@@ -3,16 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meine erste Webseite</title>
+    <title>XPLUZO | Modern Web</title>
+    <style>
+        /* Modernes CSS-Styling */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0f172a; /* Dunkelblauer, moderner Hintergrund */
+            color: #f8fafc; /* Fast weißer Text für guten Kontrast */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .card {
+            background-color: #1e293b; /* Etwas helleres Dunkelblau für die Box */
+            padding: 40px;
+            border-radius: 16px; /* Abgerundete Ecken */
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+            max-width: 450px;
+            width: 100%;
+            text-align: center;
+            border: 1px solid #334155;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 16px;
+            background: linear-gradient(to right, #38bdf8, #818cf8); /* Moderner Farbverlauf */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p {
+            color: #94a3b8; /* Leicht ausgegrauter Text für bessere Hierarchie */
+            line-height: 1.6;
+            font-size: 1.05rem;
+        }
+
+        .profile-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%; /* Macht das Bild kreisrund */
+            object-fit: cover;
+            border: 3px solid #38bdf8;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            background: linear-gradient(to right, #38bdf8, #818cf8);
+            color: #0f172a;
+            font-weight: bold;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            margin-top: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px); /* Kleiner Hover-Effekt nach oben */
+            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.4);
+        }
+    </style>
 </head>
 <body>
 
-    <h1>Willkommen auf meiner Webseite!</h1>
-    <p>Das ist mein allererster Absatz im Internet.</p>
-
-    <img src="mein-bild.jpg" alt="Beschreibung des Bildes" width="300">
-
-    <p>Besuche auch <a href="https://www.google.de">Google</a>.</p>
+    <div class="card">
+        <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=300" alt="Abstrakter moderner Hintergrund" class="profile-img">
+        
+        <h1>Willkommen bei XPLUZO</h1>
+        <p>Das ist meine brandneue, moderne Webseite. Gehostet auf Cloudflare Pages und direkt mit GitHub synchronisiert.</p>
+        
+        <a href="https://github.com/schupperterleo-ai" target="_blank" class="btn">Mein GitHub Profil</a>
+    </div>
 
 </body>
 </html>
