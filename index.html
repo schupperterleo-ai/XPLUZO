@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📱 Phone & IP Rtestttttecon mit Mini Map</title>
+    <title>📱 Pt3hone & IP Recon mit Mini Map</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -62,7 +62,7 @@
         .badge.warning { background: #fff3cd; color: #856404; }
         .badge.danger { background: #f8d7da; color: #721c24; }
         .footer { margin-top: 20px; text-align: center; font-size: 12px; color: #aaa; }
-        #mapOwn, .phone-map {
+        #mapOwn, #phoneMap {
             height: 300px;
             width: 100%;
             border-radius: 14px;
@@ -102,50 +102,7 @@
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-// ===== Stadt-Koordinaten-Datenbank =====
-const cityCoords = {
-    'Berlin': [52.5200, 13.4050],
-    'Hamburg': [53.5511, 9.9937],
-    'München': [48.1351, 11.5820],
-    'Frankfurt am Main': [50.1109, 8.6821],
-    'Köln': [50.9375, 6.9603],
-    'Düsseldorf': [51.2277, 6.7735],
-    'Stuttgart': [48.7758, 9.1829],
-    'Hannover': [52.3759, 9.7320],
-    'Leipzig': [51.3397, 12.3731],
-    'Dresden': [51.0504, 13.7373],
-    'Nürnberg': [49.4521, 11.0767],
-    'Essen': [51.4556, 7.0116],
-    'Dortmund': [51.5136, 7.4653],
-    'Bochum': [51.4818, 7.2162],
-    'Duisburg': [51.4344, 6.7624],
-    'Bremen': [53.0793, 8.8017],
-    'Bielefeld': [52.0302, 8.5325],
-    'Münster': [51.9607, 7.6261],
-    'Aachen': [50.7753, 6.0839],
-    'Bonn': [50.7374, 7.0982],
-    'Karlsruhe': [49.0069, 8.4037],
-    'Mannheim': [49.5175, 8.4833],
-    'Freiburg': [47.9990, 7.8421],
-    'Koblenz': [50.3569, 7.5889],
-    'Saarbrücken': [49.2400, 6.9969],
-    'Potsdam': [52.3906, 13.0645],
-    'Erfurt': [50.9787, 11.0328],
-    'Rostock': [54.0924, 12.0991],
-    'Magdeburg': [52.1205, 11.6276],
-    'Braunschweig': [52.2689, 10.5268],
-    'Oldenburg': [53.1435, 8.2146],
-    'Osnabrück': [52.2799, 8.0472],
-    'Lübeck': [53.8655, 10.6866],
-    'Kassel': [51.3127, 9.4797],
-    'Wiesbaden': [50.0782, 8.2398],
-    'Ulm': [48.4011, 9.9876],
-    'Chemnitz': [50.8278, 12.9214],
-    'Wuppertal': [51.2562, 7.1508],
-    'Gelsenkirchen': [51.5177, 7.0857],
-    'Mülheim': [51.4280, 6.8835],
-};
-
+// ===== Vorwahl-zu-Stadt (lokal) =====
 const vorwahlDB = {
     '30': 'Berlin', '40': 'Hamburg', '89': 'München', '69': 'Frankfurt am Main',
     '211': 'Düsseldorf', '221': 'Köln', '711': 'Stuttgart', '511': 'Hannover',
@@ -156,8 +113,7 @@ const vorwahlDB = {
     '361': 'Erfurt', '381': 'Rostock', '391': 'Magdeburg', '531': 'Braunschweig',
     '441': 'Oldenburg', '541': 'Osnabrück', '451': 'Lübeck', '561': 'Kassel',
     '611': 'Wiesbaden', '731': 'Ulm', '371': 'Chemnitz', '421': 'Bremen',
-    '521': 'Bielefeld', '251': 'Münster', '209': 'Gelsenkirchen',
-    '208': 'Mülheim',
+    '521': 'Bielefeld', '251': 'Münster', '209': 'Gelsenkirchen', '208': 'Mülheim',
 };
 
 const mobilVorwahlen = [
@@ -166,7 +122,39 @@ const mobilVorwahlen = [
     '170','171','172','173','174','175','176','177','178','179',
 ];
 
-// ===== IP-Standort ermitteln + Karte =====
+// ===== Nominatim API: Stadt -> Koordinaten =====
+async function getCoordsFromCity(city) {
+    if (!city || city === 'Unbekannt') return null;
+    try {
+        const resp = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(city + ', Deutschland')}&limit=1`);
+        const data = await resp.json();
+        if (data && data.length > 0) {
+            return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
+        }
+    } catch(e) {
+        console.log('Nominatim Fehler:', e);
+    }
+    return null;
+}
+
+// ===== Karte initialisieren =====
+function initMap(elementId, coords, title, description) {
+    setTimeout(() => {
+        const el = document.getElementById(elementId);
+        if (!el) return;
+        const map = L.map(elementId).setView(coords, 12);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap',
+            maxZoom: 18,
+        }).addTo(map);
+        L.marker(coords)
+            .addTo(map)
+            .bindPopup(`<b>${title}</b><br>${description}`)
+            .openPopup();
+    }, 300);
+}
+
+// ===== IP-Standort =====
 async function getOwnIP() {
     try {
         const resp = await fetch('https://ipapi.co/json/');
@@ -179,85 +167,91 @@ async function getOwnIP() {
             <div class="info-row"><span class="label">ISP</span><span class="value">${data.org || 'N/A'}</span></div>
             <div class="info-row"><span class="label">PLZ</span><span class="value">${data.postal || 'N/A'}</span></div>
             <div class="info-row"><span class="label">Koordinaten</span><span class="value">${data.latitude}, ${data.longitude}</span></div>
-            <div class="info-row"><span class="label">Zeitzone</span><span class="value">${data.timezone}</span></div>
         `;
-
         if (data.latitude && data.longitude) {
             document.getElementById('ownIpMapContainer').style.display = 'block';
             document.getElementById('ownCoords').textContent = `📍 ${data.city}, ${data.region}`;
-
-            const mapOwn = L.map('mapOwn').setView([data.latitude, data.longitude], 12);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap',
-                maxZoom: 18,
-            }).addTo(mapOwn);
-            L.marker([data.latitude, data.longitude])
-                .addTo(mapOwn)
-                .bindPopup(`<b>Dein IP-Standort</b><br>${data.city}<br>${data.ip}`)
-                .openPopup();
+            initMap('mapOwn', [data.latitude, data.longitude], 'Dein IP-Standort', `${data.city}<br>${data.ip}`);
         }
     } catch(e) {
         document.getElementById('ownIpInfo').innerHTML = `<span class="label" style="color:#c0392b;">Fehler: ${e.message}</span>`;
     }
 }
 
-// ===== Nummer analysieren =====
-function analyzePhone(phone) {
+// ===== Telefonnummer analysieren + echte Koordinaten holen =====
+async function search() {
+    const btn = document.getElementById('searchBtn');
+    const input = document.getElementById('phoneInput');
+    const phone = input.value.trim();
+
+    if (!phone) {
+        document.getElementById('results').innerHTML = `<div class="card error"><h3>❌ Keine Nummer eingegeben</h3></div>`;
+        return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Suche läuft...';
+    const resultsDiv = document.getElementById('results');
+    resultsDiv.innerHTML = `<div class="loading"><div class="spinner"></div><p>Analysiere ${phone}...</p></div>`;
+
+    // Nummer bereinigen
     let cleaned = phone.replace(/[^\d+]/g, '');
     if (!cleaned.startsWith('+')) {
         cleaned = cleaned.startsWith('0') ? '+49' + cleaned.substring(1) : '+49' + cleaned;
     }
 
     let phoneCity = 'Unbekannt';
-    let phoneCoords = [51.1657, 10.4515]; // DE-Mitte als Fallback
+    let phoneCoords = null;
     let phoneType = 'Unbekannt';
 
     const match = cleaned.match(/^\+49(\d+)/);
     if (match) {
         const national = match[1];
-
-        // Prüfe ob Mobilfunk
         let isMobile = false;
         for (const mv of mobilVorwahlen) {
-            if (national.startsWith(mv)) {
-                isMobile = true;
-                break;
-            }
+            if (national.startsWith(mv)) { isMobile = true; break; }
         }
-
         if (isMobile) {
             phoneType = '📱 Mobilfunk';
-            phoneCity = 'Deutschland (Mobilfunk)';
-            phoneCoords = [51.1657, 10.4515];
+            phoneCity = 'Deutschland (Mobilfunk – genauer Standort nur über Carrier)';
+            phoneCoords = [51.1657, 10.4515]; // DE-Zentrum
         } else {
             phoneType = '🏠 Festnetz';
-            // Finde Stadt über Vorwahl
             const sortedV = Object.keys(vorwahlDB).sort((a,b) => b.length - a.length);
             for (const v of sortedV) {
                 if (national.startsWith(v)) {
                     phoneCity = vorwahlDB[v];
-                    const coords = cityCoords[phoneCity];
-                    if (coords) phoneCoords = coords;
                     break;
                 }
             }
             if (!phoneCity || phoneCity === 'Unbekannt') {
-                phoneCity = 'Deutschland (unbekannter Ort)';
+                phoneCity = 'Deutschland';
+            }
+            // Echte Koordinaten über Nominatim API holen
+            const coords = await getCoordsFromCity(phoneCity);
+            if (coords) {
+                phoneCoords = coords;
+            } else {
+                phoneCoords = [51.1657, 10.4515];
             }
         }
     }
 
-    // HTML bauen
+    // Ergebnisse ausgeben
     let output = `
         <div class="card">
             <h3>📞 Telefonnummer — Analyse</h3>
             <div class="info-row"><span class="label">Nummer (E164)</span><span class="value">${cleaned}</span></div>
             <div class="info-row"><span class="label">Land</span><span class="value">🇩🇪 Deutschland</span></div>
             <div class="info-row"><span class="label">Typ</span><span class="value">${phoneType}</span></div>
-            <div class="info-row"><span class="label">Standort (geschätzt)</span><span class="value">${phoneCity}</span></div>
-            <div class="info-row"><span class="label">Koordinaten</span><span class="value">${phoneCoords[0].toFixed(4)}, ${phoneCoords[1].toFixed(4)}</span></div>
-        </div>
+            <div class="info-row"><span class="label">Standort (Stadt)</span><span class="value">${phoneCity}</span></div>
+    `;
+    if (phoneCoords) {
+        output += `<div class="info-row"><span class="label">Koordinaten</span><span class="value">${phoneCoords[0].toFixed(4)}, ${phoneCoords[1].toFixed(4)}</span></div>`;
+    }
+    output += `</div>`;
 
+    output += `
         <div class="card">
             <h3>🔍 OSINT-Recherche</h3>
             <div class="info-row">
@@ -277,50 +271,23 @@ function analyzePhone(phone) {
                 <span class="value"><a href="https://www.tellows.de/num/${cleaned}" target="_blank">Tellows öffnen</a></span>
             </div>
         </div>
-
-        <div class="card">
-            <h3>🗺️ Mini Map — Geschätzter Standort</h3>
-            <div id="phoneMap" class="phone-map"></div>
-            <div class="map-coords">📍 ${phoneCity} — ${phoneCoords[0].toFixed(4)}, ${phoneCoords[1].toFixed(4)}</div>
-        </div>
     `;
 
-    // Karte nach DOM-Update initialisieren
-    setTimeout(() => {
-        const phoneMap = L.map('phoneMap').setView(phoneCoords, 12);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap',
-            maxZoom: 18,
-        }).addTo(phoneMap);
-        L.marker(phoneCoords)
-            .addTo(phoneMap)
-            .bindPopup(`<b>Geschätzter Standort</b><br>${phoneCity}<br>${cleaned}`)
-            .openPopup();
-    }, 300);
-
-    return output;
-}
-
-// ===== Hauptfunktion =====
-async function search() {
-    const btn = document.getElementById('searchBtn');
-    const input = document.getElementById('phoneInput');
-    const phone = input.value.trim();
-
-    if (!phone) {
-        document.getElementById('results').innerHTML = `<div class="card error"><h3>❌ Keine Nummer eingegeben</h3></div>`;
-        return;
+    if (phoneCoords) {
+        output += `
+            <div class="card">
+                <h3>🗺️ Mini Map — Standort (via OpenStreetMap)</h3>
+                <div id="phoneMap" class="phone-map"></div>
+                <div class="map-coords">📍 ${phoneCity} — ${phoneCoords[0].toFixed(4)}, ${phoneCoords[1].toFixed(4)}</div>
+            </div>
+        `;
     }
 
-    btn.disabled = true;
-    btn.textContent = 'Suche läuft...';
-    document.getElementById('results').innerHTML = `<div class="loading"><div class="spinner"></div><p>Analysiere ${phone}...</p></div>`;
+    resultsDiv.innerHTML = output;
 
-    // Kurze Verzögerung für UX
-    await new Promise(r => setTimeout(r, 400));
-
-    const output = analyzePhone(phone);
-    document.getElementById('results').innerHTML = output;
+    if (phoneCoords) {
+        initMap('phoneMap', phoneCoords, 'Geschätzter Standort', `${phoneCity}<br>${cleaned}`);
+    }
 
     btn.disabled = false;
     btn.textContent = 'Suchen';
