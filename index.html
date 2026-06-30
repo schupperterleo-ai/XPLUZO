@@ -3,83 +3,281 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XPLUZO | Modern Web</title>
+    <title>Phone & IP Recon Tool</title>
     <style>
-        /* Modernes CSS-Styling */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #0f172a; /* Dunkelblauer, moderner Hintergrund */
-            color: #f8fafc; /* Fast weißer Text für guten Kontrast */
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            margin: 0;
             padding: 20px;
         }
-
-        .card {
-            background-color: #1e293b; /* Etwas helleres Dunkelblau für die Box */
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
             padding: 40px;
-            border-radius: 16px; /* Abgerundete Ecken */
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
-            max-width: 450px;
+            max-width: 800px;
             width: 100%;
-            text-align: center;
-            border: 1px solid #334155;
+            box-shadow: 0 20px 80px rgba(0,0,0,0.5);
         }
-
         h1 {
-            font-size: 2rem;
-            margin-bottom: 16px;
-            background: linear-gradient(to right, #38bdf8, #818cf8); /* Moderner Farbverlauf */
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #302b63;
+            margin-bottom: 8px;
+            font-size: 28px;
         }
-
-        p {
-            color: #94a3b8; /* Leicht ausgegrauter Text für bessere Hierarchie */
-            line-height: 1.6;
-            font-size: 1.05rem;
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
         }
-
-        .profile-img {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%; /* Macht das Bild kreisrund */
-            object-fit: cover;
-            border: 3px solid #38bdf8;
+        .input-group {
+            display: flex;
+            gap: 10px;
             margin-bottom: 20px;
+            flex-wrap: wrap;
         }
-
-        .btn {
+        input {
+            flex: 1;
+            padding: 14px 18px;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: border 0.3s;
+            min-width: 200px;
+        }
+        input:focus {
+            border-color: #302b63;
+            outline: none;
+        }
+        button {
+            padding: 14px 30px;
+            background: #302b63;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #4a42a0;
+            transform: translateY(-2px);
+        }
+        button:disabled {
+            background: #999;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .results {
+            margin-top: 25px;
+        }
+        .card {
+            background: #f8f8ff;
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #302b63;
+        }
+        .card h3 {
+            color: #302b63;
+            margin-bottom: 12px;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .info-row:last-child { border-bottom: none; }
+        .label { color: #888; font-weight: 500; }
+        .value { color: #222; font-weight: 600; word-break: break-all; }
+        .error {
+            background: #fff0f0;
+            border-left-color: #e74c3c;
+            color: #c0392b;
+        }
+        .loading {
+            text-align: center;
+            padding: 30px;
+            color: #302b63;
+        }
+        .spinner {
             display: inline-block;
-            background: linear-gradient(to right, #38bdf8, #818cf8);
-            color: #0f172a;
-            font-weight: bold;
-            text-decoration: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            margin-top: 20px;
-            transition: transform 0.2s, box-shadow 0.2s;
+            width: 30px;
+            height: 30px;
+            border: 3px solid #ddd;
+            border-top-color: #302b63;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 10px;
         }
-
-        .btn:hover {
-            transform: translateY(-2px); /* Kleiner Hover-Effekt nach oben */
-            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.4);
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge.success { background: #d4edda; color: #155724; }
+        .badge.warning { background: #fff3cd; color: #856404; }
+        .badge.danger { background: #f8d7da; color: #721c24; }
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #aaa;
         }
     </style>
 </head>
 <body>
+<div class="container">
+    <h1>📱 Phone & IP Recon</h1>
+    <p class="subtitle">Autorisierter Penetrationstest — Nur für legitime Sicherheitsbewertungen</p>
 
-    <div class="card">
-        <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=300" alt="Abstrakter moderner Hintergrund" class="profile-img">
-        
-        <h1>Willkommen bei XPLUZO</h1>
-        <p>Das ist meine brandneue, moderne Webseite. Gehostet auf Cloudflare Pages und direkt mit GitHub synchronisiert.</p>
-        
-        <a href="https://github.com/schupperterleo-ai" target="_blank" class="btn">Mein GitHub Profil</a>
+    <div class="input-group">
+        <input type="text" id="phoneInput" placeholder="z.B. +4917612345678 oder 017612345678" value="">
+        <button id="searchBtn" onclick="search()">Suchen</button>
     </div>
 
+    <div id="ipDisplay" class="card">
+        <h3>🌐 Deine IP-Adresse</h3>
+        <div id="ownIpInfo"><span class="label">Wird ermittelt...</span></div>
+    </div>
+
+    <div id="results" class="results"></div>
+    <div class="footer">Nutzung nur mit ausdrücklicher Genehmigung. Verantwortungsvoll handeln.</div>
+</div>
+
+<script>
+// ===== IP-Adresse des Clients ermitteln =====
+async function getOwnIP() {
+    try {
+        const resp = await fetch('https://ipapi.co/json/');
+        const data = await resp.json();
+        document.getElementById('ownIpInfo').innerHTML = `
+            <div class="info-row"><span class="label">IP</span><span class="value">${data.ip}</span></div>
+            <div class="info-row"><span class="label">Land</span><span class="value">${data.country_name} (${data.country_code})</span></div>
+            <div class="info-row"><span class="label">Region</span><span class="value">${data.region}</span></div>
+            <div class="info-row"><span class="label">Stadt</span><span class="value">${data.city}</span></div>
+            <div class="info-row"><span class="label">ISP</span><span class="value">${data.org || 'N/A'}</span></div>
+            <div class="info-row"><span class="label">Postleitzahl</span><span class="value">${data.postal || 'N/A'}</span></div>
+            <div class="info-row"><span class="label">Koordinaten</span><span class="value">${data.latitude}, ${data.longitude}</span></div>
+            <div class="info-row"><span class="label">Zeitzone</span><span class="value">${data.timezone}</span></div>
+        `;
+    } catch(e) {
+        document.getElementById('ownIpInfo').innerHTML = `<span class="label" style="color:#c0392b;">Fehler: ${e.message}</span>`;
+    }
+}
+
+// ===== Telefonnummer-Informationen abrufen =====
+async function lookupPhone(phone) {
+    // Bereinige Eingabe
+    let cleaned = phone.replace(/[^\d+]/g, '');
+    if (!cleaned.startsWith('+')) {
+        cleaned = cleaned.startsWith('0') ? '+49' + cleaned.substring(1) : '+49' + cleaned;
+    }
+
+    const resultsDiv = document.getElementById('results');
+    resultsDiv.innerHTML = `<div class="loading"><div class="spinner"></div><p>Suche nach ${cleaned}...</p></div>`;
+
+    let output = '';
+
+    // 1. numverify API mit deinem Key
+    try {
+        const apiKey = 'e6a0ca3ebf7c758301c1f4bcda6bde31';
+        const resp = await fetch(`https://api.apilayer.com/number_verification/validate?number=${cleaned}`, {
+            headers: { 'apikey': apiKey }
+        });
+        if (resp.ok) {
+            const data = await resp.json();
+            if (data.valid) {
+                output += `
+                    <div class="card">
+                        <h3>📞 Telefonnummer — Validiert</h3>
+                        <div class="info-row"><span class="label">Nummer</span><span class="value">${data.number}</span></div>
+                        <div class="info-row"><span class="label">International</span><span class="value">${data.international_format}</span></div>
+                        <div class="info-row"><span class="label">Ländercode</span><span class="value">+${data.country_code}</span></div>
+                        <div class="info-row"><span class="label">Land</span><span class="value">${data.country_name}</span></div>
+                        <div class="info-row"><span class="label">Betreiber</span><span class="value">${data.carrier || 'Unbekannt'}</span></div>
+                        <div class="info-row"><span class="label">Leitungsart</span><span class="value">${data.line_type || 'Unbekannt'}</span></div>
+                        <div class="info-row"><span class="label">Status</span><span class="value"><span class="badge success">✅ Gültig</span></span></div>
+                    </div>
+                `;
+            } else {
+                output += `<div class="card error"><h3>❌ Ungültige Nummer</h3><p>${data.error || 'Die Nummer konnte nicht validiert werden.'}</p></div>`;
+            }
+        } else {
+            const errData = await resp.text();
+            output += `<div class="card error"><h3>⚠️ API-Fehler</h3><p>HTTP ${resp.status}: ${errData}</p></div>`;
+        }
+    } catch(e) {
+        output += `<div class="card error"><h3>⚠️ API-Fehler</h3><p>${e.message}</p></div>`;
+    }
+
+    // 2. OSINT-Links
+    output += `
+        <div class="card">
+            <h3>🔍 OSINT-Recherche</h3>
+            <div class="info-row">
+                <span class="label">Google Dork</span>
+                <span class="value">
+                    <a href="https://www.google.com/search?q=%22${cleaned}%22" target="_blank">"${cleaned}" suchen</a>
+                </span>
+            </div>
+            <div class="info-row">
+                <span class="label">SpyDialer</span>
+                <span class="value">
+                    <a href="https://spydialer.com/default.aspx?phone=${cleaned}" target="_blank">SpyDialer öffnen</a>
+                </span>
+            </div>
+            <div class="info-row">
+                <span class="label">TrueCaller</span>
+                <span class="value">
+                    <a href="https://www.truecaller.com/search/de/${cleaned}" target="_blank">TrueCaller öffnen</a>
+                </span>
+            </div>
+        </div>
+    `;
+
+    // 3. Deutsche Vorwahl-Info
+    const vorwahlMatch = cleaned.match(/^\+49(\d{3,5})/);
+    if (vorwahlMatch) {
+        const vorwahl = '0' + vorwahlMatch[1];
+        output += `
+            <div class="card">
+                <h3>📍 Deutsche Vorwahl-Info</h3>
+                <div class="info-row"><span class="label">Vorwahl</span><span class="value">${vorwahl}</span></div>
+                <div class="info-row"><span class="label">Info</span><span class="value">Ortsnetz — <a href="https://de.wikipedia.org/wiki/${vorwahl}" target="_blank">Wikipedia</a></span></div>
+            </div>
+        `;
+    }
+
+    resultsDiv.innerHTML = output;
+}
+
+// ===== Hauptfunktion =====
+async function search() {
+    const btn = document.getElementById('searchBtn');
+    const input = document.getElementById('phoneInput');
+    btn.disabled = true;
+    btn.textContent = 'Suche läuft...';
+
+    await lookupPhone(input.value);
+
+    btn.disabled = false;
+    btn.textContent = 'Suchen';
+}
+
+// ===== Beim Laden =====
+window.onload = getOwnIP;
+</script>
 </body>
 </html>
