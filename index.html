@@ -2,335 +2,41 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📱 Ptesthone & IP Recon mit Mini Map</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <title>Format Prüfer</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        .container {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            padding: 40px;
-            max-width: 900px;
-            width: 100%;
-            box-shadow: 0 20px 80px rgba(0,0,0,0.5);
-        }
-        h1 { color: #302b63; margin-bottom: 8px; font-size: 28px; }
-        .subtitle { color: #666; margin-bottom: 30px; font-size: 14px; }
-        .input-group { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-        input {
-            flex: 1; padding: 14px 18px; border: 2px solid #ddd;
-            border-radius: 12px; font-size: 16px; transition: border 0.3s; min-width: 200px;
-        }
-        input:focus { border-color: #302b63; outline: none; }
-        button {
-            padding: 14px 30px; background: #302b63; color: white;
-            border: none; border-radius: 12px; font-size: 16px; font-weight: 600;
-            cursor: pointer; transition: all 0.3s;
-        }
-        button:hover { background: #4a42a0; transform: translateY(-2px); }
-        button:disabled { background: #999; cursor: not-allowed; transform: none; }
-        .results { margin-top: 25px; }
-        .card {
-            background: #f8f8ff; border-radius: 14px; padding: 20px;
-            margin-bottom: 15px; border-left: 4px solid #302b63;
-        }
-        .card h3 { color: #302b63; margin-bottom: 12px; font-size: 16px; text-transform: uppercase; letter-spacing: 1px; }
-        .info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; }
-        .info-row:last-child { border-bottom: none; }
-        .label { color: #888; font-weight: 500; }
-        .value { color: #222; font-weight: 600; word-break: break-all; }
-        .error { background: #fff0f0; border-left-color: #e74c3c; color: #c0392b; }
-        .loading { text-align: center; padding: 30px; color: #302b63; }
-        .spinner {
-            display: inline-block; width: 30px; height: 30px;
-            border: 3px solid #ddd; border-top-color: #302b63;
-            border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 10px;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-        .badge.success { background: #d4edda; color: #155724; }
-        .badge.warning { background: #fff3cd; color: #856404; }
-        .badge.danger { background: #f8d7da; color: #721c24; }
-        .footer { margin-top: 20px; text-align: center; font-size: 12px; color: #aaa; }
-        #mapOwn, .phone-map {
-            height: 300px;
-            width: 100%;
-            border-radius: 14px;
-            border: 2px solid #302b63;
-            margin-top: 10px;
-        }
-        .map-coords {
-            text-align: center;
-            font-size: 13px;
-            color: #555;
-            margin-top: 6px;
-        }
-        .own-ip-highlight {
-            background: linear-gradient(135deg, #302b63, #4a42a0);
-            color: white;
-            border-left: 4px solid #ffd700;
-        }
-        .own-ip-highlight .label { color: #ccc; }
-        .own-ip-highlight .value { color: #fff; }
-        .own-ip-highlight h3 { color: #ffd700; }
+        body { font-family: sans-serif; background: #121212; color: white; padding: 20px; }
+        .box { background: #1e1e1e; padding: 20px; border-radius: 8px; max-width: 400px; }
+        input, button { width: 100%; padding: 10px; margin: 10px 0; border-radius: 4px; border: none; }
+        button { background: #38bdf8; color: #121212; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
-<div class="container">
-    <h1>📱 Phone & IP Recon mit Mini Map</h1>
-    <p class="subtitle">Autorisierter Penetrationstest — Nur für legitime Sicherheitsbewertungen</p>
 
-    <div class="input-group">
-        <input type="text" id="phoneInput" placeholder="z.B. +4917612345678 oder 017612345678" value="">
-        <button id="searchBtn" onclick="search()">Suchen</button>
-    </div>
-
-    <!-- === DEINE EIGENE IP GANZ OBEN === -->
-    <div id="ipDisplay" class="card own-ip-highlight">
-        <h3>🌐 Deine eigene IP-Adresse & Standort</h3>
-        <div id="ownIpInfo"><span class="label">Wird ermittelt...</span></div>
-        <div id="ownIpMapContainer" style="display:none;">
-            <div id="mapOwn" class="phone-map"></div>
-            <div class="map-coords" id="ownCoords" style="color:#ddd;"></div>
-        </div>
-    </div>
-
-    <div id="results" class="results"></div>
-    <div class="footer">Nutzung nur mit ausdrücklicher Genehmigung. Verantwortungsvoll handeln.</div>
+<div class="box">
+    <h3>Eingabe-Validierung</h3>
+    <label>Telefonnummer prüfen:</label>
+    <input type="text" id="phoneInput" placeholder="z.B. +49 170 1234567">
+    <button onclick="checkFormat()">Format checken</button>
+    <p id="result"></p>
 </div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-// ===== Stadt-Koordinaten-Datenbank =====
-const cityCoords = {
-    'Berlin': [52.5200, 13.4050],
-    'Hamburg': [53.5511, 9.9937],
-    'München': [48.1351, 11.5820],
-    'Frankfurt am Main': [50.1109, 8.6821],
-    'Köln': [50.9375, 6.9603],
-    'Düsseldorf': [51.2277, 6.7735],
-    'Stuttgart': [48.7758, 9.1829],
-    'Hannover': [52.3759, 9.7320],
-    'Leipzig': [51.3397, 12.3731],
-    'Dresden': [51.0504, 13.7373],
-    'Nürnberg': [49.4521, 11.0767],
-    'Essen': [51.4556, 7.0116],
-    'Dortmund': [51.5136, 7.4653],
-    'Bochum': [51.4818, 7.2162],
-    'Duisburg': [51.4344, 6.7624],
-    'Bremen': [53.0793, 8.8017],
-    'Bielefeld': [52.0302, 8.5325],
-    'Münster': [51.9607, 7.6261],
-    'Aachen': [50.7753, 6.0839],
-    'Bonn': [50.7374, 7.0982],
-    'Karlsruhe': [49.0069, 8.4037],
-    'Mannheim': [49.5175, 8.4833],
-    'Freiburg': [47.9990, 7.8421],
-    'Koblenz': [50.3569, 7.5889],
-    'Saarbrücken': [49.2400, 6.9969],
-    'Potsdam': [52.3906, 13.0645],
-    'Erfurt': [50.9787, 11.0328],
-    'Rostock': [54.0924, 12.0991],
-    'Magdeburg': [52.1205, 11.6276],
-    'Braunschweig': [52.2689, 10.5268],
-    'Oldenburg': [53.1435, 8.2146],
-    'Osnabrück': [52.2799, 8.0472],
-    'Lübeck': [53.8655, 10.6866],
-    'Kassel': [51.3127, 9.4797],
-    'Wiesbaden': [50.0782, 8.2398],
-    'Ulm': [48.4011, 9.9876],
-    'Chemnitz': [50.8278, 12.9214],
-    'Wuppertal': [51.2562, 7.1508],
-    'Gelsenkirchen': [51.5177, 7.0857],
-    'Mülheim': [51.4280, 6.8835],
-};
-
-const vorwahlDB = {
-    '30': 'Berlin', '40': 'Hamburg', '89': 'München', '69': 'Frankfurt am Main',
-    '211': 'Düsseldorf', '221': 'Köln', '711': 'Stuttgart', '511': 'Hannover',
-    '341': 'Leipzig', '351': 'Dresden', '911': 'Nürnberg', '201': 'Essen',
-    '203': 'Duisburg', '231': 'Dortmund', '234': 'Bochum', '202': 'Wuppertal',
-    '241': 'Aachen', '228': 'Bonn', '721': 'Karlsruhe', '621': 'Mannheim',
-    '761': 'Freiburg', '261': 'Koblenz', '681': 'Saarbrücken', '331': 'Potsdam',
-    '361': 'Erfurt', '381': 'Rostock', '391': 'Magdeburg', '531': 'Braunschweig',
-    '441': 'Oldenburg', '541': 'Osnabrück', '451': 'Lübeck', '561': 'Kassel',
-    '611': 'Wiesbaden', '731': 'Ulm', '371': 'Chemnitz', '421': 'Bremen',
-    '521': 'Bielefeld', '251': 'Münster', '209': 'Gelsenkirchen',
-    '208': 'Mülheim',
-};
-
-const mobilVorwahlen = [
-    '150','151','152','155','156','157','159',
-    '160','162','163','169',
-    '170','171','172','173','174','175','176','177','178','179',
-];
-
-// ===== IP-Standort ermitteln + Karte =====
-async function getOwnIP() {
-    try {
-        const resp = await fetch('https://ipapi.co/json/');
-        const data = await resp.json();
-        document.getElementById('ownIpInfo').innerHTML = `
-            <div class="info-row"><span class="label">IP-Adresse</span><span class="value">${data.ip}</span></div>
-            <div class="info-row"><span class="label">Land</span><span class="value">${data.country_name} (${data.country_code})</span></div>
-            <div class="info-row"><span class="label">Region</span><span class="value">${data.region}</span></div>
-            <div class="info-row"><span class="label">Stadt</span><span class="value">${data.city}</span></div>
-            <div class="info-row"><span class="label">ISP</span><span class="value">${data.org || 'N/A'}</span></div>
-            <div class="info-row"><span class="label">PLZ</span><span class="value">${data.postal || 'N/A'}</span></div>
-            <div class="info-row"><span class="label">Koordinaten</span><span class="value">${data.latitude}, ${data.longitude}</span></div>
-            <div class="info-row"><span class="label">Zeitzone</span><span class="value">${data.timezone}</span></div>
-        `;
-
-        if (data.latitude && data.longitude) {
-            document.getElementById('ownIpMapContainer').style.display = 'block';
-            document.getElementById('ownCoords').textContent = `📍 ${data.city}, ${data.region} (${data.latitude}, ${data.longitude})`;
-
-            const mapOwn = L.map('mapOwn').setView([data.latitude, data.longitude], 12);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap',
-                maxZoom: 18,
-            }).addTo(mapOwn);
-            L.marker([data.latitude, data.longitude])
-                .addTo(mapOwn)
-                .bindPopup(`<b>Dein Standort</b><br>${data.city}<br>IP: ${data.ip}<br>ISP: ${data.org || 'N/A'}`)
-                .openPopup();
-        }
-    } catch(e) {
-        document.getElementById('ownIpInfo').innerHTML = `<span class="label" style="color:#ff6b6b;">Fehler: ${e.message}</span>`;
+function checkFormat() {
+    const input = document.getElementById('phoneInput').value;
+    const resultText = document.getElementById('result');
+    
+    // Prüft grob, ob die Nummer mit einem + startet und nur Zahlen/Leerzeichen enthält
+    const regex = /^\+[0-9\s\-]+$/;
+    
+    if (regex.test(input)) {
+        resultText.innerText = "✅ Gültiges internationales Format!";
+        resultText.style.color = "lightgreen";
+    } else {
+        resultText.innerText = "❌ Ungültiges Format. Bitte mit Ländervorwahl (z.B. +49) eingeben.";
+        resultText.style.color = "crimson";
     }
 }
-
-// ===== Nummer analysieren =====
-function analyzePhone(phone) {
-    let cleaned = phone.replace(/[^\d+]/g, '');
-    if (!cleaned.startsWith('+')) {
-        cleaned = cleaned.startsWith('0') ? '+49' + cleaned.substring(1) : '+49' + cleaned;
-    }
-
-    let phoneCity = 'Unbekannt';
-    let phoneCoords = [51.1657, 10.4515];
-    let phoneType = 'Unbekannt';
-
-    const match = cleaned.match(/^\+49(\d+)/);
-    if (match) {
-        const national = match[1];
-
-        let isMobile = false;
-        for (const mv of mobilVorwahlen) {
-            if (national.startsWith(mv)) {
-                isMobile = true;
-                break;
-            }
-        }
-
-        if (isMobile) {
-            phoneType = '📱 Mobilfunk';
-            phoneCity = 'Deutschland (Mobilfunk)';
-            phoneCoords = [51.1657, 10.4515];
-        } else {
-            phoneType = '🏠 Festnetz';
-            const sortedV = Object.keys(vorwahlDB).sort((a,b) => b.length - a.length);
-            for (const v of sortedV) {
-                if (national.startsWith(v)) {
-                    phoneCity = vorwahlDB[v];
-                    const coords = cityCoords[phoneCity];
-                    if (coords) phoneCoords = coords;
-                    break;
-                }
-            }
-            if (!phoneCity || phoneCity === 'Unbekannt') {
-                phoneCity = 'Deutschland (unbekannter Ort)';
-            }
-        }
-    }
-
-    let output = `
-        <div class="card">
-            <h3>📞 Telefonnummer — Analyse</h3>
-            <div class="info-row"><span class="label">Nummer (E164)</span><span class="value">${cleaned}</span></div>
-            <div class="info-row"><span class="label">Land</span><span class="value">🇩🇪 Deutschland</span></div>
-            <div class="info-row"><span class="label">Typ</span><span class="value">${phoneType}</span></div>
-            <div class="info-row"><span class="label">Standort (geschätzt)</span><span class="value">${phoneCity}</span></div>
-            <div class="info-row"><span class="label">Koordinaten</span><span class="value">${phoneCoords[0].toFixed(4)}, ${phoneCoords[1].toFixed(4)}</span></div>
-        </div>
-
-        <div class="card">
-            <h3>🔍 OSINT-Recherche</h3>
-            <div class="info-row">
-                <span class="label">Google</span>
-                <span class="value"><a href="https://www.google.com/search?q=%22${cleaned}%22" target="_blank">"${cleaned}" suchen</a></span>
-            </div>
-            <div class="info-row">
-                <span class="label">SpyDialer</span>
-                <span class="value"><a href="https://spydialer.com/default.aspx?phone=${cleaned}" target="_blank">SpyDialer öffnen</a></span>
-            </div>
-            <div class="info-row">
-                <span class="label">TrueCaller</span>
-                <span class="value"><a href="https://www.truecaller.com/search/de/${cleaned}" target="_blank">TrueCaller öffnen</a></span>
-            </div>
-            <div class="info-row">
-                <span class="label">Tellows</span>
-                <span class="value"><a href="https://www.tellows.de/num/${cleaned}" target="_blank">Tellows öffnen</a></span>
-            </div>
-        </div>
-
-        <div class="card">
-            <h3>🗺️ Mini Map — Geschätzter Standort der Nummer</h3>
-            <div id="phoneMap" class="phone-map"></div>
-            <div class="map-coords">📍 ${phoneCity} — ${phoneCoords[0].toFixed(4)}, ${phoneCoords[1].toFixed(4)}</div>
-        </div>
-    `;
-
-    setTimeout(() => {
-        const phoneMap = L.map('phoneMap').setView(phoneCoords, 12);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap',
-            maxZoom: 18,
-        }).addTo(phoneMap);
-        L.marker(phoneCoords)
-            .addTo(phoneMap)
-            .bindPopup(`<b>Geschätzter Standort</b><br>${phoneCity}<br>${cleaned}`)
-            .openPopup();
-    }, 300);
-
-    return output;
-}
-
-// ===== Hauptfunktion =====
-async function search() {
-    const btn = document.getElementById('searchBtn');
-    const input = document.getElementById('phoneInput');
-    const phone = input.value.trim();
-
-    if (!phone) {
-        document.getElementById('results').innerHTML = `<div class="card error"><h3>❌ Keine Nummer eingegeben</h3></div>`;
-        return;
-    }
-
-    btn.disabled = true;
-    btn.textContent = 'Suche läuft...';
-    document.getElementById('results').innerHTML = `<div class="loading"><div class="spinner"></div><p>Analysiere ${phone}...</p></div>`;
-
-    await new Promise(r => setTimeout(r, 400));
-
-    const output = analyzePhone(phone);
-    document.getElementById('results').innerHTML = output;
-
-    btn.disabled = false;
-    btn.textContent = 'Suchen';
-}
-
-window.onload = getOwnIP;
 </script>
+
 </body>
 </html>
