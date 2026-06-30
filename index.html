@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phone & IP Recon Tool</title>
+    <title>📱 Phone & IP Recon mit Mini Map</title>
+    <!-- Leaflet CSS für die Karte -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -19,127 +21,72 @@
             background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
             padding: 40px;
-            max-width: 800px;
+            max-width: 900px;
             width: 100%;
             box-shadow: 0 20px 80px rgba(0,0,0,0.5);
         }
-        h1 {
-            color: #302b63;
-            margin-bottom: 8px;
-            font-size: 28px;
-        }
-        .subtitle {
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 14px;
-        }
-        .input-group {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
+        h1 { color: #302b63; margin-bottom: 8px; font-size: 28px; }
+        .subtitle { color: #666; margin-bottom: 30px; font-size: 14px; }
+        .input-group { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
         input {
-            flex: 1;
-            padding: 14px 18px;
-            border: 2px solid #ddd;
-            border-radius: 12px;
-            font-size: 16px;
-            transition: border 0.3s;
-            min-width: 200px;
+            flex: 1; padding: 14px 18px; border: 2px solid #ddd;
+            border-radius: 12px; font-size: 16px; transition: border 0.3s; min-width: 200px;
         }
-        input:focus {
-            border-color: #302b63;
-            outline: none;
-        }
+        input:focus { border-color: #302b63; outline: none; }
         button {
-            padding: 14px 30px;
-            background: #302b63;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
+            padding: 14px 30px; background: #302b63; color: white;
+            border: none; border-radius: 12px; font-size: 16px; font-weight: 600;
+            cursor: pointer; transition: all 0.3s;
         }
-        button:hover {
-            background: #4a42a0;
-            transform: translateY(-2px);
-        }
-        button:disabled {
-            background: #999;
-            cursor: not-allowed;
-            transform: none;
-        }
-        .results {
-            margin-top: 25px;
-        }
+        button:hover { background: #4a42a0; transform: translateY(-2px); }
+        button:disabled { background: #999; cursor: not-allowed; transform: none; }
+        .results { margin-top: 25px; }
         .card {
-            background: #f8f8ff;
-            border-radius: 14px;
-            padding: 20px;
-            margin-bottom: 15px;
-            border-left: 4px solid #302b63;
+            background: #f8f8ff; border-radius: 14px; padding: 20px;
+            margin-bottom: 15px; border-left: 4px solid #302b63;
         }
-        .card h3 {
-            color: #302b63;
-            margin-bottom: 12px;
-            font-size: 16px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #eee;
-        }
+        .card h3 { color: #302b63; margin-bottom: 12px; font-size: 16px; text-transform: uppercase; letter-spacing: 1px; }
+        .info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; }
         .info-row:last-child { border-bottom: none; }
         .label { color: #888; font-weight: 500; }
         .value { color: #222; font-weight: 600; word-break: break-all; }
-        .error {
-            background: #fff0f0;
-            border-left-color: #e74c3c;
-            color: #c0392b;
-        }
-        .loading {
-            text-align: center;
-            padding: 30px;
-            color: #302b63;
-        }
+        .error { background: #fff0f0; border-left-color: #e74c3c; color: #c0392b; }
+        .loading { text-align: center; padding: 30px; color: #302b63; }
         .spinner {
-            display: inline-block;
-            width: 30px;
-            height: 30px;
-            border: 3px solid #ddd;
-            border-top-color: #302b63;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin-bottom: 10px;
+            display: inline-block; width: 30px; height: 30px;
+            border: 3px solid #ddd; border-top-color: #302b63;
+            border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 10px;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .badge {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
+        .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
         .badge.success { background: #d4edda; color: #155724; }
         .badge.warning { background: #fff3cd; color: #856404; }
         .badge.danger { background: #f8d7da; color: #721c24; }
-        .footer {
-            margin-top: 20px;
+        .footer { margin-top: 20px; text-align: center; font-size: 12px; color: #aaa; }
+
+        /* Karten-Styling */
+        #map {
+            height: 350px;
+            width: 100%;
+            border-radius: 14px;
+            border: 2px solid #302b63;
+            margin-top: 10px;
+            z-index: 1;
+        }
+        .map-container {
+            position: relative;
+        }
+        .map-coords {
             text-align: center;
-            font-size: 12px;
-            color: #aaa;
+            font-size: 13px;
+            color: #555;
+            margin-top: 6px;
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>📱 Phone & IP Recon</h1>
+    <h1>📱 Phone & IP Recon mit Mini Map</h1>
     <p class="subtitle">Autorisierter Penetrationstest — Nur für legitime Sicherheitsbewertungen</p>
 
     <div class="input-group">
@@ -148,16 +95,28 @@
     </div>
 
     <div id="ipDisplay" class="card">
-        <h3>🌐 Deine IP-Adresse</h3>
+        <h3>🌐 Deine IP-Adresse & Standort</h3>
         <div id="ownIpInfo"><span class="label">Wird ermittelt...</span></div>
+        <div id="ownIpMap" class="map-container" style="display:none;">
+            <div id="mapOwn"></div>
+            <div class="map-coords" id="ownCoords"></div>
+        </div>
     </div>
 
     <div id="results" class="results"></div>
     <div class="footer">Nutzung nur mit ausdrücklicher Genehmigung. Verantwortungsvoll handeln.</div>
 </div>
 
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-// ===== IP-Adresse des Clients ermitteln =====
+// ===== Globale Karten-Variablen =====
+let mapOwn = null;
+let mapPhone = null;
+let ownMarker = null;
+let phoneMarker = null;
+
+// ===== IP-Adresse des Clients ermitteln + Karte =====
 async function getOwnIP() {
     try {
         const resp = await fetch('https://ipapi.co/json/');
@@ -172,95 +131,230 @@ async function getOwnIP() {
             <div class="info-row"><span class="label">Koordinaten</span><span class="value">${data.latitude}, ${data.longitude}</span></div>
             <div class="info-row"><span class="label">Zeitzone</span><span class="value">${data.timezone}</span></div>
         `;
+
+        // Karte anzeigen
+        if (data.latitude && data.longitude) {
+            document.getElementById('ownIpMap').style.display = 'block';
+            document.getElementById('ownCoords').textContent = `📍 ${data.city}, ${data.region} — ${data.latitude}, ${data.longitude}`;
+
+            if (!mapOwn) {
+                mapOwn = L.map('mapOwn').setView([data.latitude, data.longitude], 12);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+                    maxZoom: 18,
+                }).addTo(mapOwn);
+                ownMarker = L.marker([data.latitude, data.longitude])
+                    .addTo(mapOwn)
+                    .bindPopup(`<b>Dein Standort (IP)</b><br>${data.city}, ${data.region}<br>${data.ip}`)
+                    .openPopup();
+            } else {
+                mapOwn.setView([data.latitude, data.longitude], 12);
+                if (ownMarker) mapOwn.removeLayer(ownMarker);
+                ownMarker = L.marker([data.latitude, data.longitude])
+                    .addTo(mapOwn)
+                    .bindPopup(`<b>Dein Standort (IP)</b><br>${data.city}, ${data.region}<br>${data.ip}`)
+                    .openPopup();
+            }
+            setTimeout(() => mapOwn.invalidateSize(), 500);
+        }
     } catch(e) {
         document.getElementById('ownIpInfo').innerHTML = `<span class="label" style="color:#c0392b;">Fehler: ${e.message}</span>`;
     }
 }
 
-// ===== Telefonnummer-Informationen abrufen =====
-async function lookupPhone(phone) {
-    // Bereinige Eingabe
+// ===== Deutsche Vorwahl-Datenbank mit Koordinaten =====
+const cityCoords = {
+    'Berlin': [52.5200, 13.4050],
+    'Hamburg': [53.5511, 9.9937],
+    'München': [48.1351, 11.5820],
+    'Frankfurt am Main': [50.1109, 8.6821],
+    'Köln': [50.9375, 6.9603],
+    'Düsseldorf': [51.2277, 6.7735],
+    'Stuttgart': [48.7758, 9.1829],
+    'Hannover': [52.3759, 9.7320],
+    'Leipzig': [51.3397, 12.3731],
+    'Dresden': [51.0504, 13.7373],
+    'Nürnberg': [49.4521, 11.0767],
+    'Essen': [51.4556, 7.0116],
+    'Dortmund': [51.5136, 7.4653],
+    'Bochum': [51.4818, 7.2162],
+    'Duisburg': [51.4344, 6.7624],
+    'Bremen': [53.0793, 8.8017],
+    'Dresden': [51.0504, 13.7373],
+    'Leipzig': [51.3397, 12.3731],
+    'Bielefeld': [52.0302, 8.5325],
+    'Münster': [51.9607, 7.6261],
+    'Aachen': [50.7753, 6.0839],
+    'Bonn': [50.7374, 7.0982],
+    'Karlsruhe': [49.0069, 8.4037],
+    'Mannheim': [49.5175, 8.4833],
+    'Freiburg': [47.9990, 7.8421],
+    'Koblenz': [50.3569, 7.5889],
+    'Saarbrücken': [49.2400, 6.9969],
+    'Potsdam': [52.3906, 13.0645],
+    'Erfurt': [50.9787, 11.0328],
+    'Rostock': [54.0924, 12.0991],
+    'Magdeburg': [52.1205, 11.6276],
+    'Braunschweig': [52.2689, 10.5268],
+    'Oldenburg': [53.1435, 8.2146],
+    'Osnabrück': [52.2799, 8.0472],
+    'Lübeck': [53.8655, 10.6866],
+    'Kassel': [51.3127, 9.4797],
+    'Wiesbaden': [50.0782, 8.2398],
+    'Ulm': [48.4011, 9.9876],
+    'Chemnitz': [50.8278, 12.9214],
+};
+
+const vorwahlDB = {
+    '030': 'Berlin', '040': 'Hamburg', '089': 'München', '069': 'Frankfurt am Main',
+    '0211': 'Düsseldorf', '0221': 'Köln', '0711': 'Stuttgart', '0511': 'Hannover',
+    '0341': 'Leipzig', '0351': 'Dresden', '0911': 'Nürnberg', '0201': 'Essen',
+    '0203': 'Duisburg', '0231': 'Dortmund', '0234': 'Bochum', '0202': 'Wuppertal',
+    '0241': 'Aachen', '0228': 'Bonn', '0721': 'Karlsruhe', '0621': 'Mannheim',
+    '0761': 'Freiburg', '0261': 'Koblenz', '0681': 'Saarbrücken', '0331': 'Potsdam',
+    '0361': 'Erfurt', '0381': 'Rostock', '0391': 'Magdeburg', '0531': 'Braunschweig',
+    '0441': 'Oldenburg', '0541': 'Osnabrück', '0451': 'Lübeck', '0561': 'Kassel',
+    '0611': 'Wiesbaden', '0731': 'Ulm', '0371': 'Chemnitz', '0421': 'Bremen',
+    '0521': 'Bielefeld', '0251': 'Münster', '0209': 'Gelsenkirchen',
+    '0208': 'Mülheim', '02431': 'Bergheim', '0281': 'Wesel',
+    '0800': 'Kostenlose Servicerufnummer', '0900': 'Mehrwertdienste (Premium)',
+    '0137': 'Mehrwertdienste (TV/Radio)', '0180': 'Service-Dienste (shared cost)',
+};
+
+const mobilVorwahlen = [
+    '0150','0151','0152','0155','0156','0157','0159',
+    '0160','0162','0163','0169',
+    '0170','0171','0172','0173','0174','0175','0176','0177','0178','0179',
+];
+
+function istMobilfunk(vorwahl) {
+    return mobilVorwahlen.some(m => vorwahl.startsWith(m));
+}
+
+function getCityFromVorwahl(vorwahl) {
+    // Längste Vorwahl zuerst matchen
+    const sorted = Object.keys(vorwahlDB).sort((a,b) => b.length - a.length);
+    for (const v of sorted) {
+        if (vorwahl.startsWith(v)) return vorwahlDB[v];
+    }
+    return null;
+}
+
+function getCoordsFromCity(city) {
+    return cityCoords[city] || null;
+}
+
+// ===== Telefonnummer analysieren (lokal) =====
+function analyzePhone(phone) {
     let cleaned = phone.replace(/[^\d+]/g, '');
     if (!cleaned.startsWith('+')) {
         cleaned = cleaned.startsWith('0') ? '+49' + cleaned.substring(1) : '+49' + cleaned;
     }
 
-    const resultsDiv = document.getElementById('results');
-    resultsDiv.innerHTML = `<div class="loading"><div class="spinner"></div><p>Suche nach ${cleaned}...</p></div>`;
-
     let output = '';
+    let phoneCity = null;
+    let phoneCoords = null;
+    let phoneType = 'Unbekannt';
 
-    // 1. numverify API mit deinem Key
-    try {
-        const apiKey = 'e6a0ca3ebf7c758301c1f4bcda6bde31';
-        const resp = await fetch(`https://api.apilayer.com/number_verification/validate?number=${cleaned}`, {
-            headers: { 'apikey': apiKey }
-        });
-        if (resp.ok) {
-            const data = await resp.json();
-            if (data.valid) {
-                output += `
-                    <div class="card">
-                        <h3>📞 Telefonnummer — Validiert</h3>
-                        <div class="info-row"><span class="label">Nummer</span><span class="value">${data.number}</span></div>
-                        <div class="info-row"><span class="label">International</span><span class="value">${data.international_format}</span></div>
-                        <div class="info-row"><span class="label">Ländercode</span><span class="value">+${data.country_code}</span></div>
-                        <div class="info-row"><span class="label">Land</span><span class="value">${data.country_name}</span></div>
-                        <div class="info-row"><span class="label">Betreiber</span><span class="value">${data.carrier || 'Unbekannt'}</span></div>
-                        <div class="info-row"><span class="label">Leitungsart</span><span class="value">${data.line_type || 'Unbekannt'}</span></div>
-                        <div class="info-row"><span class="label">Status</span><span class="value"><span class="badge success">✅ Gültig</span></span></div>
-                    </div>
-                `;
-            } else {
-                output += `<div class="card error"><h3>❌ Ungültige Nummer</h3><p>${data.error || 'Die Nummer konnte nicht validiert werden.'}</p></div>`;
+    const match = cleaned.match(/^\+49(\d+)/);
+    if (match) {
+        const national = match[1];
+        // Mobil oder Festnetz?
+        for (const mv of mobilVorwahlen) {
+            if (national.startsWith(mv.substring(1))) { // ohne 0
+                phoneType = '📱 Mobilfunk';
+                // Bei Mobilfunk können wir nur grob "Deutschland" sagen
+                phoneCity = 'Deutschland (Mobilfunk)';
+                phoneCoords = [51.1657, 10.4515]; // Zentrum DE
+                break;
             }
-        } else {
-            const errData = await resp.text();
-            output += `<div class="card error"><h3>⚠️ API-Fehler</h3><p>HTTP ${resp.status}: ${errData}</p></div>`;
         }
-    } catch(e) {
-        output += `<div class="card error"><h3>⚠️ API-Fehler</h3><p>${e.message}</p></div>`;
+        if (phoneType === 'Unbekannt') {
+            phoneType = '🏠 Festnetz';
+            // Finde Vorwahl
+            const sortedV = Object.keys(vorwahlDB).sort((a,b) => b.length - a.length);
+            for (const v of sortedV) {
+                if (national.startsWith(v.substring(1))) { // ohne 0
+                    phoneCity = vorwahlDB[v];
+                    phoneCoords = getCoordsFromCity(phoneCity);
+                    break;
+                }
+            }
+            if (!phoneCity) {
+                phoneCity = 'Deutschland (unbekannter Ort)';
+                phoneCoords = [51.1657, 10.4515];
+            }
+        }
+    } else {
+        phoneCity = 'Unbekannt';
     }
 
-    // 2. OSINT-Links
+    output += `
+        <div class="card">
+            <h3>📞 Telefonnummer — Analyse</h3>
+            <div class="info-row"><span class="label">Nummer (E164)</span><span class="value">${cleaned}</span></div>
+            <div class="info-row"><span class="label">Land</span><span class="value">🇩🇪 Deutschland</span></div>
+            <div class="info-row"><span class="label">Typ</span><span class="value">${phoneType}</span></div>
+            <div class="info-row"><span class="label">Standort (geschätzt)</span><span class="value">${phoneCity}</span></div>
+    `;
+
+    if (phoneCoords) {
+        output += `
+            <div class="info-row"><span class="label">Koordinaten</span><span class="value">${phoneCoords[0]}, ${phoneCoords[1]}</span></div>
+        `;
+    }
+
+    output += `</div>`;
+
+    // OSINT-Links
     output += `
         <div class="card">
             <h3>🔍 OSINT-Recherche</h3>
             <div class="info-row">
                 <span class="label">Google Dork</span>
-                <span class="value">
-                    <a href="https://www.google.com/search?q=%22${cleaned}%22" target="_blank">"${cleaned}" suchen</a>
-                </span>
+                <span class="value"><a href="https://www.google.com/search?q=%22${cleaned}%22" target="_blank">"${cleaned}" suchen</a></span>
             </div>
             <div class="info-row">
                 <span class="label">SpyDialer</span>
-                <span class="value">
-                    <a href="https://spydialer.com/default.aspx?phone=${cleaned}" target="_blank">SpyDialer öffnen</a>
-                </span>
+                <span class="value"><a href="https://spydialer.com/default.aspx?phone=${cleaned}" target="_blank">SpyDialer öffnen</a></span>
             </div>
             <div class="info-row">
                 <span class="label">TrueCaller</span>
-                <span class="value">
-                    <a href="https://www.truecaller.com/search/de/${cleaned}" target="_blank">TrueCaller öffnen</a>
-                </span>
+                <span class="value"><a href="https://www.truecaller.com/search/de/${cleaned}" target="_blank">TrueCaller öffnen</a></span>
+            </div>
+            <div class="info-row">
+                <span class="label">Tellows (Spam-Bewertung)</span>
+                <span class="value"><a href="https://www.tellows.de/num/${cleaned}" target="_blank">Tellows öffnen</a></span>
             </div>
         </div>
     `;
 
-    // 3. Deutsche Vorwahl-Info
-    const vorwahlMatch = cleaned.match(/^\+49(\d{3,5})/);
-    if (vorwahlMatch) {
-        const vorwahl = '0' + vorwahlMatch[1];
+    // Karte für Telefonnummer
+    if (phoneCoords) {
         output += `
             <div class="card">
-                <h3>📍 Deutsche Vorwahl-Info</h3>
-                <div class="info-row"><span class="label">Vorwahl</span><span class="value">${vorwahl}</span></div>
-                <div class="info-row"><span class="label">Info</span><span class="value">Ortsnetz — <a href="https://de.wikipedia.org/wiki/${vorwahl}" target="_blank">Wikipedia</a></span></div>
+                <h3>🗺️ Geschätzter Standort (Mini Map)</h3>
+                <div id="phoneMapContainer" style="height: 300px; width: 100%; border-radius: 14px; border: 2px solid #302b63;"></div>
+                <div class="map-coords">📍 ${phoneCity} — ${phoneCoords[0].toFixed(4)}, ${phoneCoords[1].toFixed(4)}</div>
             </div>
+            <script>
+                setTimeout(() => {
+                    const phoneMap = L.map('phoneMapContainer').setView([${phoneCoords[0]}, ${phoneCoords[1]}], 12);
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '&copy; OpenStreetMap',
+                        maxZoom: 18,
+                    }).addTo(phoneMap);
+                    L.marker([${phoneCoords[0]}, ${phoneCoords[1]}])
+                        .addTo(phoneMap)
+                        .bindPopup('<b>Geschätzter Standort</b><br>${phoneCity}<br>${cleaned}')
+                        .openPopup();
+                    setTimeout(() => phoneMap.invalidateSize(), 500);
+                }, 200);
+            <\/script>
         `;
     }
 
-    resultsDiv.innerHTML = output;
+    return output;
 }
 
 // ===== Hauptfunktion =====
@@ -270,8 +364,23 @@ async function search() {
     btn.disabled = true;
     btn.textContent = 'Suche läuft...';
 
-    await lookupPhone(input.value);
+    const resultsDiv = document.getElementById('results');
+    const phone = input.value.trim();
 
+    if (!phone) {
+        resultsDiv.innerHTML = `<div class="card error"><h3>❌ Keine Nummer eingegeben</h3><p>Bitte gib eine Telefonnummer ein.</p></div>`;
+        btn.disabled = false;
+        btn.textContent = 'Suchen';
+        return;
+    }
+
+    resultsDiv.innerHTML = `<div class="loading"><div class="spinner"></div><p>Analysiere ${phone}...</p></div>`;
+
+    // Kurze Pause für UX
+    await new Promise(r => setTimeout(r, 500));
+
+    const output = analyzePhone(phone);
+    resultsDiv.innerHTML = output;
     btn.disabled = false;
     btn.textContent = 'Suchen';
 }
