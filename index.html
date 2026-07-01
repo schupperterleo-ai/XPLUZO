@@ -3,342 +3,417 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hans - Official Player Portfolio</title>
+    <title>Hans | Elite Prospect Portfolio</title>
     <style>
-        /* High-End Tech & Sport Design */
-        body {
-            background-color: #040408;
-            color: #ffffff;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            letter-spacing: -0.3px;
+        /* Modernes Next-Level Farbschema mit Cyber-Neon & Apple-Style Blur */
+        :root {
+            --bg-main: #050508;
+            --bg-card: #0c0c14;
+            --neon-blue: #00f2fe;
+            --neon-red: #ff0055;
+            --neon-green: #00ff66;
+            --text-main: #ffffff;
+            --text-muted: #9494a8;
         }
 
-        /* Minimalistische, cleane Navbar */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* High-End Navigation Bar */
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 40px;
-            background: rgba(4, 4, 8, 0.8);
+            padding: 15px 40px;
+            background: rgba(5, 5, 8, 0.8);
             backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
             position: sticky;
             top: 0;
             z-index: 100;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
         }
 
-        /* Logo-Bereich nutzt jetzt das WhatsApp Profilbild */
         .brand-profile {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
         }
 
+        /* WhatsApp Profilbild Integration */
         .avatar-logo {
-            width: 42px;
-            height: 42px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid #00f2fe;
-            box-shadow: 0 0 10px rgba(0, 242, 254, 0.3);
+            border: 2px solid var(--neon-blue);
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
+            transition: transform 0.5s ease;
+        }
+
+        .brand-profile:hover .avatar-logo {
+            transform: rotate(360deg) scale(1.05);
         }
 
         .brand-name {
-            font-size: 1.2rem;
-            font-weight: 800;
-            letter-spacing: 1px;
-            color: #ffffff;
+            font-size: 1.25rem;
+            font-weight: 900;
+            letter-spacing: 1.5px;
+            background: linear-gradient(45deg, var(--text-main), var(--neon-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        /* Clubs FA Button - Absolut clean ohne Kitsch */
+        /* Animierter Clubs FA Button */
         .fa-trigger {
-            background: rgba(0, 242, 254, 0.06);
-            color: #00f2fe;
+            background: rgba(0, 242, 254, 0.05);
+            color: var(--neon-blue);
             border: 1px solid rgba(0, 242, 254, 0.3);
-            padding: 10px 24px;
+            padding: 12px 26px;
             border-radius: 100px;
-            font-weight: 600;
+            font-weight: 700;
             font-size: 0.9rem;
             text-decoration: none;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 10px rgba(0, 242, 254, 0.1);
         }
 
         .fa-trigger:hover {
-            background: #00f2fe;
-            color: #040408;
-            border-color: #00f2fe;
-            box-shadow: 0 0 20px rgba(0, 242, 254, 0.4);
-            transform: translateY(-1px);
+            background: var(--neon-blue);
+            color: var(--bg-main);
+            box-shadow: 0 0 25px var(--neon-blue);
+            transform: translateY(-2px);
         }
 
-        .main-content {
-            max-width: 960px;
+        .container {
+            max-width: 900px;
             margin: 60px auto;
             padding: 0 24px;
         }
 
-        /* Fokus auf das echte Bild im Profilkopf */
-        .profile-hero {
-            background: linear-gradient(180deg, #0b0b14 0%, #07070d 100%);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 24px;
+        /* Next-Level Player Card mit Puls-Effekt */
+        .player-card {
+            background: linear-gradient(145deg, #0e0e1c 0%, #07070f 100%);
+            border: 1px solid rgba(255, 0, 85, 0.25);
+            border-radius: 28px;
             padding: 50px 40px;
             text-align: center;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-            margin-bottom: 40px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            position: relative;
+            overflow: hidden;
+            animation: cardGlow 6s infinite alternate;
         }
 
-        .hero-title {
-            font-size: 3.2rem;
-            font-weight: 900;
-            margin: 0 0 15px 0;
-            letter-spacing: -1px;
+        @keyframes cardGlow {
+            0% { box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 15px rgba(255, 0, 85, 0.1); }
+            100% { box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(0, 242, 254, 0.2); }
         }
 
-        .scouting-status {
+        .scouting-badge {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: rgba(0, 255, 102, 0.1);
-            color: #00ff66;
-            padding: 6px 16px;
+            background: rgba(0, 255, 102, 0.08);
+            color: var(--neon-green);
+            padding: 8px 18px;
             border-radius: 100px;
-            font-weight: 700;
-            font-size: 0.85rem;
+            font-weight: 800;
+            font-size: 0.8rem;
             text-transform: uppercase;
+            letter-spacing: 1px;
             border: 1px solid rgba(0, 255, 102, 0.2);
+            margin-bottom: 25px;
         }
 
         .pulse-dot {
             width: 8px;
             height: 8px;
-            background-color: #00ff66;
+            background-color: var(--neon-green);
             border-radius: 50%;
-            box-shadow: 0 0 8px #00ff66;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(0, 255, 102, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(0, 255, 102, 0); }
+            100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(0, 255, 102, 0); }
+        }
+
+        .hero-title {
+            font-size: 3.8rem;
+            font-weight: 900;
+            margin: 0;
+            letter-spacing: -1.5px;
+            background: linear-gradient(135deg, #ffffff 30%, #a0a0b0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .profile-desc {
-            color: #9494a8;
-            font-size: 1.15rem;
-            line-height: 1.7;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            line-height: 1.75;
             margin-top: 25px;
-            max-width: 680px;
+            max-width: 650px;
             margin-left: auto;
             margin-right: auto;
         }
 
-        /* Professionelle Leistungsdaten-Grafik */
-        .performance-section {
-            background: #0b0b14;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 24px;
+        /* Live-Performance Bars (EA FC Inspired) */
+        .performance-panel {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: 28px;
             padding: 40px;
-            margin-bottom: 40px;
+            margin: 40px 0;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
         }
 
         .section-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #9494a8;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--text-muted);
             margin-top: 0;
-            margin-bottom: 30px;
+            margin-bottom: 35px;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
         }
 
         .metric-row {
-            margin-bottom: 25px;
+            margin-bottom: 30px;
+        }
+
+        .metric-row:last-child {
+            margin-bottom: 0;
         }
 
         .metric-header {
             display: flex;
             justify-content: space-between;
-            font-weight: 600;
-            font-size: 1rem;
-            margin-bottom: 10px;
+            font-weight: 700;
+            font-size: 1.05rem;
+            margin-bottom: 12px;
         }
 
-        .metric-bar-bg {
-            background: #141424;
-            height: 10px;
+        .bar-bg {
+            background: #121222;
+            height: 12px;
             border-radius: 100px;
             overflow: hidden;
+            position: relative;
         }
 
-        .metric-bar-fill {
+        /* Flüssige Ladeanimation für die Balken beim Aufrufen */
+        .bar-fill {
             height: 100%;
             border-radius: 100px;
-            background: linear-gradient(90deg, #ff0055, #00f2fe);
+            background: linear-gradient(90deg, var(--neon-red), var(--neon-blue));
+            animation: loadBar 1.8s cubic-bezier(0.1, 1, 0.1, 1) forwards;
         }
 
-        /* Call to Action - Für Vereine */
+        @keyframes loadBar {
+            from { width: 0%; }
+        }
+
+        /* Action Panel für Scouts */
         .action-panel {
-            background: linear-gradient(135deg, #0b0b14 0%, #101020 100%);
-            border: 1px solid rgba(0, 242, 254, 0.3);
-            border-radius: 24px;
-            padding: 45px;
+            background: linear-gradient(135deg, #0c0c14 0%, #05050b 100%);
+            border: 1px solid rgba(0, 242, 254, 0.25);
+            border-radius: 28px;
+            padding: 50px;
             text-align: center;
-            box-shadow: 0 0 30px rgba(0, 242, 254, 0.05);
+            box-shadow: 0 10px 40px rgba(0, 242, 254, 0.03);
         }
 
         .action-title {
-            font-size: 1.8rem;
+            font-size: 2rem;
             font-weight: 800;
             margin-top: 0;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
 
         .action-btn {
-            background: #ff0055;
+            background: var(--neon-red);
             color: #ffffff;
             border: none;
-            padding: 16px 44px;
-            font-size: 1rem;
+            padding: 18px 50px;
+            font-size: 1.05rem;
             font-weight: 700;
-            border-radius: 14px;
+            border-radius: 16px;
             cursor: pointer;
-            box-shadow: 0 10px 25px rgba(255, 0, 85, 0.4);
-            transition: all 0.2s ease;
-            margin-top: 20px;
+            box-shadow: 0 12px 30px rgba(255, 0, 85, 0.4);
+            transition: all 0.25s ease;
+            margin-top: 25px;
         }
 
         .action-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 30px rgba(255, 0, 85, 0.6);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(255, 0, 85, 0.6);
         }
 
-        /* Das dynamische Anfragen-Register */
+        /* Dynamisches Anfragen-Register */
         .scout-register {
             margin-top: 40px;
-            background: #0b0b14;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 24px;
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: 28px;
             padding: 40px;
         }
 
         .register-list {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 14px;
         }
 
+        /* Animation für neu reinfliegende Clubs */
         .register-item {
-            background: #040408;
-            padding: 18px 24px;
-            border-radius: 14px;
+            background: var(--bg-main);
+            padding: 20px 26px;
+            border-radius: 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border: 1px solid rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.02);
+            animation: slideIn 0.5s cubic-bezier(0.2, 1, 0.2, 1) forwards;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; filter: blur(5px); }
+            to { transform: translateY(0); opacity: 1; filter: blur(0); }
         }
 
         .club-identity {
-            font-weight: 700;
-            color: #00ff66;
-            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--neon-green);
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .club-status {
-            color: #9494a8;
-            font-size: 0.9rem;
-            font-weight: 500;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 6px 14px;
+            border-radius: 8px;
         }
     </style>
 </head>
 <body>
 
+    <!-- Header-Bereich -->
     <header>
         <div class="brand-profile">
-            <img src="whatsapp.png" alt="Profile" class="avatar-logo" onerror="this.style.display='none'">
+            <!-- Verweist direkt auf die Datei image_094503.png -->
+            <img src="image_094503.png" alt="Hans Profile Image" class="avatar-logo" onerror="this.style.border='2px solid #ff0055'">
             <div class="brand-name">HANS PROFILE</div>
         </div>
         <a href="#fa-section" class="fa-trigger" id="faCounter">Clubs FA (0)</a>
     </header>
 
-    <div class="main-content">
+    <div class="container">
 
-        <div class="profile-hero">
-            <div class="scouting-status">
+        <!-- Core Profile Card -->
+        <div class="player-card">
+            <div class="scouting-badge">
                 <div class="pulse-dot"></div>
-                Scouting Aktiv
+                Scouting System Online
             </div>
             <h1 class="hero-title">HANS</h1>
             <p class="profile-desc">
-                Akademischer und sportlicher Top-Performer der Jahrgangsstufe 7. Athletischer Allrounder mit herausragenden Werten im Antritt und spielerischer Übersicht. Ein verlässlicher Teamplayer mit exzellenter sportlicher Mentalität.
+                Hans ist 13 Jahre alt, absolut zuverlässig und charakterlich extrem nett. Auf dem Fußballplatz beweist er Ausnahmetalent: Er ist der schnellste Akteur und führt das offizielle Leistungsranking der gesamten Schule auf Platz 1 an. In der Jahrgangsstufe 7 zählt er unumstritten zu den absolut besten Spielern.
             </p>
         </div>
 
-        <div class="performance-section">
-            <div class="section-title">Physische & Technische Leistungsdaten</div>
+        <!-- Live-Performance Daten (EA FC Style) -->
+        <div class="performance-panel">
+            <div class="section-title">Physische & Technische Indikatoren</div>
             
             <div class="metric-row">
                 <div class="metric-header">
-                    <span>Sprintschnitt & Beschleunigung</span>
-                    <span style="color: #00f2fe;">Elite-Level</span>
+                    <span>Antrittsgeschwindigkeit & Topsprint</span>
+                    <span style="color: var(--neon-blue);">99 / 100</span>
                 </div>
-                <div class="metric-bar-bg">
-                    <div class="metric-bar-fill" style="width: 96%;"></div>
-                </div>
-            </div>
-
-            <div class="metric-row">
-                <div class="metric-header">
-                    <span>Schul-Leistungsranking (Sport)</span>
-                    <span style="color: #00f2fe;">Platz 1</span>
-                </div>
-                <div class="metric-bar-bg">
-                    <div class="metric-bar-fill" style="width: 100%;"></div>
+                <div class="bar-bg">
+                    <!-- Die Breite wird über das CSS-Inline-Style gesteuert und triggert die Animation -->
+                    <div class="bar-fill" style="width: 99%;"></div>
                 </div>
             </div>
 
             <div class="metric-row">
                 <div class="metric-header">
-                    <span>Teamplay & Integrationsfähigkeit</span>
-                    <span style="color: #00ff66;">Maximum</span>
+                    <span>Schul-Gesamtranking (Klassenliste)</span>
+                    <span style="color: var(--neon-blue);">Top #1</span>
                 </div>
-                <div class="metric-bar-bg">
-                    <div class="metric-bar-fill" style="width: 100%; background: linear-gradient(90deg, #00ff66, #00f2fe);"></div>
+                <div class="bar-bg">
+                    <div class="bar-fill" style="width: 100%;"></div>
+                </div>
+            </div>
+
+            <div class="metric-row">
+                <div class="metric-header">
+                    <span>Teamplay & Sportliche Mentalität (Sehr Nett)</span>
+                    <span style="color: var(--neon-green);">Maximum</span>
+                </div>
+                <div class="bar-bg">
+                    <div class="bar-fill" style="width: 100%; background: linear-gradient(90deg, var(--neon-green), var(--neon-blue));"></div>
                 </div>
             </div>
         </div>
 
+        <!-- Interaktives Einladungs-System -->
         <div class="action-panel">
-            <div class="action-title">Vereins-Anfrage einreichen</div>
-            <p style="color: #9494a8; margin: 0;">Für offizielle Einladungen zu Probetrainings oder Sichtungsterminen.</p>
-            <button class="action-btn" onclick="submitScoutRequest()">Anfrage senden</button>
+            <div class="action-title">Offizielle Einladung hinterlegen</div>
+            <p style="color: var(--text-muted); margin: 0;">Ermöglicht verifizierten Vereinen die direkte Kontaktaufnahme für Sichtungstermine.</p>
+            <button class="action-btn" onclick="registerNewClub()">Anfrage senden</button>
         </div>
 
+        <!-- Live Clubs FA Register -->
         <div class="scout-register" id="fa-section">
-            <div class="section-title">Eingegangene Anfragen (Clubs FA)</div>
+            <div class="section-title">Eingegangene Angebote (Clubs FA)</div>
             <div class="register-list" id="scoutList">
-                </div>
+                <!-- Startet absolut sauber und füllt sich dynamisch per Klick -->
+            </div>
         </div>
 
     </div>
 
+    <!-- Interaktive Script-Logik für Echtzeit-Updates -->
     <script>
-        let count = 0;
+        let globalCounter = 0;
 
-        function submitScoutRequest() {
-            const club = prompt("Name des offiziellen Fußballvereins:");
+        function registerNewClub() {
+            const name = prompt("Name Ihres offiziellen Fußballvereins:");
             
-            if (club && club.trim() !== "") {
-                count++;
+            if (name && name.trim() !== "") {
+                globalCounter++;
                 
-                // Update den Button oben rechts direkt live
-                document.getElementById("faCounter").innerText = "Clubs FA (" + count + ")";
+                // Aktualisiert den Zähler oben rechts im Header
+                const counterBtn = document.getElementById("faCounter");
+                counterBtn.innerText = "Clubs FA (" + globalCounter + ")";
                 
+                // Fügt den Club mit Reinflieg-Animation der Liste hinzu
                 const list = document.getElementById("scoutList");
                 const item = document.createElement("div");
                 item.className = "register-item";
                 item.innerHTML = `
-                    <span class="club-identity">⚽ ${club}</span>
-                    <span class="club-status">Sichtungsanfrage hinterlegt</span>
+                    <span class="club-identity">⚽ ${name}</span>
+                    <span class="club-status">Sichtungsangebot aktiv</span>
                 `;
                 
-                // Neue Anfrage sofort ganz oben einfügen
                 list.insertBefore(item, list.firstChild);
             }
         }
