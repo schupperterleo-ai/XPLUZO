@@ -3,110 +3,329 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Server Connect</title>
+    <title>Hans Pro Scouting | Elite Player Card</title>
     <style>
+        /* Modernes Cyber-Neon Farbkonzept mit Apple-Style Rundungen */
         body {
-            background-color: #08080c;
+            background-color: #06060a;
             color: #ffffff;
-            font-family: 'Segoe UI', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Feste Navbar oben */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background: rgba(10, 10, 18, 0.85);
+            backdrop-filter: blur(10px); /* Apple-typischer Blur-Effekt */
+            border-bottom: 2px solid #00f2fe;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0, 242, 254, 0.15);
+        }
+
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            background: linear-gradient(45deg, #ff0055, #00f2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* CLUBS FA Button mit Live-Zähler */
+        .fa-counter {
+            background: transparent;
+            color: #00f2fe;
+            border: 2px solid #00f2fe;
+            padding: 10px 22px;
+            border-radius: 30px; /* Sehr runde Formen */
+            font-weight: bold;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
+        }
+
+        .fa-counter:hover {
+            background: #00f2fe;
+            color: #06060a;
+            box-shadow: 0 0 25px #00f2fe;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        /* DIE PLAYER-CARD (Apple-inspired Layout) */
+        .player-card {
+            background: linear-gradient(135deg, #11111f 0%, #16162a 100%);
+            border: 2px solid #ff0055;
+            border-radius: 24px; /* Weiche, moderne Ecken */
+            padding: 35px;
+            box-shadow: 0 10px 30px rgba(255, 0, 85, 0.15);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .avatar-placeholder {
+            width: 110px;
+            height: 110px;
+            background: #1f1f38;
+            border: 3px solid #00f2fe;
+            border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            margin: 0;
+            font-size: 2.5rem;
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.4);
+            margin-bottom: 20px;
         }
 
-        .server-card {
-            background: #111116;
-            border: 2px solid #00f2fe;
+        .player-card h1 {
+            font-size: 2.8rem;
+            margin: 0 0 5px 0;
+            font-weight: 800;
+        }
+
+        .badge-7 {
+            background: rgba(255, 0, 85, 0.15);
+            color: #ff0055;
+            padding: 6px 16px;
             border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            border: 1px solid rgba(255, 0, 85, 0.3);
+        }
+
+        .bio-text {
+            color: #b0b0cb;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-top: 20px;
+            max-width: 600px;
+        }
+
+        /* GRAPHICS: Skill Bars (Wie in FIFA / EA FC) */
+        .skills-section {
+            background: #11111a;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 1px solid #222238;
+        }
+
+        .skills-section h2 {
+            margin-top: 0;
+            font-size: 1.4rem;
+            color: #00f2fe;
+            text-shadow: 0 0 10px rgba(0, 242, 254, 0.2);
+        }
+
+        .skill-bar-wrapper {
+            margin-bottom: 20px;
+        }
+
+        .skill-info {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .bar-bg {
+            background: #1f1f33;
+            height: 14px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        /* Animierte Ladebalken für die Grafiken */
+        .bar-fill {
+            height: 100%;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 242, 254, 0.5);
+        }
+
+        .fill-speed { width: 98%; background: linear-gradient(90deg, #ff0055, #00f2fe); }
+        .fill-skill { width: 95%; background: linear-gradient(90deg, #ff0055, #00f2fe); }
+        .fill-team { width: 100%; background: linear-gradient(90deg, #00ff66, #00f2fe); }
+
+        /* Interaktiver Action-Bereich */
+        .scouting-box {
+            background: linear-gradient(135deg, #11111a 0%, #0d0d18 100%);
+            border: 2px dashed #00f2fe;
+            border-radius: 24px;
             padding: 40px;
             text-align: center;
-            box-shadow: 0 0 15px rgba(0, 242, 254, 0.2);
-            max-width: 400px;
-            width: 100%;
         }
 
-        h2 {
-            color: #ff0055;
-            text-shadow: 0 0 10px #ff0055;
-            margin-bottom: 5px;
-        }
-
-        .status {
-            color: #00ff66;
-            font-size: 0.9rem;
-            text-shadow: 0 0 8px rgba(0, 255, 102, 0.4);
-            margin-bottom: 25px;
-        }
-
-        /* Die klickbare IP-Box */
-        .ip-box {
-            background: #181824;
-            border: 2px dashed #00f2fe;
-            border-radius: 12px;
-            padding: 15px;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 1.2rem;
+        .scout-btn {
+            background: #ff0055;
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            font-size: 1.1rem;
             font-weight: bold;
-            color: #00f2fe;
+            border-radius: 14px;
             cursor: pointer;
+            box-shadow: 0 0 20px #ff0055;
             transition: all 0.2s ease;
-            user-select: none; /* Text kann nicht versehentlich markiert werden */
         }
 
-        /* Hover-Effekt */
-        .ip-box:hover {
-            background: rgba(0, 242, 254, 0.05);
-            box-shadow: 0 0 15px rgba(0, 242, 254, 0.5);
-            transform: scale(1.02);
+        .scout-btn:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 30px #ff0055;
         }
 
-        /* Klasse wird per JavaScript hinzugefügt, wenn kopiert wurde */
-        .ip-box.copied {
-            border-style: solid;
-            border-color: #00ff66;
-            color: #00ff66;
-            box-shadow: 0 0 25px #00ff66;
+        /* Sektion für eingehende Angebote */
+        .live-requests {
+            margin-top: 40px;
+            background: #11111a;
+            border-radius: 20px;
+            padding: 30px;
+            border-left: 5px solid #00ff66;
         }
 
-        .hint {
-            font-size: 0.8rem;
-            color: #5a5a75;
+        .request-item {
+            background: #07070d;
+            padding: 15px;
+            border-radius: 12px;
             margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #1f1f33;
+        }
+
+        .club-title {
+            color: #00ff66;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
-    <div class="server-card">
-        <h2>LOAD_SMP</h2>
-        <div class="status">● SERVER ONLINE</div>
-        
-        <!-- Wenn man hier draufklickt, wird die Funktion aufgerufen -->
-        <div class="ip-box" id="ipBox" onclick="copyIP()">
-            loadsmp.net
+    <!-- Header mit Live-Anfragen-Zähler -->
+    <header>
+        <div class="logo">HANS // PRO SCOUT</div>
+        <a href="#anfragen-liste" class="fa-counter" id="faButton">Clubs FA (3)</a>
+    </header>
+
+    <div class="container">
+
+        <!-- Haupt-Profilkarte -->
+        <div class="player-card">
+            <div class="avatar-placeholder">🏃‍♂️</div>
+            <h1>HANS</h1>
+            <span class="badge-7">Schul-Ranking: Platz 1 (Klasse 7)</span>
+            <p class="bio-text">
+                Hans ist 13 Jahre alt und gilt aktuell als das größte sportliche Talent der gesamten Schule. Neben seinen überragenden Werten auf dem Platz überzeugt er Scouts vor allem durch seinen extrem netten Charakter und sein faires Zusammenspiel.
+            </p>
         </div>
-        <div class="hint">Klicke auf die IP zum Kopieren!</div>
+
+        <!-- Visuelle Grafiken / Statistiken -->
+        <div class="skills-section">
+            <h2>📊 SPIELER-GRAFIKEN (EA FC STYLE)</h2>
+            
+            <!-- Skill 1: Geschwindigkeit -->
+            <div class="skill-bar-wrapper">
+                <div class="skill-info">
+                    <span>⚡ Geschwindigkeit / Antritt</span>
+                    <span style="color: #00f2fe;">98 / 100</span>
+                </div>
+                <div class="bar-bg">
+                    <div class="bar-fill fill-speed"></div>
+                </div>
+            </div>
+
+            <!-- Skill 2: Technik -->
+            <div class="skill-bar-wrapper">
+                <div class="skill-info">
+                    <span>⚽ Ballkontrolle & Technik</span>
+                    <span style="color: #00f2fe;">95 / 100</span>
+                </div>
+                <div class="bar-bg">
+                    <div class="bar-fill fill-skill"></div>
+                </div>
+            </div>
+
+            <!-- Skill 3: Teamplay -->
+            <div class="skill-bar-wrapper">
+                <div class="skill-info">
+                    <span>🤝 Fairness & Teamplay (Sehr Nett)</span>
+                    <span style="color: #00ff66;">100 / 100</span>
+                </div>
+                <div class="bar-bg">
+                    <div class="bar-fill fill-team"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scouting-Aufforderung -->
+        <div class="scouting-box">
+            <h2 style="margin-top:0; color: #ff0055;">OFFIZIELLES SCOUTING</h2>
+            <p style="color: #a0a0b0; margin-bottom: 25px;">Senden Sie jetzt eine offizielle Einladung für ein Probetraining an Hans.</p>
+            <button class="scout-btn" onclick="addClubRequest()">Anfrage an Hans senden</button>
+        </div>
+
+        <!-- Liste der Vereine -->
+        <div class="live-requests" id="anfragen-liste">
+            <h3 style="margin-top: 0; color: #00f2fe;">Eingegangene Club-Anfragen</h3>
+            <div id="requestContainer">
+                <div class="request-item">
+                    <span class="club-title">⚽ Real Cyber Kickers</span>
+                    <span style="color: #a0a0b0;">Sucht Top-Stürmer</span>
+                </div>
+                <div class="request-item">
+                    <span class="club-title">⚡ Neon Strike United</span>
+                    <span style="color: #a0a0b0;">Möchte Probetraining</span>
+                </div>
+                <div class="request-item">
+                    <span class="club-title">🏆 Load_SMP Athletic</span>
+                    <span style="color: #a0a0b0;">Sofortiges Angebot</span>
+                </div>
+            </div>
+        </div>
+
     </div>
 
+    <!-- JavaScript für interaktive Grafik-Updates -->
     <script>
-        function copyIP() {
-            const ipText = "loadsmp.net"; // Die IP, die kopiert werden soll
-            const box = document.getElementById("ipBox");
+        let currentRequests = 3;
+
+        function addClubRequest() {
+            let clubName = prompt("Geben Sie den Namen Ihres Fußballclubs ein:");
             
-            // Text in die Zwischenablage kopieren
-            navigator.clipboard.writeText(ipText).then(() => {
-                // Style ändern zu "Kopiert"
-                box.classList.add("copied");
-                box.innerText = "Kopiert!";
+            if (clubName && clubName.trim() !== "") {
+                // Zähler erhöhen
+                currentRequests++;
+                document.getElementById("faButton").innerText = "Clubs FA (" + currentRequests + ")";
                 
-                // Nach 2 Sekunden wieder zurücksetzen
-                setTimeout(() => {
-                    box.classList.remove("copied");
-                    box.innerText = ipText;
-                }, 2000);
-            });
+                // Neue Grafik-Box für den Club erstellen
+                const container = document.getElementById("requestContainer");
+                const newItem = document.createElement("div");
+                newItem.className = "request-item";
+                newItem.innerHTML = `
+                    <span class="club-title">⭐ ${clubName}</span>
+                    <span style="color: #00ff66; font-weight: bold;">Anfrage gesendet!</span>
+                `;
+                
+                // Oben in die Liste einfügen
+                container.insertBefore(newItem, container.firstChild);
+                
+                alert("Erfolgreich! Der Club '" + clubName + "' wurde zur 'Clubs FA' Liste oben rechts hinzugefügt!");
+            }
         }
     </script>
 
