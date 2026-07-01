@@ -48,21 +48,20 @@
         }
 
         /* Der interaktive Scroll-Fußball */
-        .scrolling-football {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 450px;
-            height: 450px;
-            margin-top: -225px;
-            margin-left: -225px;
-            opacity: 0.06; /* Dezent im Hintergrund, damit man den Text perfekt lesen kann */
-            filter: drop-shadow(0 0 30px var(--neon-blue));
-            transform: rotate(0deg);
-            will-change: transform;
-            transition: transform 0.1s ease-out; /* Macht die Drehung extrem smooth */
-        }
-
+.scrolling-football {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 800px;  /* Jetzt fast doppelt so groß! */
+    height: 800px;
+    margin-top: -400px;  /* Perfekt in der Mitte zentriert */
+    margin-left: -400px; /* Perfekt in der Mitte zentriert */
+    opacity: 0.05; /* Leicht angepasst, damit es edel bleibt */
+    filter: drop-shadow(0 0 40px var(--neon-blue));
+    transform: rotate(0deg);
+    will-change: transform;
+    transition: transform 0.1s ease-out;
+}
         /* Canvas für die Maus-Partikel */
         #particle-canvas {
             position: fixed;
