@@ -2,41 +2,103 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Format Prüfer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mein Cyber-Space</title>
     <style>
-        body { font-family: sans-serif; background: #121212; color: white; padding: 20px; }
-        .box { background: #1e1e1e; padding: 20px; border-radius: 8px; max-width: 400px; }
-        input, button { width: 100%; padding: 10px; margin: 10px 0; border-radius: 4px; border: none; }
-        button { background: #38bdf8; color: #121212; font-weight: bold; cursor: pointer; }
+        /* Grunddesign für die ganze Seite */
+        body {
+            background-color: #0d0d13;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* Die zentrale Box (Dashboard) */
+        .container {
+            background: rgba(20, 20, 30, 0.8);
+            border: 2px solid #00f2fe;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 0 20px #00f2fe, inset 0 0 10px rgba(0, 242, 254, 0.3);
+            max-width: 450px;
+            width: 100%;
+        }
+
+        /* Titel mit Neon-Rot/Pink-Glow */
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #ff0055;
+            text-shadow: 0 0 10px #ff0055, 0 0 20px #ff0055;
+        }
+
+        p {
+            color: #a0a0b0;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+
+        /* Die Buttons (Links) */
+        .links-flex {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .btn {
+            background: transparent;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 15px 20px;
+            border: 2px solid #ff0055;
+            border-radius: 12px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 5px rgba(250, 0, 85, 0.2);
+        }
+
+        /* Hover-Effekt: Button wechselt zu Neon-Blau */
+        .btn:hover {
+            border-color: #00f2fe;
+            background: rgba(0, 242, 254, 0.1);
+            box-shadow: 0 0 15px #00f2fe;
+            transform: translateY(-3px);
+        }
+
+        /* Server IP / Info Box */
+        .info-box {
+            margin-top: 30px;
+            background: #161622;
+            padding: 12px;
+            border-radius: 10px;
+            border-left: 4px solid #00f2fe;
+            font-size: 0.9rem;
+            color: #00f2fe;
+        }
     </style>
 </head>
 <body>
 
-<div class="box">
-    <h3>Eingabe-Validierung</h3>
-    <label>Telefonnummer prüfen:</label>
-    <input type="text" id="phoneInput" placeholder="z.B. +49 170 1234567">
-    <button onclick="checkFormat()">Format checken</button>
-    <p id="result"></p>
-</div>
+    <div class="container">
+        <h1>LOAD_SPACE</h1>
+        <p>Willkommen auf meinem Profil. Check meine Links ab!</p>
 
-<script>
-function checkFormat() {
-    const input = document.getElementById('phoneInput').value;
-    const resultText = document.getElementById('result');
-    
-    // Prüft grob, ob die Nummer mit einem + startet und nur Zahlen/Leerzeichen enthält
-    const regex = /^\+[0-9\s\-]+$/;
-    
-    if (regex.test(input)) {
-        resultText.innerText = "✅ Gültiges internationales Format!";
-        resultText.style.color = "lightgreen";
-    } else {
-        resultText.innerText = "❌ Ungültiges Format. Bitte mit Ländervorwahl (z.B. +49) eingeben.";
-        resultText.style.color = "crimson";
-    }
-}
-</script>
+        <div class="links-flex">
+            <a href="#" class="btn">Mein Discord Server</a>
+            <a href="#" class="btn">Lieblings-Projekte</a>
+            <a href="#" class="btn">Gaming Stats</a>
+        </div>
+
+        <div class="info-box">
+            Status: Online & am Coden ⚡
+        </div>
+    </div>
 
 </body>
 </html>
