@@ -3,328 +3,343 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hans Pro Scouting | Elite Player Card</title>
+    <title>Hans - Official Player Portfolio</title>
     <style>
-        /* Modernes Cyber-Neon Farbkonzept mit Apple-Style Rundungen */
+        /* High-End Tech & Sport Design */
         body {
-            background-color: #06060a;
+            background-color: #040408;
             color: #ffffff;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 0;
+            letter-spacing: -0.3px;
         }
 
-        /* Feste Navbar oben */
+        /* Minimalistische, cleane Navbar */
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 30px;
-            background: rgba(10, 10, 18, 0.85);
-            backdrop-filter: blur(10px); /* Apple-typischer Blur-Effekt */
-            border-bottom: 2px solid #00f2fe;
+            padding: 20px 40px;
+            background: rgba(4, 4, 8, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 4px 20px rgba(0, 242, 254, 0.15);
         }
 
-        .logo {
-            font-size: 1.6rem;
+        /* Logo-Bereich nutzt jetzt das WhatsApp Profilbild */
+        .brand-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar-logo {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #00f2fe;
+            box-shadow: 0 0 10px rgba(0, 242, 254, 0.3);
+        }
+
+        .brand-name {
+            font-size: 1.2rem;
             font-weight: 800;
             letter-spacing: 1px;
-            background: linear-gradient(45deg, #ff0055, #00f2fe);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #ffffff;
         }
 
-        /* CLUBS FA Button mit Live-Zähler */
-        .fa-counter {
-            background: transparent;
+        /* Clubs FA Button - Absolut clean ohne Kitsch */
+        .fa-trigger {
+            background: rgba(0, 242, 254, 0.06);
             color: #00f2fe;
-            border: 2px solid #00f2fe;
-            padding: 10px 22px;
-            border-radius: 30px; /* Sehr runde Formen */
-            font-weight: bold;
+            border: 1px solid rgba(0, 242, 254, 0.3);
+            padding: 10px 24px;
+            border-radius: 100px;
+            font-weight: 600;
+            font-size: 0.9rem;
             text-decoration: none;
-            transition: all 0.3s ease;
-            box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .fa-counter:hover {
+        .fa-trigger:hover {
             background: #00f2fe;
-            color: #06060a;
-            box-shadow: 0 0 25px #00f2fe;
+            color: #040408;
+            border-color: #00f2fe;
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.4);
+            transform: translateY(-1px);
         }
 
-        .container {
-            max-width: 900px;
-            margin: 40px auto;
-            padding: 0 20px;
+        .main-content {
+            max-width: 960px;
+            margin: 60px auto;
+            padding: 0 24px;
         }
 
-        /* DIE PLAYER-CARD (Apple-inspired Layout) */
-        .player-card {
-            background: linear-gradient(135deg, #11111f 0%, #16162a 100%);
-            border: 2px solid #ff0055;
-            border-radius: 24px; /* Weiche, moderne Ecken */
-            padding: 35px;
-            box-shadow: 0 10px 30px rgba(255, 0, 85, 0.15);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        /* Fokus auf das echte Bild im Profilkopf */
+        .profile-hero {
+            background: linear-gradient(180deg, #0b0b14 0%, #07070d 100%);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 24px;
+            padding: 50px 40px;
             text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
             margin-bottom: 40px;
         }
 
-        .avatar-placeholder {
-            width: 110px;
-            height: 110px;
-            background: #1f1f38;
-            border: 3px solid #00f2fe;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
+        .hero-title {
+            font-size: 3.2rem;
+            font-weight: 900;
+            margin: 0 0 15px 0;
+            letter-spacing: -1px;
+        }
+
+        .scouting-status {
+            display: inline-flex;
             align-items: center;
-            font-size: 2.5rem;
-            box-shadow: 0 0 20px rgba(0, 242, 254, 0.4);
-            margin-bottom: 20px;
-        }
-
-        .player-card h1 {
-            font-size: 2.8rem;
-            margin: 0 0 5px 0;
-            font-weight: 800;
-        }
-
-        .badge-7 {
-            background: rgba(255, 0, 85, 0.15);
-            color: #ff0055;
+            gap: 8px;
+            background: rgba(0, 255, 102, 0.1);
+            color: #00ff66;
             padding: 6px 16px;
-            border-radius: 20px;
-            font-weight: bold;
+            border-radius: 100px;
+            font-weight: 700;
             font-size: 0.85rem;
             text-transform: uppercase;
-            border: 1px solid rgba(255, 0, 85, 0.3);
+            border: 1px solid rgba(0, 255, 102, 0.2);
         }
 
-        .bio-text {
-            color: #b0b0cb;
-            font-size: 1.1rem;
-            line-height: 1.6;
-            margin-top: 20px;
-            max-width: 600px;
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #00ff66;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #00ff66;
         }
 
-        /* GRAPHICS: Skill Bars (Wie in FIFA / EA FC) */
-        .skills-section {
-            background: #11111a;
-            border-radius: 20px;
-            padding: 30px;
+        .profile-desc {
+            color: #9494a8;
+            font-size: 1.15rem;
+            line-height: 1.7;
+            margin-top: 25px;
+            max-width: 680px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Professionelle Leistungsdaten-Grafik */
+        .performance-section {
+            background: #0b0b14;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 24px;
+            padding: 40px;
             margin-bottom: 40px;
-            border: 1px solid #222238;
         }
 
-        .skills-section h2 {
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #9494a8;
             margin-top: 0;
-            font-size: 1.4rem;
-            color: #00f2fe;
-            text-shadow: 0 0 10px rgba(0, 242, 254, 0.2);
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        .skill-bar-wrapper {
-            margin-bottom: 20px;
+        .metric-row {
+            margin-bottom: 25px;
         }
 
-        .skill-info {
+        .metric-header {
             display: flex;
             justify-content: space-between;
-            font-weight: bold;
-            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 10px;
         }
 
-        .bar-bg {
-            background: #1f1f33;
-            height: 14px;
-            border-radius: 10px;
+        .metric-bar-bg {
+            background: #141424;
+            height: 10px;
+            border-radius: 100px;
             overflow: hidden;
         }
 
-        /* Animierte Ladebalken für die Grafiken */
-        .bar-fill {
+        .metric-bar-fill {
             height: 100%;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 242, 254, 0.5);
+            border-radius: 100px;
+            background: linear-gradient(90deg, #ff0055, #00f2fe);
         }
 
-        .fill-speed { width: 98%; background: linear-gradient(90deg, #ff0055, #00f2fe); }
-        .fill-skill { width: 95%; background: linear-gradient(90deg, #ff0055, #00f2fe); }
-        .fill-team { width: 100%; background: linear-gradient(90deg, #00ff66, #00f2fe); }
-
-        /* Interaktiver Action-Bereich */
-        .scouting-box {
-            background: linear-gradient(135deg, #11111a 0%, #0d0d18 100%);
-            border: 2px dashed #00f2fe;
+        /* Call to Action - Für Vereine */
+        .action-panel {
+            background: linear-gradient(135deg, #0b0b14 0%, #101020 100%);
+            border: 1px solid rgba(0, 242, 254, 0.3);
             border-radius: 24px;
-            padding: 40px;
+            padding: 45px;
             text-align: center;
+            box-shadow: 0 0 30px rgba(0, 242, 254, 0.05);
         }
 
-        .scout-btn {
+        .action-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        .action-btn {
             background: #ff0055;
-            color: white;
+            color: #ffffff;
             border: none;
-            padding: 16px 40px;
-            font-size: 1.1rem;
-            font-weight: bold;
+            padding: 16px 44px;
+            font-size: 1rem;
+            font-weight: 700;
             border-radius: 14px;
             cursor: pointer;
-            box-shadow: 0 0 20px #ff0055;
+            box-shadow: 0 10px 25px rgba(255, 0, 85, 0.4);
             transition: all 0.2s ease;
+            margin-top: 20px;
         }
 
-        .scout-btn:hover {
-            transform: scale(1.03);
-            box-shadow: 0 0 30px #ff0055;
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(255, 0, 85, 0.6);
         }
 
-        /* Sektion für eingehende Angebote */
-        .live-requests {
+        /* Das dynamische Anfragen-Register */
+        .scout-register {
             margin-top: 40px;
-            background: #11111a;
-            border-radius: 20px;
-            padding: 30px;
-            border-left: 5px solid #00ff66;
+            background: #0b0b14;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 24px;
+            padding: 40px;
         }
 
-        .request-item {
-            background: #07070d;
-            padding: 15px;
-            border-radius: 12px;
-            margin-top: 10px;
+        .register-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .register-item {
+            background: #040408;
+            padding: 18px 24px;
+            border-radius: 14px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border: 1px solid #1f1f33;
+            border: 1px solid rgba(255, 255, 255, 0.03);
         }
 
-        .club-title {
+        .club-identity {
+            font-weight: 700;
             color: #00ff66;
-            font-weight: bold;
+            font-size: 1.05rem;
+        }
+
+        .club-status {
+            color: #9494a8;
+            font-size: 0.9rem;
+            font-weight: 500;
         }
     </style>
 </head>
 <body>
 
-    <!-- Header mit Live-Anfragen-Zähler -->
     <header>
-        <div class="logo">HANS // PRO SCOUT</div>
-        <a href="#anfragen-liste" class="fa-counter" id="faButton">Clubs FA (3)</a>
+        <div class="brand-profile">
+            <img src="whatsapp.png" alt="Profile" class="avatar-logo" onerror="this.style.display='none'">
+            <div class="brand-name">HANS PROFILE</div>
+        </div>
+        <a href="#fa-section" class="fa-trigger" id="faCounter">Clubs FA (0)</a>
     </header>
 
-    <div class="container">
+    <div class="main-content">
 
-        <!-- Haupt-Profilkarte -->
-        <div class="player-card">
-            <div class="avatar-placeholder">🏃‍♂️</div>
-            <h1>HANS</h1>
-            <span class="badge-7">Schul-Ranking: Platz 1 (Klasse 7)</span>
-            <p class="bio-text">
-                Hans ist 13 Jahre alt und gilt aktuell als das größte sportliche Talent der gesamten Schule. Neben seinen überragenden Werten auf dem Platz überzeugt er Scouts vor allem durch seinen extrem netten Charakter und sein faires Zusammenspiel.
+        <div class="profile-hero">
+            <div class="scouting-status">
+                <div class="pulse-dot"></div>
+                Scouting Aktiv
+            </div>
+            <h1 class="hero-title">HANS</h1>
+            <p class="profile-desc">
+                Akademischer und sportlicher Top-Performer der Jahrgangsstufe 7. Athletischer Allrounder mit herausragenden Werten im Antritt und spielerischer Übersicht. Ein verlässlicher Teamplayer mit exzellenter sportlicher Mentalität.
             </p>
         </div>
 
-        <!-- Visuelle Grafiken / Statistiken -->
-        <div class="skills-section">
-            <h2>📊 SPIELER-GRAFIKEN (EA FC STYLE)</h2>
+        <div class="performance-section">
+            <div class="section-title">Physische & Technische Leistungsdaten</div>
             
-            <!-- Skill 1: Geschwindigkeit -->
-            <div class="skill-bar-wrapper">
-                <div class="skill-info">
-                    <span>⚡ Geschwindigkeit / Antritt</span>
-                    <span style="color: #00f2fe;">98 / 100</span>
+            <div class="metric-row">
+                <div class="metric-header">
+                    <span>Sprintschnitt & Beschleunigung</span>
+                    <span style="color: #00f2fe;">Elite-Level</span>
                 </div>
-                <div class="bar-bg">
-                    <div class="bar-fill fill-speed"></div>
-                </div>
-            </div>
-
-            <!-- Skill 2: Technik -->
-            <div class="skill-bar-wrapper">
-                <div class="skill-info">
-                    <span>⚽ Ballkontrolle & Technik</span>
-                    <span style="color: #00f2fe;">95 / 100</span>
-                </div>
-                <div class="bar-bg">
-                    <div class="bar-fill fill-skill"></div>
+                <div class="metric-bar-bg">
+                    <div class="metric-bar-fill" style="width: 96%;"></div>
                 </div>
             </div>
 
-            <!-- Skill 3: Teamplay -->
-            <div class="skill-bar-wrapper">
-                <div class="skill-info">
-                    <span>🤝 Fairness & Teamplay (Sehr Nett)</span>
-                    <span style="color: #00ff66;">100 / 100</span>
+            <div class="metric-row">
+                <div class="metric-header">
+                    <span>Schul-Leistungsranking (Sport)</span>
+                    <span style="color: #00f2fe;">Platz 1</span>
                 </div>
-                <div class="bar-bg">
-                    <div class="bar-fill fill-team"></div>
+                <div class="metric-bar-bg">
+                    <div class="metric-bar-fill" style="width: 100%;"></div>
+                </div>
+            </div>
+
+            <div class="metric-row">
+                <div class="metric-header">
+                    <span>Teamplay & Integrationsfähigkeit</span>
+                    <span style="color: #00ff66;">Maximum</span>
+                </div>
+                <div class="metric-bar-bg">
+                    <div class="metric-bar-fill" style="width: 100%; background: linear-gradient(90deg, #00ff66, #00f2fe);"></div>
                 </div>
             </div>
         </div>
 
-        <!-- Scouting-Aufforderung -->
-        <div class="scouting-box">
-            <h2 style="margin-top:0; color: #ff0055;">OFFIZIELLES SCOUTING</h2>
-            <p style="color: #a0a0b0; margin-bottom: 25px;">Senden Sie jetzt eine offizielle Einladung für ein Probetraining an Hans.</p>
-            <button class="scout-btn" onclick="addClubRequest()">Anfrage an Hans senden</button>
+        <div class="action-panel">
+            <div class="action-title">Vereins-Anfrage einreichen</div>
+            <p style="color: #9494a8; margin: 0;">Für offizielle Einladungen zu Probetrainings oder Sichtungsterminen.</p>
+            <button class="action-btn" onclick="submitScoutRequest()">Anfrage senden</button>
         </div>
 
-        <!-- Liste der Vereine -->
-        <div class="live-requests" id="anfragen-liste">
-            <h3 style="margin-top: 0; color: #00f2fe;">Eingegangene Club-Anfragen</h3>
-            <div id="requestContainer">
-                <div class="request-item">
-                    <span class="club-title">⚽ Real Cyber Kickers</span>
-                    <span style="color: #a0a0b0;">Sucht Top-Stürmer</span>
+        <div class="scout-register" id="fa-section">
+            <div class="section-title">Eingegangene Anfragen (Clubs FA)</div>
+            <div class="register-list" id="scoutList">
                 </div>
-                <div class="request-item">
-                    <span class="club-title">⚡ Neon Strike United</span>
-                    <span style="color: #a0a0b0;">Möchte Probetraining</span>
-                </div>
-                <div class="request-item">
-                    <span class="club-title">🏆 Load_SMP Athletic</span>
-                    <span style="color: #a0a0b0;">Sofortiges Angebot</span>
-                </div>
-            </div>
         </div>
 
     </div>
 
-    <!-- JavaScript für interaktive Grafik-Updates -->
     <script>
-        let currentRequests = 3;
+        let count = 0;
 
-        function addClubRequest() {
-            let clubName = prompt("Geben Sie den Namen Ihres Fußballclubs ein:");
+        function submitScoutRequest() {
+            const club = prompt("Name des offiziellen Fußballvereins:");
             
-            if (clubName && clubName.trim() !== "") {
-                // Zähler erhöhen
-                currentRequests++;
-                document.getElementById("faButton").innerText = "Clubs FA (" + currentRequests + ")";
+            if (club && club.trim() !== "") {
+                count++;
                 
-                // Neue Grafik-Box für den Club erstellen
-                const container = document.getElementById("requestContainer");
-                const newItem = document.createElement("div");
-                newItem.className = "request-item";
-                newItem.innerHTML = `
-                    <span class="club-title">⭐ ${clubName}</span>
-                    <span style="color: #00ff66; font-weight: bold;">Anfrage gesendet!</span>
+                // Update den Button oben rechts direkt live
+                document.getElementById("faCounter").innerText = "Clubs FA (" + count + ")";
+                
+                const list = document.getElementById("scoutList");
+                const item = document.createElement("div");
+                item.className = "register-item";
+                item.innerHTML = `
+                    <span class="club-identity">⚽ ${club}</span>
+                    <span class="club-status">Sichtungsanfrage hinterlegt</span>
                 `;
                 
-                // Oben in die Liste einfügen
-                container.insertBefore(newItem, container.firstChild);
-                
-                alert("Erfolgreich! Der Club '" + clubName + "' wurde zur 'Clubs FA' Liste oben rechts hinzugefügt!");
+                // Neue Anfrage sofort ganz oben einfügen
+                list.insertBefore(item, list.firstChild);
             }
         }
     </script>
