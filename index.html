@@ -3,102 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mein Cyber-Space</title>
+    <title>Server Connect</title>
     <style>
-        /* Grunddesign für die ganze Seite */
         body {
-            background-color: #0d0d13;
+            background-color: #08080c;
             color: #ffffff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            overflow-x: hidden;
         }
 
-        /* Die zentrale Box (Dashboard) */
-        .container {
-            background: rgba(20, 20, 30, 0.8);
+        .server-card {
+            background: #111116;
             border: 2px solid #00f2fe;
             border-radius: 20px;
             padding: 40px;
             text-align: center;
-            box-shadow: 0 0 20px #00f2fe, inset 0 0 10px rgba(0, 242, 254, 0.3);
-            max-width: 450px;
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.2);
+            max-width: 400px;
             width: 100%;
         }
 
-        /* Titel mit Neon-Rot/Pink-Glow */
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
+        h2 {
             color: #ff0055;
-            text-shadow: 0 0 10px #ff0055, 0 0 20px #ff0055;
+            text-shadow: 0 0 10px #ff0055;
+            margin-bottom: 5px;
         }
 
-        p {
-            color: #a0a0b0;
-            font-size: 1.1rem;
-            margin-bottom: 30px;
-        }
-
-        /* Die Buttons (Links) */
-        .links-flex {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .btn {
-            background: transparent;
-            color: #ffffff;
-            text-decoration: none;
-            padding: 15px 20px;
-            border: 2px solid #ff0055;
-            border-radius: 12px;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            box-shadow: 0 0 5px rgba(250, 0, 85, 0.2);
-        }
-
-        /* Hover-Effekt: Button wechselt zu Neon-Blau */
-        .btn:hover {
-            border-color: #00f2fe;
-            background: rgba(0, 242, 254, 0.1);
-            box-shadow: 0 0 15px #00f2fe;
-            transform: translateY(-3px);
-        }
-
-        /* Server IP / Info Box */
-        .info-box {
-            margin-top: 30px;
-            background: #161622;
-            padding: 12px;
-            border-radius: 10px;
-            border-left: 4px solid #00f2fe;
+        .status {
+            color: #00ff66;
             font-size: 0.9rem;
+            text-shadow: 0 0 8px rgba(0, 255, 102, 0.4);
+            margin-bottom: 25px;
+        }
+
+        /* Die klickbare IP-Box */
+        .ip-box {
+            background: #181824;
+            border: 2px dashed #00f2fe;
+            border-radius: 12px;
+            padding: 15px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.2rem;
+            font-weight: bold;
             color: #00f2fe;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none; /* Text kann nicht versehentlich markiert werden */
+        }
+
+        /* Hover-Effekt */
+        .ip-box:hover {
+            background: rgba(0, 242, 254, 0.05);
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.5);
+            transform: scale(1.02);
+        }
+
+        /* Klasse wird per JavaScript hinzugefügt, wenn kopiert wurde */
+        .ip-box.copied {
+            border-style: solid;
+            border-color: #00ff66;
+            color: #00ff66;
+            box-shadow: 0 0 25px #00ff66;
+        }
+
+        .hint {
+            font-size: 0.8rem;
+            color: #5a5a75;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>LOAD_SPACE</h1>
-        <p>Willkommen auf meinem Profil. Check meine Links ab!</p>
-
-        <div class="links-flex">
-            <a href="#" class="btn">Mein Discord Server</a>
-            <a href="#" class="btn">Lieblings-Projekte</a>
-            <a href="#" class="btn">Gaming Stats</a>
+    <div class="server-card">
+        <h2>LOAD_SMP</h2>
+        <div class="status">● SERVER ONLINE</div>
+        
+        <!-- Wenn man hier draufklickt, wird die Funktion aufgerufen -->
+        <div class="ip-box" id="ipBox" onclick="copyIP()">
+            loadsmp.net
         </div>
-
-        <div class="info-box">
-            Status: Online & am Coden ⚡
-        </div>
+        <div class="hint">Klicke auf die IP zum Kopieren!</div>
     </div>
+
+    <script>
+        function copyIP() {
+            const ipText = "loadsmp.net"; // Die IP, die kopiert werden soll
+            const box = document.getElementById("ipBox");
+            
+            // Text in die Zwischenablage kopieren
+            navigator.clipboard.writeText(ipText).then(() => {
+                // Style ändern zu "Kopiert"
+                box.classList.add("copied");
+                box.innerText = "Kopiert!";
+                
+                // Nach 2 Sekunden wieder zurücksetzen
+                setTimeout(() => {
+                    box.classList.remove("copied");
+                    box.innerText = ipText;
+                }, 2000);
+            });
+        }
+    </script>
 
 </body>
 </html>
