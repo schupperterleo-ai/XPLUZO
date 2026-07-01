@@ -22,11 +22,6 @@
 
         body {
             background-color: var(--bg-main);
-            /* Futuristisches Hintergrund-Raster */
-            background-image: 
-                linear-gradient(rgba(255, 255, 255, 0.01) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.01) 1px, transparent 1px);
-            background-size: 40px 40px;
             color: var(--text-main);
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             margin: 0;
@@ -35,24 +30,57 @@
             position: relative;
         }
 
-        /* Canvas für die Partikel im Hintergrund */
-        #particle-canvas {
+        /* FIXIERTER HINTERGRUND: Gitter + 3D-Rotierender Fußball */
+        .background-wrapper {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
             z-index: 1;
-            pointer-events: none; /* Klicks gehen durch das Canvas durch */
+            pointer-events: none;
+            overflow: hidden;
+            /* Futuristisches Tech-Raster */
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.01) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.01) 1px, transparent 1px);
+            background-size: 40px 40px;
         }
 
-        /* Content Wrapper über den Partikeln */
+        /* Der interaktive Scroll-Fußball */
+        .scrolling-football {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 450px;
+            height: 450px;
+            margin-top: -225px;
+            margin-left: -225px;
+            opacity: 0.06; /* Dezent im Hintergrund, damit man den Text perfekt lesen kann */
+            filter: drop-shadow(0 0 30px var(--neon-blue));
+            transform: rotate(0deg);
+            will-change: transform;
+            transition: transform 0.1s ease-out; /* Macht die Drehung extrem smooth */
+        }
+
+        /* Canvas für die Maus-Partikel */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* Content über den Grafiken */
         .app-container {
             position: relative;
-            z-index: 2;
+            z-index: 3;
         }
 
-        /* High-End Navigation Bar mit Unschärfe-Effekt */
+        /* High-End Navigation Bar */
         header {
             display: flex;
             justify-content: space-between;
@@ -73,6 +101,7 @@
             gap: 14px;
         }
 
+        /* WhatsApp Profilbild integration */
         .avatar-logo {
             width: 44px;
             height: 44px;
@@ -121,7 +150,7 @@
             padding: 0 24px;
         }
 
-        /* Glassmorphism Player Card */
+        /* Premium Glassmorphism Cards */
         .player-card {
             background: var(--bg-card);
             backdrop-filter: blur(12px);
@@ -239,7 +268,7 @@
             height: 100%;
             border-radius: 100px;
             background: linear-gradient(90deg, var(--neon-red), var(--neon-blue));
-            width: 0%; /* Startet bei 0 für die JavaScript-Animation */
+            width: 0%;
             transition: width 2s cubic-bezier(0.1, 1, 0.1, 1);
             box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
         }
@@ -260,7 +289,6 @@
             font-weight: 800;
             margin-top: 0;
             margin-bottom: 12px;
-            letter-spacing: -0.5px;
         }
 
         .action-btn {
@@ -273,12 +301,12 @@
             border-radius: 16px;
             cursor: pointer;
             box-shadow: 0 12px 35px rgba(255, 0, 85, 0.45);
-            transition: all 0.25s cubic-bezier(0.2, 1, 0.2, 1);
+            transition: all 0.25s ease;
             margin-top: 20px;
         }
 
         .action-btn:hover {
-            transform: translateY(-3px) scale(1.02);
+            transform: translateY(-3px);
             box-shadow: 0 20px 45px rgba(255, 0, 85, 0.6);
         }
 
@@ -331,15 +359,28 @@
 </head>
 <body>
 
-    <!-- Partikel Canvas im Hintergrund -->
+    <!-- Fixierter Hintergrund mit dem rotierenden Ball -->
+    <div class="background-wrapper">
+        <!-- SVG-Fußball für gestochen scharfe Qualität, der sich per JS beim Scrollen dreht -->
+        <svg class="scrolling-football" id="ball" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M256 0C114.615 0 0 114.615 0 256s114.615 256 256 256 256-114.615 256-256S397.385 0 256 0zm0 464c-114.692 0-208-93.308-208-208S141.308 48 256 48s208 93.308 208 208-93.308 208-208 208z" fill="#00f2fe"/>
+            <path d="M256 160l-72 52 24 84h96l24-84z" fill="#00f2fe"/>
+            <path d="M184 212l-76-20-40 68 64 56 52-20z" fill="#00f2fe"/>
+            <path d="M328 212l76-20 40 68-64 56-52-20z" fill="#00f2fe"/>
+            <path d="M256 160V80h-68l-32 64z" fill="#00f2fe"/>
+            <path d="M256 160V80h68l32 64z" fill="#00f2fe"/>
+            <path d="M232 296l24 48 24-48-48-20z" fill="#00f2fe"/>
+        </svg>
+    </div>
+
+    <!-- Maus-Partikel Canvas -->
     <canvas id="particle-canvas"></canvas>
 
-    <!-- Der gesamte sichtbare Inhalt -->
+    <!-- App Content Wrapper -->
     <div class="app-container">
 
         <header>
             <div class="brand-profile">
-                <!-- Greift direkt auf das WhatsApp Bild zu -->
                 <img src="image_094503.png" alt="Hans Profile Image" class="avatar-logo" onerror="this.style.border='2px solid #ff0055'">
                 <div class="brand-name">HANS PROFILE</div>
             </div>
@@ -348,7 +389,7 @@
 
         <div class="container">
 
-            <!-- Haupt-Profilkarte -->
+            <!-- Profilkarte -->
             <div class="player-card">
                 <div class="scouting-badge">
                     <div class="pulse-dot"></div>
@@ -356,8 +397,7 @@
                 </div>
                 <h1 class="hero-title">HANS</h1>
                 <p class="profile-desc">
-                    Hans ist 13 Jahre alt, absolut zuverlässig und charakterlich extrem nett. Auf dem Fußballplatz beweist er Ausnahmetalent: Er ist der schnellste Akteur und führt das offizielle Leistungsranking der gesamten Schule auf Platz 1 an. In der Jahrgangsstufe 7 zählt er unumstritten zu den absolut besten Spielern.
-                </p>
+                    Hans ist 13 Jahre alt, absolut zuverlässig und charakterlich extrem nett. Auf dem Fußballplatz beweist er Ausnahmetalent: Er ist der schnellste und er hat teamgeist.
             </div>
 
             <!-- Performance Bars -->
@@ -395,7 +435,7 @@
                 </div>
             </div>
 
-            <!-- Interaktives Einladungs-System -->
+            <!-- Action Panel -->
             <div class="action-panel">
                 <div class="action-title">Offizielle Einladung hinterlegen</div>
                 <p style="color: var(--text-muted); margin: 0;">Ermöglicht verifizierten Vereinen die direkte Kontaktaufnahme für Sichtungstermine.</p>
@@ -411,9 +451,16 @@
         </div>
     </div>
 
-    <!-- HIGH-END INTERAKTIONS-LOGIK -->
     <script>
-        // 1. STATS ANIMATION (Füllt die Balken erst nach Laden der Seite flüssig auf)
+        // 1. SCROLL-DREHUNG FÜR DEN FUSSBALL
+        const ball = document.getElementById('ball');
+        window.addEventListener('scroll', () => {
+            // Berechnet die aktuelle Scroll-Position und wandelt sie in Grad um
+            let scrollPercent = window.scrollY * 0.18; 
+            ball.style.transform = `rotate(${scrollPercent}deg)`;
+        });
+
+        // 2. STATS ANIMATION
         window.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 document.getElementById('bar1').style.width = document.getElementById('bar1').getAttribute('data-width');
@@ -422,7 +469,7 @@
             }, 300);
         });
 
-        // 2. LIVE CLUB REGISTER LOGIK
+        // 3. LIVE REGISTER LOGIK
         let globalCounter = 0;
         function registerNewClub() {
             const name = prompt("Name Ihres offiziellen Fußballvereins:");
@@ -441,14 +488,12 @@
             }
         }
 
-        // 3. CURSOR PARTIKEL-SYSTEM (Pure JavaScript HTML5 Canvas)
+        // 4. MOUSE CURSOR PARTIKEL SYSTEM
         const canvas = document.getElementById('particle-canvas');
         const ctx = canvas.getContext('2d');
-
         let particles = [];
         let mouse = { x: null, y: null };
 
-        // Canvas-Größe anpassen
         function resizeCanvas() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
@@ -456,43 +501,34 @@
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
-        // Mausbewegung tracken
         window.addEventListener('mousemove', (e) => {
             mouse.x = e.clientX;
             mouse.y = e.clientY;
-            
-            // Bei jeder Bewegung 2 neue Partikel spawnen
             for(let i = 0; i < 2; i++) {
                 particles.push(new Particle(mouse.x, mouse.y));
             }
         });
 
-        // Partikel-Klasse
         class Particle {
             constructor(x, y) {
                 this.x = x;
                 this.y = y;
-                // Zufällige Flugrichtung
                 this.speedX = (Math.random() - 0.5) * 1.5;
                 this.speedY = (Math.random() - 0.5) * 1.5;
-                // Größe und Transparenz
                 this.size = Math.random() * 3 + 1;
                 this.alpha = 1;
-                this.decay = Math.random() * 0.015 + 0.01; // Wie schnell sie verschwinden
+                this.decay = Math.random() * 0.015 + 0.01;
             }
-
             update() {
                 this.x += this.speedX;
                 this.y += this.speedY;
                 this.alpha -= this.decay;
             }
-
             draw() {
                 ctx.save();
                 ctx.globalAlpha = this.alpha;
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                // Leuchtendes Neon-Blau für Partikel
                 ctx.fillStyle = '#00f2fe';
                 ctx.shadowBlur = 10;
                 ctx.shadowColor = '#00f2fe';
@@ -501,15 +537,11 @@
             }
         }
 
-        // Animations-Schleife
         function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
             for (let i = 0; i < particles.length; i++) {
                 particles[i].update();
                 particles[i].draw();
-                
-                // Entfernen, wenn unsichtbar
                 if (particles[i].alpha <= 0) {
                     particles.splice(i, 1);
                     i--;
@@ -519,6 +551,5 @@
         }
         animate();
     </script>
-
 </body>
 </html>
