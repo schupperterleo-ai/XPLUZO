@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Valorant </title>
+    <title>Valorant 3D Web Game</title>
+    <!-- Einbinden von Three.js für die 3D-Grafik -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         :root {
             --main-color: rgb(46, 213, 115);
             --main-bg-color: rgba(46, 213, 116, 0.2);
             --pattern-color: rgba(46, 213, 116, 0.08);
-            --val-hue: hue-rotate(250deg); /* Macht alles Cyber-Neon-Rot */
+            --val-hue: hue-rotate(250deg); /* Macht die UI Elemente Valorant-Neon-Rot */
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
@@ -23,25 +25,35 @@
             width: 100vw;
         }
 
-        /* HINTERGRUND-TEXTUR */
+        /* 3D CANVAS HINTERGRUND */
+        #three-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: 0;
+        }
+
+        /* SCREEN OVERLAYS (HTML GUI über dem 3D-Bereich) */
+        .gui-layer {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 2;
+            display: none;
+            flex-direction: column;
+            pointer-events: none;
+        }
+        .gui-layer.active { display: flex; pointer-events: auto; }
+
+        /* CYBER GRID EFFECT FÜR LOGIN/LOBBY BACKGROUND */
         .cyber-grid-bg {
             filter: var(--val-hue);
             background: 
-                radial-gradient(circle, var(--main-bg-color) 0%, rgba(0, 0, 0, 0.85) 95%),
+                radial-gradient(circle, var(--main-bg-color) 0%, rgba(0, 0, 0, 0.5) 95%),
                 linear-gradient(var(--pattern-color) 1px, transparent 1px),
                 linear-gradient(to right, var(--pattern-color) 1px, transparent 1px);
             background-size: cover, 25px 25px, 25px 25px;
             background-position: center;
         }
-
-        /* SCREENS */
-        .screen {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            display: none; flex-direction: column;
-            z-index: 1;
-        }
-        .screen.active { display: flex; }
 
         /* BUTTON STYLE (UIVERSE) */
         .button {
@@ -62,84 +74,73 @@
         /* 1. LOGIN SCREEN */
         #login-screen { justify-content: center; align-items: center; }
         .login-card {
-            background: rgba(11, 20, 26, 0.9); padding: 3rem;
+            background: rgba(11, 20, 26, 0.95); padding: 3rem;
             border: 1px solid rgba(46, 213, 115, 0.2);
             display: flex; flex-direction: column; gap: 1.5rem; min-width: 350px;
         }
         .login-card h1 { text-transform: uppercase; letter-spacing: 0.3rem; text-align: center; color: var(--main-color); }
-        .input-group { display: flex; flex-direction: column; gap: 0.5rem; }
-        .input-group label { text-transform: uppercase; font-size: 0.8rem; color: rgba(236, 232, 225, 0.6); }
+        .input-group { display: flex; flex-direction: column; gap: 0.5rem; color: #fff; }
+        .input-group label { text-transform: uppercase; font-size: 0.8rem; color: rgba(236, 232, 225, 0.6); letter-spacing: 0.1rem;}
         .input-group input {
             background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(46, 213, 115, 0.3);
             padding: 0.8rem; color: #fff; font-size: 1rem; outline: none;
         }
-        .input-group input:focus { border-color: var(--main-color); }
 
         /* 2. LOBBY SCREEN */
         #lobby-screen { padding: 2rem 4rem; justify-content: space-between; }
-        .lobby-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(46, 213, 115, 0.2); padding-bottom: 1rem; }
-        .logo-section { display: flex; align-items: center; gap: 2rem; }
+        .lobby-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(46, 213, 115, 0.2); padding-bottom: 1rem; filter: var(--val-hue); }
         .logo { font-weight: 900; font-size: 1.5rem; letter-spacing: 0.4rem; color: var(--main-color); }
-        .settings-icon { font-size: 1.5rem; cursor: pointer; color: var(--main-color); transition: transform 0.3s; }
-        .settings-icon:hover { transform: rotate(40deg); }
         
-        .lobby-container { display: flex; flex: 1; margin-top: 2rem; gap: 2rem; }
+        .lobby-container { display: flex; flex: 1; margin-top: 2rem; gap: 2rem; justify-content: space-between; align-items: flex-end;}
         .party-panel {
-            width: 300px; background: rgba(11, 20, 26, 0.7);
+            width: 300px; background: rgba(11, 20, 26, 0.85);
             border: 1px solid rgba(46, 213, 115, 0.1); padding: 1.5rem;
-            display: flex; flex-direction: column; gap: 1rem;
+            display: flex; flex-direction: column; gap: 1rem; filter: var(--val-hue);
         }
-        .party-list { display: flex; flex-direction: column; gap: 0.5rem; flex: 1; overflow-y: auto; }
+        .party-list { display: flex; flex-direction: column; gap: 0.5rem; }
         .party-member { background: rgba(255,255,255,0.05); padding: 0.6rem; border-left: 3px solid var(--main-color); font-size: 0.9rem; }
         
-        .center-lobby { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 2rem; }
-        .game-mode { font-size: 3rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5rem; }
+        .center-lobby { display: flex; flex-direction: column; align-items: center; gap: 1.5rem; margin-bottom: 4rem; width: 100%; filter: var(--val-hue); }
+        .game-mode { font-size: 3rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5rem; text-shadow: 0 0 10px var(--main-bg-color); }
 
-        /* SETTINGS MODAL */
-        .modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0,0,0,0.8); z-index: 10; justify-content: center; align-items: center;
+        /* 3. ESC / PAUSE MENU MODAL */
+        #pause-menu {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(11, 20, 26, 0.85); z-index: 100;
+            display: none; flex-direction: column; justify-content: center; align-items: center; gap: 1.5rem;
         }
-        .modal-content {
-            background: #0b141a; padding: 2.5rem; border: 1px solid var(--main-color);
-            min-width: 300px; display: flex; flex-direction: column; gap: 1.5rem;
-        }
-        .modal-content h2 { text-transform: uppercase; color: var(--main-color); font-size: 1.3rem; }
+        #pause-menu.active { display: flex; }
+        .pause-title { font-size: 2.5rem; letter-spacing: 0.5rem; font-weight: 900; color: #ff4655; margin-bottom: 2rem; text-transform: uppercase;}
+        .settings-box { background: rgba(255,255,255,0.02); padding: 1.5rem; border: 1px solid rgba(255,255,255,0.1); width: 320px; display: flex; flex-direction: column; gap: 1rem;}
 
-        /* 3. GAME SCREEN */
-        #game-screen { display: none; width: 100vw; height: 100vh; position: relative; background: #050a0e; }
-        #gameCanvas { width: 100%; height: 100%; display: block; }
-        
-        /* INGAME HUD */
-        .game-hud {
-            position: absolute; pointer-events: none; font-family: monospace;
-            filter: var(--val-hue);
-        }
-        .weapon-bar {
-            bottom: 2rem; right: 2rem; display: flex; flex-direction: column;
-            gap: 0.5rem; align-items: flex-end;
+        /* INGAME WEAPON HUD */
+        #game-hud {
+            position: absolute; bottom: 2rem; right: 2rem; display: none; flex-direction: column;
+            gap: 0.5rem; align-items: flex-end; z-index: 5; filter: var(--val-hue);
         }
         .weapon-slot {
-            background: rgba(11, 20, 26, 0.6); border: 1px solid rgba(46, 213, 115, 0.2);
+            background: rgba(11, 20, 26, 0.8); border: 1px solid rgba(46, 213, 115, 0.2);
             padding: 0.5rem 1.5rem; width: 180px; text-align: right;
             color: rgba(255,255,255,0.4); font-weight: bold; transition: all 0.2s;
         }
         .weapon-slot.active {
             border-color: var(--main-color); color: var(--main-color);
-            background: rgba(46, 213, 116, 0.1); box-shadow: 0 0 10px rgba(46, 213, 115, 0.2);
+            background: rgba(46, 213, 116, 0.15); box-shadow: 0 0 10px rgba(46, 213, 115, 0.2);
         }
-        .ammo-display { font-size: 1.5rem; font-weight: bold; }
     </style>
 </head>
 <body>
 
+    <!-- 3D Grafik-Ausgabe -->
+    <div id="three-canvas"></div>
+
     <!-- 1. LOGIN SCREEN -->
-    <div id="login-screen" class="screen cyber-grid-bg active">
+    <div id="login-screen" class="gui-layer cyber-grid-bg active">
         <div class="login-card">
             <h1>Riot Sign In</h1>
             <div class="input-group">
                 <label>Username</label>
-                <input type="text" id="username" autocomplete="off" placeholder="DEIN NAME">
+                <input type="text" id="username" autocomplete="off" placeholder="DEIN AGENTEN-NAME">
             </div>
             <div class="input-group">
                 <label>Password</label>
@@ -150,351 +151,450 @@
     </div>
 
     <!-- 2. LOBBY SCREEN -->
-    <div id="lobby-screen" class="screen cyber-grid-bg">
+    <div id="lobby-screen" class="gui-layer">
         <div class="lobby-header">
-            <div class="logo-section">
-                <div class="logo">VALORANT_WEB</div>
-                <div class="settings-icon" onclick="toggleSettings(true)">⚙</div>
-            </div>
+            <div class="logo">VALORANT_3D</div>
             <div class="button" style="padding: 0.4rem 1.5rem; font-size: 1rem;" id="player-tag">AGENT#EUW</div>
         </div>
 
         <div class="lobby-container">
-            <!-- Party / Freunde Panel -->
+            <!-- Party System links -->
             <div class="party-panel">
                 <h3>PARTY (<span id="party-count">1</span>/5)</h3>
-                <div class="party-list" id="party-list">
-                    <!-- Wird dynamisch befüllt -->
-                </div>
+                <div class="party-list" id="party-list"></div>
                 <div class="input-group">
-                    <input type="text" id="friend-name" placeholder="Freund einladen..." style="background:rgba(255,255,255,0.05); border:1px solid rgba(46, 213, 115, 0.3); padding:0.5rem; color:white; outline:none;">
+                    <input type="text" id="friend-name" placeholder="Name..." style="background:rgba(255,255,255,0.05); border:1px solid rgba(46, 213, 115, 0.3); padding:0.5rem; color:white; outline:none;">
                 </div>
                 <button class="button" style="padding:0.5rem; font-size:0.9rem;" onclick="addFriend()">Add Friend</button>
             </div>
 
-            <!-- Zentrum -->
+            <!-- Zentrum Start-Button -->
             <div class="center-lobby">
                 <div class="game-mode">Deathmatch</div>
                 <button class="button" style="padding: 1.5rem 5rem; font-size: 1.8rem;" onclick="startGame()">Start Game</button>
             </div>
+            <div style="width: 300px;"></div> <!-- Symmetrie-Platzhalter -->
         </div>
     </div>
 
-    <!-- SETTINGS MODAL -->
-    <div id="settings-modal" class="modal">
-        <div class="modal-content">
-            <h2>Settings</h2>
-            <div class="input-group">
-                <label>Mouse Sensitivity: <span id="sens-val">1.0</span></label>
-                <input type="range" id="sensitivity" min="0.1" max="3.0" step="0.1" value="1.0" oninput="document.getElementById('sens-val').innerText=this.value">
-            </div>
-            <button class="button" style="padding:0.5rem;" onclick="toggleSettings(false)">Save & Close</button>
-        </div>
+    <!-- INGAME HUD (Waffen) -->
+    <div id="game-hud">
+        <div class="weapon-slot" id="slot-1">1 VANDAL <br><span style="font-size:1.3rem;" id="ammo-1">25</span></div>
+        <div class="weapon-slot" id="slot-2">2 PHANTOM <br><span style="font-size:1.3rem;" id="ammo-2">30</span></div>
+        <div class="weapon-slot" id="slot-3">3 CLASSIC <br><span style="font-size:1.3rem;" id="ammo-3">12</span></div>
     </div>
 
-    <!-- 3. GAME SCREEN -->
-    <div id="game-screen" class="screen">
-        <canvas id="gameCanvas"></canvas>
+    <!-- 3. ESC / PAUSENMENÜ -->
+    <div id="pause-menu">
+        <div class="pause-title">Spiel Pausiert</div>
+        <button class="button" style="width: 320px;" onclick="resumeGame()">Weiterspielen</button>
         
-        <!-- Waffen HUD unten rechts (Reihe übereinander) -->
-        <div class="game-hud weapon-bar">
-            <div class="weapon-slot" id="slot-1">1 VANDAL <br><span class="ammo-display" id="ammo-1">25</span></div>
-            <div class="weapon-slot" id="slot-2">2 PHANTOM <br><span class="ammo-display" id="ammo-2">30</span></div>
-            <div class="weapon-slot" id="slot-3">3 CLASSIC <br><span class="ammo-display" id="ammo-3">12</span></div>
+        <div class="settings-box">
+            <label style="font-size: 0.8rem; letter-spacing: 0.1rem; text-transform: uppercase;">Maus-Sensitivität: <span id="sens-val">1.0</span></label>
+            <input type="range" id="sensitivity" min="0.1" max="4.0" step="0.1" value="1.0" oninput="document.getElementById('sens-val').innerText=this.value; mouseSens=parseFloat(this.value);">
         </div>
+
+        <button class="button" style="width: 320px; border-image: radial-gradient(circle, #ff4655 0%, rgba(0,0,0,0) 100%) 1; color: #ff4655;" onclick="backToLobby()">Zurück zur Lobby</button>
     </div>
 
     <script>
-        // GLOBALE VARIABLEN & ENGINE STATE
-        let player = { name: "Agent", x: 1000, y: 1000, speed: 5, size: 20, angle: 0, currentWeapon: 1 };
-        let weapons = {
-            1: { name: "Vandal", ammo: 25, maxAmmo: 25, damage: 40, fireRate: 150, lastShot: 0 },
-            2: { name: "Phantom", ammo: 30, maxAmmo: 30, damage: 35, fireRate: 120, lastShot: 0 },
-            3: { name: "Classic", ammo: 12, maxAmmo: 12, damage: 20, fireRate: 300, lastShot: 0 }
-        };
+        // ENGINE & GAME STATE
+        let currentGameState = "LOGIN"; // LOGIN, LOBBY, MATCH
+        let username = "AGENT";
         let party = [];
         let mouseSens = 1.0;
         let keys = {};
-        let mouse = { x: 0, y: 0 };
-        let bullets = [];
-        let bots = [];
-        let mapSize = 3000; // Riesige Arena
-        let obstacles = [];
+        let isPaused = false;
 
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
+        // Waffen-System
+        let currentWeapon = 1;
+        let weapons = {
+            1: { name: "Vandal", ammo: 25, maxAmmo: 25, fireRate: 150, lastShot: 0 },
+            2: { name: "Phantom", ammo: 30, maxAmmo: 30, fireRate: 120, lastShot: 0 },
+            3: { name: "Classic", ammo: 12, maxAmmo: 12, fireRate: 300, lastShot: 0 }
+        };
 
-        // LOGIN
+        // 3D-Variablen (Three.js)
+        let scene, camera, renderer;
+        let playerMesh, lobbyCharacterMesh;
+        let moveDirection = new THREE.Vector3();
+        let targetRotation = 0;
+        let bots3D = [];
+        let bullets3D = [];
+        let arenaWalls = [];
+
+        // PERSISTENT LOGIN-CHECK BEIM START
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedName = localStorage.getItem('valo_3d_username');
+            if (savedName) {
+                username = savedName;
+                initMainGame(username);
+            }
+        });
+
         function login() {
-            const name = document.getElementById('username').value.trim() || "AGENT";
-            player.name = name.toUpperCase();
-            document.getElementById('player-tag').innerText = player.name + "#2026";
-            party.push(player.name + " (Leader)");
+            const input = document.getElementById('username').value.trim();
+            username = input || "AGENT";
+            localStorage.setItem('valo_3d_username', username);
+            initMainGame(username);
+        }
+
+        function initMainGame(name) {
+            document.getElementById('player-tag').innerText = name.toUpperCase() + "#2026";
+            party = [name.toUpperCase() + " (Leader)"];
             updatePartyUI();
+            
             switchScreen('lobby-screen');
+            currentGameState = "LOBBY";
+            
+            // Initialisiere die 3D Engine
+            init3DEngine();
         }
 
         function switchScreen(id) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            const target = document.getElementById(id);
-            target.classList.add('active');
-            if(id === 'game-screen') target.style.display = 'block';
-            else document.getElementById('game-screen').style.display = 'none';
+            document.querySelectorAll('.gui-layer').forEach(layer => layer.classList.remove('active'));
+            if(id) document.getElementById(id).classList.add('active');
         }
 
-        // PARTY SYSTEM
+        // PARTY MANAGEMENT
         function addFriend() {
-            const fName = document.getElementById('friend-name').value.trim();
+            const fInput = document.getElementById('friend-name');
+            const fName = fInput.value.trim();
             if(fName && party.length < 5) {
                 party.push(fName.toUpperCase() + "#EUW");
-                document.getElementById('friend-name').value = "";
+                fInput.value = "";
                 updatePartyUI();
+                createLobbyPartyCharacter(); // Spawnt ein weiteres 3D Modell in der Lobby!
             }
         }
 
         function updatePartyUI() {
             const list = document.getElementById('party-list');
             list.innerHTML = "";
-            party.forEach(p => {
-                list.innerHTML += `<div class="party-member">${p}</div>`;
-            });
+            party.forEach(p => { list.innerHTML += `<div class="party-member">${p}</div>`; });
             document.getElementById('party-count').innerText = party.length;
         }
 
-        // SETTINGS
-        function toggleSettings(show) {
-            document.getElementById('settings-modal').style.display = show ? 'flex' : 'none';
-            if(!show) mouseSens = parseFloat(document.getElementById('sensitivity').value);
-        }
-
-        // GAME INITIALIZATION & MAP GENERATION
-        function generateMap() {
-            obstacles = [];
-            // Ränder generieren
-            obstacles.push({x: 0, y: 0, w: mapSize, h: 40});
-            obstacles.push({x: 0, y: 0, w: 40, h: mapSize});
-            obstacles.push({x: 0, y: mapSize-40, w: mapSize, h: 40});
-            obstacles.push({x: mapSize-40, y: 0, w: 40, h: mapSize});
-
-            // Taktische Kisten und Wände verteilen (wie auf Bind/Haven)
-            for (let i = 0; i < 40; i++) {
-                obstacles.push({
-                    x: Math.random() * (mapSize - 400) + 200,
-                    y: Math.random() * (mapSize - 400) + 200,
-                    w: Math.random() * 150 + 60,
-                    h: Math.random() * 150 + 60
-                });
-            }
-        }
-
-        function spawnBots() {
-            bots = [];
-            for(let i=0; i<15; i++) {
-                bots.push({
-                    x: Math.random() * (mapSize - 200) + 100,
-                    y: Math.random() * (mapSize - 200) + 100,
-                    hp: 100,
-                    size: 20,
-                    speed: 2 + Math.random() * 2
-                });
-            }
-        }
-
-        function startGame() {
-            switchScreen('game-screen');
-            resizeCanvas();
-            generateMap();
-            spawnBots();
-            updateWeaponHUD();
+        // THREE.JS 3D INITIALISIERUNG
+        function init3DEngine() {
+            const container = document.getElementById('three-canvas');
             
-            // Event Listeners aktivieren
-            window.addEventListener('keydown', e => {
-                keys[e.key.toLowerCase()] = true;
-                if(['1','2','3'].includes(e.key)) {
-                    player.currentWeapon = parseInt(e.key);
-                    updateWeaponHUD();
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x050a0e);
+            scene.fog = new THREE.FogExp2(0x050a0e, 0.015);
+
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            container.appendChild(renderer.domElement);
+
+            // Lichtquellen
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+            scene.add(ambientLight);
+            
+            const dirLight = new THREE.DirectionalLight(0x00f0ff, 0.8); // Neon Blaues Führungslicht
+            dirLight.position.set(10, 20, 10);
+            scene.add(dirLight);
+
+            // Baue die 3D Lobby Szenerie auf
+            setup3DLobbyView();
+
+            // Event Listeners registrieren
+            window.addEventListener('resize', onWindowResize);
+            window.addEventListener('keydown', handleKeyDown);
+            window.addEventListener('keyup', handleKeyUp);
+            window.addEventListener('mousemove', handlePointerLook);
+            window.addEventListener('mousedown', handleShooting);
+
+            // Start Animation Frame Loop
+            animate();
+        }
+
+        function setup3DLobbyView() {
+            // Bereinige alte Szene falls vorhanden
+            while(scene.children.length > 0){ scene.remove(scene.children[0]); }
+            scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+            const lobbyLight = new THREE.PointLight(0xff4655, 2, 50); // Rotes Neon-Zentrum-Licht
+            lobbyLight.position.set(0, 5, 0);
+            scene.add(lobbyLight);
+
+            // Bodenplatte für Lobby
+            const floorGeo = new THREE.PlaneGeometry(50, 50);
+            const floorMat = new THREE.MeshBasicMaterial({ color: 0x0b141a, side: THREE.DoubleSide });
+            const floor = new THREE.Mesh(floorGeo, floorMat);
+            floor.rotation.x = Math.PI / 2;
+            scene.add(floor);
+
+            // Gittermuster auf dem Boden (passend zur CSS Textur)
+            const grid = new THREE.GridHelper(50, 50, 0xff4655, 0x1f2e3d);
+            grid.position.y = 0.01;
+            scene.add(grid);
+
+            // 3D Charakter-Modell (Zylinder/Kapsel) für dich im Zentrum der Lobby
+            const charGeo = new THREE.CylinderGeometry(0.6, 0.6, 2.2, 16);
+            const charMat = new THREE.MeshStandardMaterial({ color: 0x00f0ff, roughness: 0.2, metalness: 0.5 });
+            lobbyCharacterMesh = new THREE.Mesh(charGeo, charMat);
+            lobbyCharacterMesh.position.set(0, 1.1, -2);
+            scene.add(lobbyCharacterMesh);
+
+            // Kamera für Lobby ausrichten (Blick auf Charakter)
+            camera.position.set(0, 2.5, 4);
+            camera.lookAt(0, 1.1, -2);
+        }
+
+        function createLobbyPartyCharacter() {
+            // Spawnt versetzte 3D Männchen für jedes Party-Mitglied
+            const charGeo = new THREE.CylinderGeometry(0.6, 0.6, 2.2, 16);
+            const charMat = new THREE.MeshStandardMaterial({ color: 0x555555, roughness: 0.5 });
+            const partyMesh = new THREE.Mesh(charGeo, charMat);
+            let offset = party.length * 1.8 - 2;
+            partyMesh.position.set(offset, 1.1, -3);
+            scene.add(partyMesh);
+        }
+
+        // MATCHSTART: GENERIERE 3D ARENA & DEATHMATCH
+        function startGame() {
+            switchScreen(null); // Blendet alles HTML GUI aus
+            document.getElementById('game-hud').style.display = 'flex';
+            currentGameState = "MATCH";
+            isPaused = false;
+
+            // Szene leeren & Arena aufbauen
+            while(scene.children.length > 0){ scene.remove(scene.children[0]); }
+            arenaWalls = [];
+            bullets3D = [];
+            bots3D = [];
+
+            scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+            const sunLight = new THREE.DirectionalLight(0xffffff, 0.7);
+            sunLight.position.set(30, 50, 10);
+            scene.add(sunLight);
+
+            // Große 3D Arena Bodenplatte (150x150 Einheiten)
+            const arenaFloorGeo = new THREE.PlaneGeometry(150, 150);
+            const arenaFloorMat = new THREE.MeshStandardMaterial({ color: 0x111922, roughness: 0.8 });
+            const floor = new THREE.Mesh(arenaFloorGeo, arenaFloorMat);
+            floor.rotation.x = -Math.PI / 2;
+            scene.add(floor);
+
+            const arenaGrid = new THREE.GridHelper(150, 75, 0xff4655, 0x223344);
+            arenaGrid.position.y = 0.02;
+            scene.add(arenaGrid);
+
+            // Spieler Kapsel erzeugen (3D Ego-Sicht Führung)
+            const pGeo = new THREE.CylinderGeometry(0.7, 0.7, 2.4, 16);
+            const pMat = new THREE.MeshStandardMaterial({ color: 0x00f0ff });
+            playerMesh = new THREE.Mesh(pGeo, pMat);
+            playerMesh.position.set(0, 1.2, 0);
+            scene.add(playerMesh);
+
+            // Taktische 3D Blöcke generieren (Wände/Kisten)
+            for(let i=0; i<35; i++) {
+                let w = Math.random() * 8 + 4;
+                let h = Math.random() * 6 + 3;
+                let d = Math.random() * 8 + 4;
+                const boxGeo = new THREE.BoxGeometry(w, h, d);
+                const boxMat = new THREE.MeshStandardMaterial({ color: 0x1f2e3d, roughness: 0.4 });
+                const wall = new THREE.Mesh(boxGeo, boxMat);
+                
+                wall.position.set(
+                    Math.random() * 120 - 60,
+                    h / 2,
+                    Math.random() * 120 - 60
+                );
+                // Nicht direkt auf dem Spawn spawnen
+                if (wall.position.distanceTo(playerMesh.position) > 15) {
+                    scene.add(wall);
+                    arenaWalls.push(wall);
                 }
-            });
-            window.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
-            window.addEventListener('mousemove', handleMouseMove);
-            window.addEventListener('mousedown', shoot);
+            }
 
-            requestAnimationFrame(gameLoop);
+            // 3D Bots spawnen (Gegner)
+            for(let i=0; i<10; i++) {
+                const botGeo = new THREE.CylinderGeometry(0.7, 0.7, 2.4, 16);
+                const botMat = new THREE.MeshStandardMaterial({ color: 0xff4655 }); // Rote Feinde
+                const bot = new THREE.Mesh(botGeo, botMat);
+                bot.position.set(Math.random() * 100 - 50, 1.2, Math.random() * 100 - 50);
+                bot.userData = { hp: 100, speed: 0.05 + Math.random()*0.04 };
+                scene.add(bot);
+                bots3D.push(bot);
+            }
+
+            updateWeaponUI();
         }
 
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resizeCanvas);
+        // CONTROLS & ESC MENU HANDLING
+        function handleKeyDown(e) {
+            keys[e.key.toLowerCase()] = true;
 
-        // INPUT AND MOUSE SENSITIVITY HANDLING
-        function handleMouseMove(e) {
-            // Sensitivity beeinflusst, wie agil die Drehung berechnet wird
-            let centerX = canvas.width / 2;
-            let centerY = canvas.height / 2;
-            let dx = (e.clientX - centerX) * mouseSens;
-            let dy = (e.clientY - centerY) * mouseSens;
-            player.angle = Math.atan2(dy, dx);
+            // ESC-Taste steuert das Pausenmenü
+            if (e.key === "Escape") {
+                if (currentGameState === "MATCH" || currentGameState === "LOBBY") {
+                    togglePauseMenu();
+                }
+            }
+
+            // Waffenwechsel über Tasten 1, 2, 3
+            if (['1','2','3'].includes(e.key) && currentGameState === "MATCH" && !isPaused) {
+                currentWeapon = parseInt(e.key);
+                updateWeaponUI();
+            }
         }
 
-        function updateWeaponHUD() {
+        function handleKeyUp(e) { keys[e.key.toLowerCase()] = false; }
+
+        function togglePauseMenu() {
+            isPaused = !isPaused;
+            const menu = document.getElementById('pause-menu');
+            if(isPaused) {
+                menu.classList.add('active');
+            } else {
+                menu.classList.remove('active');
+            }
+        }
+
+        function resumeGame() { togglePauseMenu(); }
+
+        function backToLobby() {
+            document.getElementById('pause-menu').classList.remove('active');
+            document.getElementById('game-hud').style.display = 'none';
+            currentGameState = "LOBBY";
+            isPaused = false;
+            switchScreen('lobby-screen');
+            setup3DLobbyView(); // Baut die Lobby-Szene wieder auf
+        }
+
+        // ZIELEN MIT DER MAUS (Sensitivity angepasst)
+        function handlePointerLook(e) {
+            if (currentGameState !== "MATCH" || isPaused) return;
+            // Bestimmt die Drehung des Charakters basierend auf Mausbewegung horizontal
+            let movementX = e.movementX || 0;
+            targetRotation -= movementX * 0.002 * mouseSens;
+            playerMesh.rotation.y = targetRotation;
+        }
+
+        // SCHIESS-SYSTEM (3D Projektile)
+        function handleShooting(e) {
+            if (currentGameState !== "MATCH" || isPaused || e.button !== 0) return;
+            let wp = weapons[currentWeapon];
+            let now = Date.now();
+
+            if (now - wp.lastShot >= wp.fireRate && wp.ammo > 0) {
+                wp.ammo--;
+                wp.lastShot = now;
+                updateWeaponUI();
+
+                // Erstelle Kugel im 3D Raum
+                const bulletGeo = new THREE.SphereGeometry(0.15, 8, 8);
+                const bulletMat = new THREE.MeshBasicMaterial({ color: 0xfff000 });
+                const bullet = new THREE.Mesh(bulletGeo, bulletMat);
+                
+                bullet.position.set(playerMesh.position.x, playerMesh.position.y + 0.5, playerMesh.position.z);
+                
+                // Berechne Schussrichtung basierend auf Blickrichtung des Spielers
+                let dir = new THREE.Vector3(0, 0, -1).applyQuaternion(playerMesh.quaternion);
+                bullet.userData = { direction: dir, speed: 1.5 };
+                
+                scene.add(bullet);
+                bullets3D.push(bullet);
+            }
+        }
+
+        function updateWeaponUI() {
             document.querySelectorAll('.weapon-slot').forEach(s => s.classList.remove('active'));
-            document.getElementById(`slot-${player.currentWeapon}`).classList.add('active');
+            document.getElementById(`slot-${currentWeapon}`).classList.add('active');
             for(let i=1; i<=3; i++) {
                 document.getElementById(`ammo-${i}`).innerText = weapons[i].ammo;
             }
         }
 
-        // SHOOTING MECHANICS
-        function shoot(e) {
-            if (e.button !== 0) return; // Nur Linksklick
-            let activeWpn = weapons[player.currentWeapon];
-            let now = Date.now();
-            
-            if (now - activeWpn.lastShot >= activeWpn.fireRate && activeWpn.ammo > 0) {
-                activeWpn.ammo--;
-                activeWpn.lastShot = now;
-                updateWeaponHUD();
-
-                // Kugel spawnen (fliegt in Blickrichtung des Spielers)
-                bullets.push({
-                    x: player.x,
-                    y: player.y,
-                    vx: Math.cos(player.angle) * 15,
-                    vy: Math.sin(player.angle) * 15,
-                    damage: activeWpn.damage
-                });
-            }
+        // RESIZE
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
-        // COLLISION CHECK
-        function checkCollision(x, y, size) {
-            for(let obs of obstacles) {
-                if (x + size > obs.x && x - size < obs.x + obs.w &&
-                    y + size > obs.y && y - size < obs.y + obs.h) {
-                    return true;
-                }
+        // ANIMATION RUNTIME LOOP (60 FPS)
+        function animate() {
+            requestAnimationFrame(animate);
+
+            if (currentGameState === "LOBBY" && lobbyCharacterMesh) {
+                // Dreht das 3D Männchen in der Lobby stylisch im Kreis
+                lobbyCharacterMesh.rotation.y += 0.01;
             }
-            return false;
-        }
 
-        // MAIN GAME LOOP
-        function gameLoop() {
-            // 1. BEWEGUNG (WASD)
-            let nextX = player.x;
-            let nextY = player.y;
+            if (currentGameState === "MATCH" && !isPaused) {
+                // 1. Spieler-Bewegung berechnen (WASD)
+                moveDirection.set(0, 0, 0);
+                if (keys['w']) moveDirection.z -= 1;
+                if (keys['s']) moveDirection.z += 1;
+                if (keys['a']) moveDirection.x -= 1;
+                if (keys['d']) moveDirection.x += 1;
 
-            if (keys['w'] || keys['arrowup']) nextY -= player.speed;
-            if (keys['s'] || keys['arrowdown']) nextY += player.speed;
-            if (!checkCollision(player.x, nextY, player.size)) player.y = nextY;
+                moveDirection.normalize();
+                moveDirection.applyQuaternion(playerMesh.quaternion); // Bewegt in Blickrichtung
+                moveDirection.multiplyScalar(0.15); // Geschwindigkeit
 
-            if (keys['a'] || keys['arrowleft']) nextX -= player.speed;
-            if (keys['d'] || keys['arrowright']) nextX += player.speed;
-            if (!checkCollision(nextX, player.y, player.size)) player.x = nextX;
+                // Kollisions-Check Kiste/Wand
+                let originalPos = playerMesh.position.clone();
+                playerMesh.position.add(moveDirection);
 
-            // 2. BULLETS UPDATEN
-            for(let i = bullets.length - 1; i >= 0; i--) {
-                let b = bullets[i];
-                b.x += b.vx;
-                b.y += b.vy;
-
-                // Wandtreffer?
-                if (checkCollision(b.x, b.y, 2)) {
-                    bullets.splice(i, 1);
-                    continue;
-                }
-
-                // Bot-Treffer?
-                for(let j = bots.length - 1; j >= 0; j--) {
-                    let bot = bots[j];
-                    let dist = Math.hypot(b.x - bot.x, b.y - bot.y);
-                    if (dist < bot.size) {
-                        bot.hp -= b.damage;
-                        bullets.splice(i, 1);
-                        if(bot.hp <= 0) bots.splice(j, 1); // Bot zerstört
+                for (let wall of arenaWalls) {
+                    let box = new THREE.Box3().setFromObject(wall);
+                    let playerBox = new THREE.Box3().setFromObject(playerMesh);
+                    if (box.intersectsBox(playerBox)) {
+                        playerMesh.position.copy(originalPos); // Zurücksetzen bei Wandkontakt
                         break;
                     }
                 }
-            }
 
-            // 3. BOTS KI BEWEGUNG (laufen grob Richtung Spieler)
-            bots.forEach(bot => {
-                let angleToPlayer = Math.atan2(player.y - bot.y, player.x - bot.x);
-                let bx = bot.x + Math.cos(angleToPlayer) * bot.speed;
-                let by = bot.y + Math.sin(angleToPlayer) * bot.speed;
-                if(!checkCollision(bx, by, bot.size)) {
-                    bot.x = bx;
-                    bot.y = by;
+                // 3D Kamera hinter dem Spieler fixieren (Third-Person View)
+                let relativeCameraOffset = new THREE.Vector3(0, 4, 8);
+                let cameraOffset = relativeCameraOffset.applyMatrix4(playerMesh.matrixWorld);
+                camera.position.x = cameraOffset.x;
+                camera.position.y = cameraOffset.y;
+                camera.position.z = cameraOffset.z;
+                camera.lookAt(playerMesh.position.x, playerMesh.position.y + 1, playerMesh.position.z);
+
+                // 2. Projektile bewegen & Kollision prüfen
+                for(let i=bullets3D.length-1; i>=0; i--) {
+                    let b = bullets3D[i];
+                    b.position.addScaledVector(b.userData.direction, b.userData.speed);
+
+                    // Maximale Reichweite checken
+                    if(b.position.distanceTo(playerMesh.position) > 100) {
+                        scene.remove(b);
+                        bullets3D.splice(i, 1);
+                        continue;
+                    }
+
+                    // Bot Treffer-Zonencheck
+                    for(let j=bots3D.length-1; j>=0; j--) {
+                        let bot = bots3D[j];
+                        if (b.position.distanceTo(bot.position) < 1.2) {
+                            bot.userData.hp -= 35;
+                            scene.remove(b);
+                            bullets3D.splice(i, 1);
+                            
+                            if(bot.userData.hp <= 0) {
+                                scene.remove(bot);
+                                bots3D.splice(j, 1);
+                            }
+                            break;
+                        }
+                    }
                 }
-            });
 
-            // 4. RENDERING (Kamera folgt dem Spieler)
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.save();
-            ctx.translate(canvas.width / 2 - player.x, canvas.height / 2 - player.y);
-
-            // Boden zeichen
-            ctx.fillStyle = "#0f1922";
-            ctx.fillRect(0, 0, mapSize, mapSize);
-
-            // Taktische Hindernisse zeichnen
-            ctx.fillStyle = "#1f2e3d";
-            ctx.strokeStyle = "rgba(46, 213, 115, 0.4)";
-            ctx.lineWidth = 2;
-            obstacles.forEach(obs => {
-                ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
-                ctx.strokeRect(obs.x, obs.y, obs.w, obs.h);
-            });
-
-            // Kugel-Tracer zeichnen
-            ctx.strokeStyle = "#ff4655"; // Valorant Rot-Pink für Tracer
-            ctx.lineWidth = 3;
-            bullets.forEach(b => {
-                ctx.beginPath();
-                ctx.moveTo(b.x, b.y);
-                ctx.lineTo(b.x - b.vx * 1.5, b.y - b.vy * 1.5);
-                ctx.stroke();
-            });
-
-            // Bots zeichnen (Gegner)
-            bots.forEach(bot => {
-                ctx.fillStyle = "#ff4655";
-                ctx.beginPath();
-                ctx.arc(bot.x, bot.y, bot.size, 0, Math.PI * 2);
-                ctx.fill();
-                // HP-Bar über dem Bot
-                ctx.fillStyle = "#red";
-                ctx.fillRect(bot.x - 20, bot.y - 30, (bot.hp / 100) * 40, 5);
-            });
-
-            // Spieler zeichnen
-            ctx.save();
-            ctx.translate(player.x, player.y);
-            ctx.rotate(player.angle);
-            
-            // Spieler-Body
-            ctx.fillStyle = "#00f0ff"; // Neon-Blau für dich als Agenten
-            ctx.beginPath();
-            ctx.arc(0, 0, player.size, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // Waffenlauf (zeigt Blickrichtung)
-            ctx.fillStyle = "#fff";
-            ctx.fillRect(0, -4, 25, 8);
-            ctx.restore();
-
-            // Spielername über der Spielfigur
-            ctx.fillStyle = "#fff";
-            ctx.font = "bold 14px Segoe UI";
-            ctx.textAlign = "center";
-            ctx.fillText(player.name, player.x, player.y - 30);
-
-            ctx.restore();
-
-            if (document.getElementById('game-screen').style.display === 'block') {
-                requestAnimationFrame(gameLoop);
+                // 3. Bots bewegen sich auf den Spieler zu
+                bots3D.forEach(bot => {
+                    let dirToPlayer = new THREE.Vector3().subVectors(playerMesh.position, bot.position).normalize();
+                    bot.position.addScaledVector(dirToPlayer, bot.userData.speed);
+                    bot.lookAt(playerMesh.position.x, bot.position.y, playerMesh.position.z);
+                });
             }
+
+            renderer.render(scene, camera);
         }
     </script>
 </body>
