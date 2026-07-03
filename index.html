@@ -3,552 +3,308 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hans // Scouting Profile</title>
+    <title>Valorant Web Game</title>
     <style>
+        /* GLOBALE VARIABLEN & CYBER-NEON COLOR SCHEME */
         :root {
-            --bg-main: #030306;
-            --bg-card: rgba(15, 15, 27, 0.65);
-            --neon-blue: #00f2fe;
-            --neon-red: #ff0055;
-            --neon-green: #00ff66;
-            --text-main: #ffffff;
-            --text-muted: #9494a8;
-            --border-glow: rgba(0, 242, 254, 0.15);
+            /* Das originale Button-Grün als Basis */
+            --main-color: rgb(46, 213, 115);
+            --main-bg-color: rgba(46, 213, 116, 0.2);
+            --pattern-color: rgba(46, 213, 116, 0.08);
+            
+            /* HUE-ROTATE: 250deg bis 270deg macht aus dem Grün ein giftiges Valorant-Neon-Rot */
+            --val-hue: hue-rotate(250deg);
+            
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        html {
-            scroll-behavior: smooth;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            background-color: var(--bg-main);
-            color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            margin: 0;
-            padding: 0;
-            overflow-x: hidden;
-            position: relative;
-        }
-
-        /* FIXIERTER HINTERGRUND: Gitter + 3D-Rotierender Fußball */
-        .background-wrapper {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 1;
-            pointer-events: none;
+            background-color: #0b141a; /* Tiefer, dunkler Valorant-Hintergrund */
+            color: #ece8e1; /* Off-White für besseren Kontrast */
             overflow: hidden;
-            /* Futuristisches Tech-Raster */
-            background-image: 
-                linear-gradient(rgba(255, 255, 255, 0.01) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.01) 1px, transparent 1px);
-            background-size: 40px 40px;
+            height: 100vh;
+            width: 100vw;
         }
 
-        /* Der interaktive Scroll-Fußball */
-.scrolling-football {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 800px;  /* Jetzt fast doppelt so groß! */
-    height: 800px;
-    margin-top: -400px;  /* Perfekt in der Mitte zentriert */
-    margin-left: -400px; /* Perfekt in der Mitte zentriert */
-    opacity: 0.05; /* Leicht angepasst, damit es edel bleibt */
-    filter: drop-shadow(0 0 40px var(--neon-blue));
-    transform: rotate(0deg);
-    will-change: transform;
-    transition: transform 0.1s ease-out;
-}
-        /* Canvas für die Maus-Partikel */
-        #particle-canvas {
+        /* GEMEINSAME TEXTUR FÜR HINTERGRÜNDE (Abgeleitet von deinem Button-Code) */
+        .cyber-grid-bg {
+            filter: var(--val-hue);
+            background: 
+                radial-gradient(circle, var(--main-bg-color) 0%, rgba(0, 0, 0, 0.85) 95%),
+                linear-gradient(var(--pattern-color) 1px, transparent 1px),
+                linear-gradient(to right, var(--pattern-color) 1px, transparent 1px);
+            background-size: cover, 25px 25px, 25px 25px;
+            background-position: center;
+        }
+
+        /* SCREENS MANAGEMENT */
+        .screen {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
             pointer-events: none;
+            transition: opacity 0.5s ease-in-out;
+            z-index: 1;
         }
 
-        /* Content über den Grafiken */
-        .app-container {
-            position: relative;
-            z-index: 3;
+        .screen.active {
+            opacity: 1;
+            pointer-events: auto;
         }
 
-        /* High-End Navigation Bar */
-        header {
+        /* 1. LOGIN / STARTER SCREEN */
+        #login-screen {
+            gap: 2rem;
+        }
+
+        .login-card {
+            background: rgba(11, 20, 26, 0.85);
+            padding: 3rem;
+            border: 1px solid rgba(46, 213, 115, 0.2);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            min-width: 350px;
+        }
+
+        .login-card h1 {
+            text-transform: uppercase;
+            letter-spacing: 0.3rem;
+            font-size: 1.8rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            color: var(--main-color);
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .input-group label {
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.1rem;
+            color: rgba(236, 232, 225, 0.6);
+        }
+
+        .input-group input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(46, 213, 115, 0.3);
+            padding: 0.8rem;
+            color: #fff;
+            font-size: 1rem;
+            letter-spacing: 0.05rem;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .input-group input:focus {
+            border-color: var(--main-color);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 10px rgba(46, 213, 115, 0.2);
+        }
+
+        /* 2. LOBBY SCREEN */
+        #lobby-screen {
+            justify-content: space-between;
+            align-items: stretch;
+            padding: 2rem 4rem;
+        }
+
+        /* Valorant Top-Bar */
+        .lobby-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 40px;
-            background: rgba(3, 3, 6, 0.75);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            border-bottom: 1px solid rgba(46, 213, 115, 0.2);
+            padding-bottom: 1rem;
         }
 
-        .brand-profile {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        /* WhatsApp Profilbild integration */
-        .avatar-logo {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--neon-blue);
-            box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
-            transition: transform 0.6s cubic-bezier(0.2, 1, 0.2, 1);
-        }
-
-        .brand-profile:hover .avatar-logo {
-            transform: rotate(360deg) scale(1.08);
-        }
-
-        .brand-name {
-            font-size: 1.25rem;
+        .logo {
             font-weight: 900;
-            letter-spacing: 2px;
-            background: linear-gradient(45deg, #ffffff, var(--neon-blue));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            font-size: 1.5rem;
+            letter-spacing: 0.4rem;
+            color: var(--main-color);
         }
 
-        .fa-trigger {
-            background: rgba(0, 242, 254, 0.05);
-            color: var(--neon-blue);
-            border: 1px solid rgba(0, 242, 254, 0.3);
-            padding: 12px 28px;
-            border-radius: 100px;
-            font-weight: 700;
-            font-size: 0.9rem;
-            text-decoration: none;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        .player-tag {
+            font-size: 1.1rem;
+            letter-spacing: 0.1rem;
+            background: rgba(46, 213, 115, 0.1);
+            padding: 0.5rem 1.5rem;
+            border-left: 3px solid var(--main-color);
         }
 
-        .fa-trigger:hover {
-            background: var(--neon-blue);
-            color: var(--bg-main);
-            box-shadow: 0 0 30px var(--neon-blue);
-            transform: translateY(-2px);
-        }
-
-        .container {
-            max-width: 850px;
-            margin: 50px auto;
-            padding: 0 24px;
-        }
-
-        /* Premium Glassmorphism Cards */
-        .player-card {
-            background: var(--bg-card);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-top: 1px solid rgba(0, 242, 254, 0.3);
-            border-radius: 32px;
-            padding: 50px 40px;
-            text-align: center;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .player-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), 0 0 30px var(--border-glow);
-        }
-
-        .scouting-badge {
-            display: inline-flex;
+        /* Hauptbereich der Lobby */
+        .lobby-main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
             align-items: center;
-            gap: 8px;
-            background: rgba(0, 255, 102, 0.08);
-            color: var(--neon-green);
-            padding: 8px 18px;
-            border-radius: 100px;
-            font-weight: 800;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border: 1px solid rgba(0, 255, 102, 0.15);
-            margin-bottom: 25px;
+            margin: 2rem 0;
         }
 
-        .pulse-dot {
-            width: 8px;
-            height: 8px;
-            background-color: var(--neon-green);
-            border-radius: 50%;
-            animation: pulse 1.6s infinite;
+        /* Match-Suche Container im Zentrum */
+        .matchmaking-box {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .game-mode {
+            font-size: 3rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5rem;
+            text-shadow: 0 0 20px rgba(46, 213, 115, 0.4);
+        }
+
+        /* DER ORIGINAL-BUTTON VON UIVERSE (leicht angepasst für Flexibilität) */
+        .button {
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5rem;
+            background: radial-gradient(
+                circle,
+                var(--main-bg-color) 0%,
+                rgba(0, 0, 0, 0) 95%
+                ),
+                linear-gradient(var(--pattern-color) 1px, transparent 1px),
+                linear-gradient(to right, var(--pattern-color) 1px, transparent 1px);
+            background-size: cover, 15px 15px, 15px 15px;
+            background-position: center center, center center, center center;
+            border-image: radial-gradient(
+                circle,
+                var(--main-color) 0%,
+                rgba(0, 0, 0, 0) 100%
+                ) 1;
+            border-width: 1px 0 1px 0;
+            color: var(--main-color);
+            padding: 1.2rem 4rem;
+            font-weight: 700;
+            font-size: 1.5rem;
+            transition: background-size 0.2s ease-in-out, transform 0.1s;
+            outline: none;
+        }
+
+        .button:hover {
+            background-size: cover, 10px 10px, 10px 10px;
+            box-shadow: 0 0 15px rgba(46, 213, 115, 0.15);
+        }
+        
+        .button:active {
+            transform: scale(0.98);
+        }
+
+        /* Matchmaking-Sucheffekt */
+        .searching-text {
+            display: none;
+            font-size: 1.2rem;
+            letter-spacing: 0.2rem;
+            animation: pulse 1.5s infinite ease-in-out;
         }
 
         @keyframes pulse {
-            0% { transform: scale(0.85); box-shadow: 0 0 0 0 rgba(0, 255, 102, 0.6); }
-            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(0, 255, 102, 0); }
-            100% { transform: scale(0.85); box-shadow: 0 0 0 0 rgba(0, 255, 102, 0); }
-        }
-
-        .hero-title {
-            font-size: 4rem;
-            font-weight: 900;
-            margin: 0;
-            letter-spacing: -2px;
-            background: linear-gradient(180deg, #ffffff 0%, #b5b5c8 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .profile-desc {
-            color: var(--text-muted);
-            font-size: 1.25rem;
-            line-height: 1.8;
-            margin-top: 25px;
-            max-width: 620px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        /* Performance Bars */
-        .performance-panel {
-            background: var(--bg-card);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            border-radius: 32px;
-            padding: 40px;
-            margin: 35px 0;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-        }
-
-        .section-title {
-            font-size: 1rem;
-            font-weight: 800;
-            color: var(--text-muted);
-            margin-top: 0;
-            margin-bottom: 35px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .metric-row {
-            margin-bottom: 30px;
-        }
-
-        .metric-row:last-child {
-            margin-bottom: 0;
-        }
-
-        .metric-header {
-            display: flex;
-            justify-content: space-between;
-            font-weight: 700;
-            font-size: 1.05rem;
-            margin-bottom: 12px;
-        }
-
-        .bar-bg {
-            background: #0f0f1c;
-            height: 12px;
-            border-radius: 100px;
-            overflow: hidden;
-        }
-
-        .bar-fill {
-            height: 100%;
-            border-radius: 100px;
-            background: linear-gradient(90deg, var(--neon-red), var(--neon-blue));
-            width: 0%;
-            transition: width 2s cubic-bezier(0.1, 1, 0.1, 1);
-            box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
-        }
-
-        /* Action Panel */
-        .action-panel {
-            background: linear-gradient(135deg, rgba(12, 12, 20, 0.7) 0%, rgba(5, 5, 11, 0.7) 100%);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(0, 242, 254, 0.3);
-            border-radius: 32px;
-            padding: 50px;
-            text-align: center;
-        }
-
-        .action-title {
-            font-size: 2.2rem;
-            font-weight: 800;
-            margin-top: 0;
-            margin-bottom: 12px;
-        }
-
-        .action-btn {
-            background: var(--neon-red);
-            color: #ffffff;
-            border: none;
-            padding: 18px 55px;
-            font-size: 1.1rem;
-            font-weight: 700;
-            border-radius: 16px;
-            cursor: pointer;
-            box-shadow: 0 12px 35px rgba(255, 0, 85, 0.45);
-            transition: all 0.25s ease;
-            margin-top: 20px;
-        }
-
-        .action-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 20px 45px rgba(255, 0, 85, 0.6);
-        }
-
-        /* Scout Register */
-        .scout-register {
-            margin-top: 35px;
-            background: var(--bg-card);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            border-radius: 32px;
-            padding: 40px;
-        }
-
-        .register-list {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-
-        .register-item {
-            background: rgba(3, 3, 6, 0.6);
-            padding: 22px 28px;
-            border-radius: 18px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid rgba(255, 255, 255, 0.02);
-            animation: slideIn 0.5s cubic-bezier(0.1, 1, 0.1, 1) forwards;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateY(-15px); opacity: 0; filter: blur(4px); }
-            to { transform: translateY(0); opacity: 1; filter: blur(0); }
-        }
-
-        .club-identity {
-            font-weight: 800;
-            color: var(--neon-green);
-            font-size: 1.15rem;
-        }
-
-        .club-status {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            font-weight: 600;
-            background: rgba(255, 255, 255, 0.04);
-            padding: 6px 14px;
-            border-radius: 8px;
+            0% { opacity: 0.4; }
+            50% { opacity: 1; }
+            100% { opacity: 0.4; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Fixierter Hintergrund mit dem rotierenden Ball -->
-    <div class="background-wrapper">
-        <!-- SVG-Fußball für gestochen scharfe Qualität, der sich per JS beim Scrollen dreht -->
-        <svg class="scrolling-football" id="ball" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M256 0C114.615 0 0 114.615 0 256s114.615 256 256 256 256-114.615 256-256S397.385 0 256 0zm0 464c-114.692 0-208-93.308-208-208S141.308 48 256 48s208 93.308 208 208-93.308 208-208 208z" fill="#00f2fe"/>
-            <path d="M256 160l-72 52 24 84h96l24-84z" fill="#00f2fe"/>
-            <path d="M184 212l-76-20-40 68 64 56 52-20z" fill="#00f2fe"/>
-            <path d="M328 212l76-20 40 68-64 56-52-20z" fill="#00f2fe"/>
-            <path d="M256 160V80h-68l-32 64z" fill="#00f2fe"/>
-            <path d="M256 160V80h68l32 64z" fill="#00f2fe"/>
-            <path d="M232 296l24 48 24-48-48-20z" fill="#00f2fe"/>
-        </svg>
+    <!-- 1. LOGIN / STARTER SCREEN -->
+    <div id="login-screen" class="screen cyber-grid-bg active">
+        <div class="login-card">
+            <h1>Riot Sign In</h1>
+            
+            <div class="input-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" autocomplete="off" placeholder="Dein Agenten-Name">
+            </div>
+
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="••••••••">
+            </div>
+
+            <button class="button" type="button" onclick="login()">Sign In</button>
+        </div>
     </div>
 
-    <!-- Maus-Partikel Canvas -->
-    <canvas id="particle-canvas"></canvas>
+    <!-- 2. LOBBY SCREEN -->
+    <div id="lobby-screen" class="screen cyber-grid-bg">
+        <!-- Top Bar -->
+        <div class="lobby-header">
+            <div class="logo">VALORANT_WEB</div>
+            <div class="player-tag" id="display-name">AGENT#EUW</div>
+        </div>
 
-    <!-- App Content Wrapper -->
-    <div class="app-container">
-
-        <header>
-            <div class="brand-profile">
-                <img src="image_094503.png" alt="Hans Profile Image" class="avatar-logo" onerror="this.style.border='2px solid #ff0055'">
-                <div class="brand-name">HANS PROFILE</div>
-            </div>
-            <a href="#fa-section" class="fa-trigger" id="faCounter">Clubs FA (0)</a>
-        </header>
-
-        <div class="container">
-
-            <!-- Profilkarte -->
-            <div class="player-card">
-                <div class="scouting-badge">
-                    <div class="pulse-dot"></div>
-                    Scouting System Online
-                </div>
-                <h1 class="hero-title">HANS</h1>
-                <p class="profile-desc">
-                    Hans ist 13 Jahre alt, absolut zuverlässig und charakterlich extrem nett. Auf dem Fußballplatz beweist er Ausnahmetalent: Er ist der schnellste und er hat teamgeist.
-            </div>
-
-            <!-- Performance Bars -->
-            <div class="performance-panel">
-                <div class="section-title">Physische & Technische Indikatoren</div>
+        <!-- Main Content -->
+        <div class="lobby-main">
+            <div class="matchmaking-box">
+                <div class="game-mode">Unrated</div>
                 
-                <div class="metric-row">
-                    <div class="metric-header">
-                        <span>Antrittsgeschwindigkeit & Topsprint</span>
-                        <span style="color: var(--neon-blue);">99 / 100</span>
-                    </div>
-                    <div class="bar-bg">
-                        <div class="bar-fill" id="bar1" data-width="99%"></div>
-                    </div>
-                </div>
-
-                <div class="metric-row">
-                    <div class="metric-header">
-                        <span>Schul-Gesamtranking (Klassenliste)</span>
-                        <span style="color: var(--neon-blue);">Top #1</span>
-                    </div>
-                    <div class="bar-bg">
-                        <div class="bar-fill" id="bar2" data-width="100%"></div>
-                    </div>
-                </div>
-
-                <div class="metric-row">
-                    <div class="metric-header">
-                        <span>Teamplay & Sportliche Mentalität (Sehr Nett)</span>
-                        <span style="color: var(--neon-green);">Maximum</span>
-                    </div>
-                    <div class="bar-bg">
-                        <div class="bar-fill" id="bar3" data-width="100%" style="background: linear-gradient(90deg, var(--neon-green), var(--neon-blue));"></div>
-                    </div>
-                </div>
+                <button class="button" id="play-btn" onclick="startMatchmaking()">Start Game</button>
+                <div class="searching-text" id="search-status">Warten auf Mitspieler...</div>
             </div>
-
-            <!-- Action Panel -->
-            <div class="action-panel">
-                <div class="action-title">Offizielle Einladung hinterlegen</div>
-                <p style="color: var(--text-muted); margin: 0;">Ermöglicht verifizierten Vereinen die direkte Kontaktaufnahme für Sichtungstermine.</p>
-                <button class="action-btn" onclick="registerNewClub()">Anfrage senden</button>
-            </div>
-
-            <!-- Live Register -->
-            <div class="scout-register" id="fa-section">
-                <div class="section-title">Eingegangene Angebote (Clubs FA)</div>
-                <div class="register-list" id="scoutList"></div>
-            </div>
-
         </div>
     </div>
 
     <script>
-        // 1. SCROLL-DREHUNG FÜR DEN FUSSBALL
-        const ball = document.getElementById('ball');
-        window.addEventListener('scroll', () => {
-            // Berechnet die aktuelle Scroll-Position und wandelt sie in Grad um
-            let scrollPercent = window.scrollY * 0.18; 
-            ball.style.transform = `rotate(${scrollPercent}deg)`;
-        });
+        // Login Logik
+        function login() {
+            const nameInput = document.getElementById('username').value.trim();
+            
+            // Fallback, falls kein Name eingegeben wurde
+            const username = nameInput ? nameInput.toUpperCase() : "AGENT";
+            
+            // Setze den Spielernamen in der Lobby
+            document.getElementById('display-name').innerText = username + "#2026";
+            
+            // Wechsel den Screen
+            document.getElementById('login-screen').classList.remove('active');
+            document.getElementById('lobby-screen').classList.add('active');
+        }
 
-        // 2. STATS ANIMATION
-        window.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                document.getElementById('bar1').style.width = document.getElementById('bar1').getAttribute('data-width');
-                document.getElementById('bar2').style.width = document.getElementById('bar2').getAttribute('data-width');
-                document.getElementById('bar3').style.width = document.getElementById('bar3').getAttribute('data-width');
-            }, 300);
-        });
+        // Matchmaking-Button Effekt
+        let isSearching = false;
+        function startMatchmaking() {
+            const playBtn = document.getElementById('play-btn');
+            const statusText = document.getElementById('search-status');
 
-        // 3. LIVE REGISTER LOGIK
-        let globalCounter = 0;
-        function registerNewClub() {
-            const name = prompt("Name Ihres offiziellen Fußballvereins:");
-            if (name && name.trim() !== "") {
-                globalCounter++;
-                document.getElementById("faCounter").innerText = "Clubs FA (" + globalCounter + ")";
+            if (!isSearching) {
+                isSearching = true;
+                playBtn.innerText = "Abbrechen";
+                statusText.style.display = "block";
                 
-                const list = document.getElementById("scoutList");
-                const item = document.createElement("div");
-                item.className = "register-item";
-                item.innerHTML = `
-                    <span class="club-identity">⚽ ${name}</span>
-                    <span class="club-status">Sichtungsangebot aktiv</span>
-                `;
-                list.insertBefore(item, list.firstChild);
+                // Hier könntest du später dein echtes Spiel starten lassen!
+                console.log("Matchmaking gestartet...");
+            } else {
+                isSearching = false;
+                playBtn.innerText = "Start Game";
+                statusText.style.display = "none";
+                console.log("Matchmaking abgebrochen.");
             }
         }
-
-        // 4. MOUSE CURSOR PARTIKEL SYSTEM
-        const canvas = document.getElementById('particle-canvas');
-        const ctx = canvas.getContext('2d');
-        let particles = [];
-        let mouse = { x: null, y: null };
-
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-
-        window.addEventListener('mousemove', (e) => {
-            mouse.x = e.clientX;
-            mouse.y = e.clientY;
-            for(let i = 0; i < 2; i++) {
-                particles.push(new Particle(mouse.x, mouse.y));
-            }
-        });
-
-        class Particle {
-            constructor(x, y) {
-                this.x = x;
-                this.y = y;
-                this.speedX = (Math.random() - 0.5) * 1.5;
-                this.speedY = (Math.random() - 0.5) * 1.5;
-                this.size = Math.random() * 3 + 1;
-                this.alpha = 1;
-                this.decay = Math.random() * 0.015 + 0.01;
-            }
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-                this.alpha -= this.decay;
-            }
-            draw() {
-                ctx.save();
-                ctx.globalAlpha = this.alpha;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = '#00f2fe';
-                ctx.shadowBlur = 10;
-                ctx.shadowColor = '#00f2fe';
-                ctx.fill();
-                ctx.restore();
-            }
-        }
-
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            for (let i = 0; i < particles.length; i++) {
-                particles[i].update();
-                particles[i].draw();
-                if (particles[i].alpha <= 0) {
-                    particles.splice(i, 1);
-                    i--;
-                }
-            }
-            requestAnimationFrame(animate);
-        }
-        animate();
     </script>
 </body>
 </html>
