@@ -3,36 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Valorant Web Game</title>
+    <title>Valorant </title>
     <style>
-        /* GLOBALE VARIABLEN & CYBER-NEON COLOR SCHEME */
         :root {
-            /* Das originale Button-Grün als Basis */
             --main-color: rgb(46, 213, 115);
             --main-bg-color: rgba(46, 213, 116, 0.2);
             --pattern-color: rgba(46, 213, 116, 0.08);
-            
-            /* HUE-ROTATE: 250deg bis 270deg macht aus dem Grün ein giftiges Valorant-Neon-Rot */
-            --val-hue: hue-rotate(250deg);
-            
+            --val-hue: hue-rotate(250deg); /* Macht alles Cyber-Neon-Rot */
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
 
         body {
-            background-color: #0b141a; /* Tiefer, dunkler Valorant-Hintergrund */
-            color: #ece8e1; /* Off-White für besseren Kontrast */
+            background-color: #0b141a;
+            color: #ece8e1;
             overflow: hidden;
             height: 100vh;
             width: 100vw;
         }
 
-        /* GEMEINSAME TEXTUR FÜR HINTERGRÜNDE (Abgeleitet von deinem Button-Code) */
+        /* HINTERGRUND-TEXTUR */
         .cyber-grid-bg {
             filter: var(--val-hue);
             background: 
@@ -43,266 +34,466 @@
             background-position: center;
         }
 
-        /* SCREENS MANAGEMENT */
+        /* SCREENS */
         .screen {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.5s ease-in-out;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            display: none; flex-direction: column;
             z-index: 1;
         }
+        .screen.active { display: flex; }
 
-        .screen.active {
-            opacity: 1;
-            pointer-events: auto;
+        /* BUTTON STYLE (UIVERSE) */
+        .button {
+            cursor: pointer; text-transform: uppercase; letter-spacing: 0.3rem;
+            background: radial-gradient(circle, var(--main-bg-color) 0%, rgba(0, 0, 0, 0) 95%),
+                        linear-gradient(var(--pattern-color) 1px, transparent 1px),
+                        linear-gradient(to right, var(--pattern-color) 1px, transparent 1px);
+            background-size: cover, 15px 15px, 15px 15px;
+            background-position: center;
+            border-image: radial-gradient(circle, var(--main-color) 0%, rgba(0, 0, 0, 0) 100%) 1;
+            border-width: 1px 0 1px 0; color: var(--main-color);
+            padding: 1rem 2.5rem; font-weight: 700; font-size: 1.2rem;
+            transition: background-size 0.2s; outline: none;
         }
+        .button:hover { background-size: cover, 10px 10px, 10px 10px; }
+        .button:active { filter: brightness(1.2); }
 
-        /* 1. LOGIN / STARTER SCREEN */
-        #login-screen {
-            gap: 2rem;
-        }
-
+        /* 1. LOGIN SCREEN */
+        #login-screen { justify-content: center; align-items: center; }
         .login-card {
-            background: rgba(11, 20, 26, 0.85);
-            padding: 3rem;
+            background: rgba(11, 20, 26, 0.9); padding: 3rem;
             border: 1px solid rgba(46, 213, 115, 0.2);
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            min-width: 350px;
+            display: flex; flex-direction: column; gap: 1.5rem; min-width: 350px;
         }
-
-        .login-card h1 {
-            text-transform: uppercase;
-            letter-spacing: 0.3rem;
-            font-size: 1.8rem;
-            text-align: center;
-            margin-bottom: 1rem;
-            color: var(--main-color);
-        }
-
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .input-group label {
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            letter-spacing: 0.1rem;
-            color: rgba(236, 232, 225, 0.6);
-        }
-
+        .login-card h1 { text-transform: uppercase; letter-spacing: 0.3rem; text-align: center; color: var(--main-color); }
+        .input-group { display: flex; flex-direction: column; gap: 0.5rem; }
+        .input-group label { text-transform: uppercase; font-size: 0.8rem; color: rgba(236, 232, 225, 0.6); }
         .input-group input {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(46, 213, 115, 0.3);
-            padding: 0.8rem;
-            color: #fff;
-            font-size: 1rem;
-            letter-spacing: 0.05rem;
-            outline: none;
-            transition: all 0.2s;
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(46, 213, 115, 0.3);
+            padding: 0.8rem; color: #fff; font-size: 1rem; outline: none;
         }
-
-        .input-group input:focus {
-            border-color: var(--main-color);
-            background: rgba(255, 255, 255, 0.1);
-            box-shadow: 0 0 10px rgba(46, 213, 115, 0.2);
-        }
+        .input-group input:focus { border-color: var(--main-color); }
 
         /* 2. LOBBY SCREEN */
-        #lobby-screen {
-            justify-content: space-between;
-            align-items: stretch;
-            padding: 2rem 4rem;
-        }
-
-        /* Valorant Top-Bar */
-        .lobby-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(46, 213, 115, 0.2);
-            padding-bottom: 1rem;
-        }
-
-        .logo {
-            font-weight: 900;
-            font-size: 1.5rem;
-            letter-spacing: 0.4rem;
-            color: var(--main-color);
-        }
-
-        .player-tag {
-            font-size: 1.1rem;
-            letter-spacing: 0.1rem;
-            background: rgba(46, 213, 115, 0.1);
-            padding: 0.5rem 1.5rem;
-            border-left: 3px solid var(--main-color);
-        }
-
-        /* Hauptbereich der Lobby */
-        .lobby-main {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 2rem 0;
-        }
-
-        /* Match-Suche Container im Zentrum */
-        .matchmaking-box {
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2rem;
-        }
-
-        .game-mode {
-            font-size: 3rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.5rem;
-            text-shadow: 0 0 20px rgba(46, 213, 115, 0.4);
-        }
-
-        /* DER ORIGINAL-BUTTON VON UIVERSE (leicht angepasst für Flexibilität) */
-        .button {
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 0.5rem;
-            background: radial-gradient(
-                circle,
-                var(--main-bg-color) 0%,
-                rgba(0, 0, 0, 0) 95%
-                ),
-                linear-gradient(var(--pattern-color) 1px, transparent 1px),
-                linear-gradient(to right, var(--pattern-color) 1px, transparent 1px);
-            background-size: cover, 15px 15px, 15px 15px;
-            background-position: center center, center center, center center;
-            border-image: radial-gradient(
-                circle,
-                var(--main-color) 0%,
-                rgba(0, 0, 0, 0) 100%
-                ) 1;
-            border-width: 1px 0 1px 0;
-            color: var(--main-color);
-            padding: 1.2rem 4rem;
-            font-weight: 700;
-            font-size: 1.5rem;
-            transition: background-size 0.2s ease-in-out, transform 0.1s;
-            outline: none;
-        }
-
-        .button:hover {
-            background-size: cover, 10px 10px, 10px 10px;
-            box-shadow: 0 0 15px rgba(46, 213, 115, 0.15);
-        }
+        #lobby-screen { padding: 2rem 4rem; justify-content: space-between; }
+        .lobby-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(46, 213, 115, 0.2); padding-bottom: 1rem; }
+        .logo-section { display: flex; align-items: center; gap: 2rem; }
+        .logo { font-weight: 900; font-size: 1.5rem; letter-spacing: 0.4rem; color: var(--main-color); }
+        .settings-icon { font-size: 1.5rem; cursor: pointer; color: var(--main-color); transition: transform 0.3s; }
+        .settings-icon:hover { transform: rotate(40deg); }
         
-        .button:active {
-            transform: scale(0.98);
+        .lobby-container { display: flex; flex: 1; margin-top: 2rem; gap: 2rem; }
+        .party-panel {
+            width: 300px; background: rgba(11, 20, 26, 0.7);
+            border: 1px solid rgba(46, 213, 115, 0.1); padding: 1.5rem;
+            display: flex; flex-direction: column; gap: 1rem;
         }
+        .party-list { display: flex; flex-direction: column; gap: 0.5rem; flex: 1; overflow-y: auto; }
+        .party-member { background: rgba(255,255,255,0.05); padding: 0.6rem; border-left: 3px solid var(--main-color); font-size: 0.9rem; }
+        
+        .center-lobby { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 2rem; }
+        .game-mode { font-size: 3rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5rem; }
 
-        /* Matchmaking-Sucheffekt */
-        .searching-text {
-            display: none;
-            font-size: 1.2rem;
-            letter-spacing: 0.2rem;
-            animation: pulse 1.5s infinite ease-in-out;
+        /* SETTINGS MODAL */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.8); z-index: 10; justify-content: center; align-items: center;
         }
+        .modal-content {
+            background: #0b141a; padding: 2.5rem; border: 1px solid var(--main-color);
+            min-width: 300px; display: flex; flex-direction: column; gap: 1.5rem;
+        }
+        .modal-content h2 { text-transform: uppercase; color: var(--main-color); font-size: 1.3rem; }
 
-        @keyframes pulse {
-            0% { opacity: 0.4; }
-            50% { opacity: 1; }
-            100% { opacity: 0.4; }
+        /* 3. GAME SCREEN */
+        #game-screen { display: none; width: 100vw; height: 100vh; position: relative; background: #050a0e; }
+        #gameCanvas { width: 100%; height: 100%; display: block; }
+        
+        /* INGAME HUD */
+        .game-hud {
+            position: absolute; pointer-events: none; font-family: monospace;
+            filter: var(--val-hue);
         }
+        .weapon-bar {
+            bottom: 2rem; right: 2rem; display: flex; flex-direction: column;
+            gap: 0.5rem; align-items: flex-end;
+        }
+        .weapon-slot {
+            background: rgba(11, 20, 26, 0.6); border: 1px solid rgba(46, 213, 115, 0.2);
+            padding: 0.5rem 1.5rem; width: 180px; text-align: right;
+            color: rgba(255,255,255,0.4); font-weight: bold; transition: all 0.2s;
+        }
+        .weapon-slot.active {
+            border-color: var(--main-color); color: var(--main-color);
+            background: rgba(46, 213, 116, 0.1); box-shadow: 0 0 10px rgba(46, 213, 115, 0.2);
+        }
+        .ammo-display { font-size: 1.5rem; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <!-- 1. LOGIN / STARTER SCREEN -->
+    <!-- 1. LOGIN SCREEN -->
     <div id="login-screen" class="screen cyber-grid-bg active">
         <div class="login-card">
             <h1>Riot Sign In</h1>
-            
             <div class="input-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" autocomplete="off" placeholder="Dein Agenten-Name">
+                <label>Username</label>
+                <input type="text" id="username" autocomplete="off" placeholder="DEIN NAME">
             </div>
-
             <div class="input-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" placeholder="••••••••">
+                <label>Password</label>
+                <input type="password" placeholder="••••••••">
             </div>
-
-            <button class="button" type="button" onclick="login()">Sign In</button>
+            <button class="button" onclick="login()">Sign In</button>
         </div>
     </div>
 
     <!-- 2. LOBBY SCREEN -->
     <div id="lobby-screen" class="screen cyber-grid-bg">
-        <!-- Top Bar -->
         <div class="lobby-header">
-            <div class="logo">VALORANT_WEB</div>
-            <div class="player-tag" id="display-name">AGENT#EUW</div>
+            <div class="logo-section">
+                <div class="logo">VALORANT_WEB</div>
+                <div class="settings-icon" onclick="toggleSettings(true)">⚙</div>
+            </div>
+            <div class="button" style="padding: 0.4rem 1.5rem; font-size: 1rem;" id="player-tag">AGENT#EUW</div>
         </div>
 
-        <!-- Main Content -->
-        <div class="lobby-main">
-            <div class="matchmaking-box">
-                <div class="game-mode">Unrated</div>
-                
-                <button class="button" id="play-btn" onclick="startMatchmaking()">Start Game</button>
-                <div class="searching-text" id="search-status">Warten auf Mitspieler...</div>
+        <div class="lobby-container">
+            <!-- Party / Freunde Panel -->
+            <div class="party-panel">
+                <h3>PARTY (<span id="party-count">1</span>/5)</h3>
+                <div class="party-list" id="party-list">
+                    <!-- Wird dynamisch befüllt -->
+                </div>
+                <div class="input-group">
+                    <input type="text" id="friend-name" placeholder="Freund einladen..." style="background:rgba(255,255,255,0.05); border:1px solid rgba(46, 213, 115, 0.3); padding:0.5rem; color:white; outline:none;">
+                </div>
+                <button class="button" style="padding:0.5rem; font-size:0.9rem;" onclick="addFriend()">Add Friend</button>
+            </div>
+
+            <!-- Zentrum -->
+            <div class="center-lobby">
+                <div class="game-mode">Deathmatch</div>
+                <button class="button" style="padding: 1.5rem 5rem; font-size: 1.8rem;" onclick="startGame()">Start Game</button>
             </div>
         </div>
     </div>
 
+    <!-- SETTINGS MODAL -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <h2>Settings</h2>
+            <div class="input-group">
+                <label>Mouse Sensitivity: <span id="sens-val">1.0</span></label>
+                <input type="range" id="sensitivity" min="0.1" max="3.0" step="0.1" value="1.0" oninput="document.getElementById('sens-val').innerText=this.value">
+            </div>
+            <button class="button" style="padding:0.5rem;" onclick="toggleSettings(false)">Save & Close</button>
+        </div>
+    </div>
+
+    <!-- 3. GAME SCREEN -->
+    <div id="game-screen" class="screen">
+        <canvas id="gameCanvas"></canvas>
+        
+        <!-- Waffen HUD unten rechts (Reihe übereinander) -->
+        <div class="game-hud weapon-bar">
+            <div class="weapon-slot" id="slot-1">1 VANDAL <br><span class="ammo-display" id="ammo-1">25</span></div>
+            <div class="weapon-slot" id="slot-2">2 PHANTOM <br><span class="ammo-display" id="ammo-2">30</span></div>
+            <div class="weapon-slot" id="slot-3">3 CLASSIC <br><span class="ammo-display" id="ammo-3">12</span></div>
+        </div>
+    </div>
+
     <script>
-        // Login Logik
+        // GLOBALE VARIABLEN & ENGINE STATE
+        let player = { name: "Agent", x: 1000, y: 1000, speed: 5, size: 20, angle: 0, currentWeapon: 1 };
+        let weapons = {
+            1: { name: "Vandal", ammo: 25, maxAmmo: 25, damage: 40, fireRate: 150, lastShot: 0 },
+            2: { name: "Phantom", ammo: 30, maxAmmo: 30, damage: 35, fireRate: 120, lastShot: 0 },
+            3: { name: "Classic", ammo: 12, maxAmmo: 12, damage: 20, fireRate: 300, lastShot: 0 }
+        };
+        let party = [];
+        let mouseSens = 1.0;
+        let keys = {};
+        let mouse = { x: 0, y: 0 };
+        let bullets = [];
+        let bots = [];
+        let mapSize = 3000; // Riesige Arena
+        let obstacles = [];
+
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // LOGIN
         function login() {
-            const nameInput = document.getElementById('username').value.trim();
-            
-            // Fallback, falls kein Name eingegeben wurde
-            const username = nameInput ? nameInput.toUpperCase() : "AGENT";
-            
-            // Setze den Spielernamen in der Lobby
-            document.getElementById('display-name').innerText = username + "#2026";
-            
-            // Wechsel den Screen
-            document.getElementById('login-screen').classList.remove('active');
-            document.getElementById('lobby-screen').classList.add('active');
+            const name = document.getElementById('username').value.trim() || "AGENT";
+            player.name = name.toUpperCase();
+            document.getElementById('player-tag').innerText = player.name + "#2026";
+            party.push(player.name + " (Leader)");
+            updatePartyUI();
+            switchScreen('lobby-screen');
         }
 
-        // Matchmaking-Button Effekt
-        let isSearching = false;
-        function startMatchmaking() {
-            const playBtn = document.getElementById('play-btn');
-            const statusText = document.getElementById('search-status');
+        function switchScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            const target = document.getElementById(id);
+            target.classList.add('active');
+            if(id === 'game-screen') target.style.display = 'block';
+            else document.getElementById('game-screen').style.display = 'none';
+        }
 
-            if (!isSearching) {
-                isSearching = true;
-                playBtn.innerText = "Abbrechen";
-                statusText.style.display = "block";
-                
-                // Hier könntest du später dein echtes Spiel starten lassen!
-                console.log("Matchmaking gestartet...");
-            } else {
-                isSearching = false;
-                playBtn.innerText = "Start Game";
-                statusText.style.display = "none";
-                console.log("Matchmaking abgebrochen.");
+        // PARTY SYSTEM
+        function addFriend() {
+            const fName = document.getElementById('friend-name').value.trim();
+            if(fName && party.length < 5) {
+                party.push(fName.toUpperCase() + "#EUW");
+                document.getElementById('friend-name').value = "";
+                updatePartyUI();
+            }
+        }
+
+        function updatePartyUI() {
+            const list = document.getElementById('party-list');
+            list.innerHTML = "";
+            party.forEach(p => {
+                list.innerHTML += `<div class="party-member">${p}</div>`;
+            });
+            document.getElementById('party-count').innerText = party.length;
+        }
+
+        // SETTINGS
+        function toggleSettings(show) {
+            document.getElementById('settings-modal').style.display = show ? 'flex' : 'none';
+            if(!show) mouseSens = parseFloat(document.getElementById('sensitivity').value);
+        }
+
+        // GAME INITIALIZATION & MAP GENERATION
+        function generateMap() {
+            obstacles = [];
+            // Ränder generieren
+            obstacles.push({x: 0, y: 0, w: mapSize, h: 40});
+            obstacles.push({x: 0, y: 0, w: 40, h: mapSize});
+            obstacles.push({x: 0, y: mapSize-40, w: mapSize, h: 40});
+            obstacles.push({x: mapSize-40, y: 0, w: 40, h: mapSize});
+
+            // Taktische Kisten und Wände verteilen (wie auf Bind/Haven)
+            for (let i = 0; i < 40; i++) {
+                obstacles.push({
+                    x: Math.random() * (mapSize - 400) + 200,
+                    y: Math.random() * (mapSize - 400) + 200,
+                    w: Math.random() * 150 + 60,
+                    h: Math.random() * 150 + 60
+                });
+            }
+        }
+
+        function spawnBots() {
+            bots = [];
+            for(let i=0; i<15; i++) {
+                bots.push({
+                    x: Math.random() * (mapSize - 200) + 100,
+                    y: Math.random() * (mapSize - 200) + 100,
+                    hp: 100,
+                    size: 20,
+                    speed: 2 + Math.random() * 2
+                });
+            }
+        }
+
+        function startGame() {
+            switchScreen('game-screen');
+            resizeCanvas();
+            generateMap();
+            spawnBots();
+            updateWeaponHUD();
+            
+            // Event Listeners aktivieren
+            window.addEventListener('keydown', e => {
+                keys[e.key.toLowerCase()] = true;
+                if(['1','2','3'].includes(e.key)) {
+                    player.currentWeapon = parseInt(e.key);
+                    updateWeaponHUD();
+                }
+            });
+            window.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
+            window.addEventListener('mousemove', handleMouseMove);
+            window.addEventListener('mousedown', shoot);
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+
+        // INPUT AND MOUSE SENSITIVITY HANDLING
+        function handleMouseMove(e) {
+            // Sensitivity beeinflusst, wie agil die Drehung berechnet wird
+            let centerX = canvas.width / 2;
+            let centerY = canvas.height / 2;
+            let dx = (e.clientX - centerX) * mouseSens;
+            let dy = (e.clientY - centerY) * mouseSens;
+            player.angle = Math.atan2(dy, dx);
+        }
+
+        function updateWeaponHUD() {
+            document.querySelectorAll('.weapon-slot').forEach(s => s.classList.remove('active'));
+            document.getElementById(`slot-${player.currentWeapon}`).classList.add('active');
+            for(let i=1; i<=3; i++) {
+                document.getElementById(`ammo-${i}`).innerText = weapons[i].ammo;
+            }
+        }
+
+        // SHOOTING MECHANICS
+        function shoot(e) {
+            if (e.button !== 0) return; // Nur Linksklick
+            let activeWpn = weapons[player.currentWeapon];
+            let now = Date.now();
+            
+            if (now - activeWpn.lastShot >= activeWpn.fireRate && activeWpn.ammo > 0) {
+                activeWpn.ammo--;
+                activeWpn.lastShot = now;
+                updateWeaponHUD();
+
+                // Kugel spawnen (fliegt in Blickrichtung des Spielers)
+                bullets.push({
+                    x: player.x,
+                    y: player.y,
+                    vx: Math.cos(player.angle) * 15,
+                    vy: Math.sin(player.angle) * 15,
+                    damage: activeWpn.damage
+                });
+            }
+        }
+
+        // COLLISION CHECK
+        function checkCollision(x, y, size) {
+            for(let obs of obstacles) {
+                if (x + size > obs.x && x - size < obs.x + obs.w &&
+                    y + size > obs.y && y - size < obs.y + obs.h) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // MAIN GAME LOOP
+        function gameLoop() {
+            // 1. BEWEGUNG (WASD)
+            let nextX = player.x;
+            let nextY = player.y;
+
+            if (keys['w'] || keys['arrowup']) nextY -= player.speed;
+            if (keys['s'] || keys['arrowdown']) nextY += player.speed;
+            if (!checkCollision(player.x, nextY, player.size)) player.y = nextY;
+
+            if (keys['a'] || keys['arrowleft']) nextX -= player.speed;
+            if (keys['d'] || keys['arrowright']) nextX += player.speed;
+            if (!checkCollision(nextX, player.y, player.size)) player.x = nextX;
+
+            // 2. BULLETS UPDATEN
+            for(let i = bullets.length - 1; i >= 0; i--) {
+                let b = bullets[i];
+                b.x += b.vx;
+                b.y += b.vy;
+
+                // Wandtreffer?
+                if (checkCollision(b.x, b.y, 2)) {
+                    bullets.splice(i, 1);
+                    continue;
+                }
+
+                // Bot-Treffer?
+                for(let j = bots.length - 1; j >= 0; j--) {
+                    let bot = bots[j];
+                    let dist = Math.hypot(b.x - bot.x, b.y - bot.y);
+                    if (dist < bot.size) {
+                        bot.hp -= b.damage;
+                        bullets.splice(i, 1);
+                        if(bot.hp <= 0) bots.splice(j, 1); // Bot zerstört
+                        break;
+                    }
+                }
+            }
+
+            // 3. BOTS KI BEWEGUNG (laufen grob Richtung Spieler)
+            bots.forEach(bot => {
+                let angleToPlayer = Math.atan2(player.y - bot.y, player.x - bot.x);
+                let bx = bot.x + Math.cos(angleToPlayer) * bot.speed;
+                let by = bot.y + Math.sin(angleToPlayer) * bot.speed;
+                if(!checkCollision(bx, by, bot.size)) {
+                    bot.x = bx;
+                    bot.y = by;
+                }
+            });
+
+            // 4. RENDERING (Kamera folgt dem Spieler)
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.save();
+            ctx.translate(canvas.width / 2 - player.x, canvas.height / 2 - player.y);
+
+            // Boden zeichen
+            ctx.fillStyle = "#0f1922";
+            ctx.fillRect(0, 0, mapSize, mapSize);
+
+            // Taktische Hindernisse zeichnen
+            ctx.fillStyle = "#1f2e3d";
+            ctx.strokeStyle = "rgba(46, 213, 115, 0.4)";
+            ctx.lineWidth = 2;
+            obstacles.forEach(obs => {
+                ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
+                ctx.strokeRect(obs.x, obs.y, obs.w, obs.h);
+            });
+
+            // Kugel-Tracer zeichnen
+            ctx.strokeStyle = "#ff4655"; // Valorant Rot-Pink für Tracer
+            ctx.lineWidth = 3;
+            bullets.forEach(b => {
+                ctx.beginPath();
+                ctx.moveTo(b.x, b.y);
+                ctx.lineTo(b.x - b.vx * 1.5, b.y - b.vy * 1.5);
+                ctx.stroke();
+            });
+
+            // Bots zeichnen (Gegner)
+            bots.forEach(bot => {
+                ctx.fillStyle = "#ff4655";
+                ctx.beginPath();
+                ctx.arc(bot.x, bot.y, bot.size, 0, Math.PI * 2);
+                ctx.fill();
+                // HP-Bar über dem Bot
+                ctx.fillStyle = "#red";
+                ctx.fillRect(bot.x - 20, bot.y - 30, (bot.hp / 100) * 40, 5);
+            });
+
+            // Spieler zeichnen
+            ctx.save();
+            ctx.translate(player.x, player.y);
+            ctx.rotate(player.angle);
+            
+            // Spieler-Body
+            ctx.fillStyle = "#00f0ff"; // Neon-Blau für dich als Agenten
+            ctx.beginPath();
+            ctx.arc(0, 0, player.size, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Waffenlauf (zeigt Blickrichtung)
+            ctx.fillStyle = "#fff";
+            ctx.fillRect(0, -4, 25, 8);
+            ctx.restore();
+
+            // Spielername über der Spielfigur
+            ctx.fillStyle = "#fff";
+            ctx.font = "bold 14px Segoe UI";
+            ctx.textAlign = "center";
+            ctx.fillText(player.name, player.x, player.y - 30);
+
+            ctx.restore();
+
+            if (document.getElementById('game-screen').style.display === 'block') {
+                requestAnimationFrame(gameLoop);
             }
         }
     </script>
