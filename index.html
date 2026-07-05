@@ -1,831 +1,450 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NUKEBOT — Dashboard</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nukebot — Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <style>
-        /* ============ RESET & BASE ============ */
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #0b0d15;
-            color: #e8edf5;
-            min-height: 100vh;
-            overflow-x: hidden;
+        /* ========== RESET ========== */
+        *,*::before,*::after{ margin:0; padding:0; box-sizing:border-box; }
+        html{ scroll-behavior:smooth; }
+        body{
+            font-family:'Inter',sans-serif;
+            background:#0b0d15;
+            color:#e8edf5;
+            min-height:100vh;
+            overflow-x:hidden;
         }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #0b0d15; }
-        ::-webkit-scrollbar-thumb { background: rgba(88, 101, 242, 0.4); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(88, 101, 242, 0.7); }
-        a { text-decoration: none; color: inherit; }
+        ::-webkit-scrollbar{ width:6px; }
+        ::-webkit-scrollbar-track{ background:#0b0d15; }
+        ::-webkit-scrollbar-thumb{ background:rgba(88,101,242,.4); border-radius:10px; }
 
-        /* ============ ANIMATED BG ============ */
-        .bg-glow {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: -2;
-            overflow: hidden;
+        /* ========== ANIMATED BG ========== */
+        .bg-glow{ position:fixed; inset:0; z-index:-2; overflow:hidden; }
+        .bg-glow .orb{
+            position:absolute; border-radius:50%; filter:blur(120px); opacity:.35;
+            animation:orbFloat 20s ease-in-out infinite alternate;
         }
-        .bg-glow .orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(120px);
-            opacity: 0.35;
-            animation: orbFloat 20s ease-in-out infinite alternate;
+        .bg-glow .orb:nth-child(1){ width:600px; height:600px; background:#5865f2; top:-10%; left:-10%; animation-duration:25s; }
+        .bg-glow .orb:nth-child(2){ width:500px; height:500px; background:#ed4245; bottom:-10%; right:-10%; animation-duration:20s; animation-delay:-5s; }
+        .bg-glow .orb:nth-child(3){ width:400px; height:400px; background:#57f287; top:40%; left:50%; animation-duration:18s; animation-delay:-10s; opacity:.15; }
+        @keyframes orbFloat{
+            0%{ transform:translate(0,0) scale(1); }
+            33%{ transform:translate(60px,-40px) scale(1.05); }
+            66%{ transform:translate(-30px,50px) scale(.95); }
+            100%{ transform:translate(40px,20px) scale(1.02); }
         }
-        .bg-glow .orb:nth-child(1) {
-            width: 600px; height: 600px;
-            background: #5865f2;
-            top: -10%; left: -10%;
-            animation-duration: 25s;
-        }
-        .bg-glow .orb:nth-child(2) {
-            width: 500px; height: 500px;
-            background: #ed4245;
-            bottom: -10%; right: -10%;
-            animation-duration: 20s;
-            animation-delay: -5s;
-        }
-        .bg-glow .orb:nth-child(3) {
-            width: 400px; height: 400px;
-            background: #57f287;
-            top: 40%; left: 50%;
-            animation-duration: 18s;
-            animation-delay: -10s;
-            opacity: 0.15;
-        }
-        @keyframes orbFloat {
-            0% { transform: translate(0,0) scale(1); }
-            33% { transform: translate(60px,-40px) scale(1.05); }
-            66% { transform: translate(-30px,50px) scale(0.95); }
-            100% { transform: translate(40px,20px) scale(1.02); }
+        .grid-overlay{
+            position:fixed; inset:0; z-index:-1; pointer-events:none;
+            background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),
+            linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);
+            background-size:60px 60px;
         }
 
-        /* ============ GRID OVERLAY ============ */
-        .grid-overlay {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: -1;
-            background-image: 
-                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-            background-size: 60px 60px;
-            pointer-events: none;
+        /* ========== LAYOUT ========== */
+        .app{ display:flex; min-height:100vh; }
+
+        /* ========== SIDEBAR ========== */
+        .sidebar{
+            width:270px; min-height:100vh; position:fixed; left:0; top:0; z-index:100;
+            background:rgba(11,13,21,.75); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+            border-right:1px solid rgba(255,255,255,.06);
+            padding:28px 20px; display:flex; flex-direction:column;
+            transition:transform .3s ease;
+        }
+        .sidebar-brand{ display:flex; align-items:center; gap:14px; margin-bottom:40px; padding:0 6px; }
+        .sidebar-brand .logo-icon{
+            width:42px; height:42px;
+            background:linear-gradient(135deg,#5865f2,#ed4245);
+            border-radius:12px; display:flex; align-items:center; justify-content:center;
+            font-weight:900; font-size:20px; color:#fff;
+            box-shadow:0 8px 24px rgba(88,101,242,.35);
+        }
+        .sidebar-brand h2{ font-weight:700; font-size:20px; letter-spacing:-.3px; color:#e8edf5; }
+        .sidebar-brand h2 span{ color:#ed4245; }
+        .sidebar-nav{ display:flex; flex-direction:column; gap:6px; flex:1; }
+        .sidebar-nav .nav-item{
+            display:flex; align-items:center; gap:14px;
+            padding:12px 16px; border-radius:12px;
+            font-weight:500; font-size:14px;
+            color:rgba(232,237,245,.55);
+            transition:all .25s ease; cursor:pointer;
+        }
+        .sidebar-nav .nav-item:hover{ color:rgba(232,237,245,.85); background:rgba(255,255,255,.04); }
+        .sidebar-nav .nav-item.active{
+            color:#fff; background:rgba(88,101,242,.18);
+            border:1px solid rgba(88,101,242,.25);
+            box-shadow:0 0 20px rgba(88,101,242,.08);
+        }
+        .sidebar-nav .nav-item .icon{ width:22px; height:22px; display:flex; align-items:center; justify-content:center; font-size:18px; }
+        .sidebar-nav .nav-item .badge{
+            margin-left:auto;
+            background:rgba(237,66,69,.2); color:#ed4245;
+            font-size:11px; font-weight:700; padding:2px 10px; border-radius:20px;
+            border:1px solid rgba(237,66,69,.25);
+        }
+        .sidebar-bottom{ margin-top:auto; padding-top:20px; border-top:1px solid rgba(255,255,255,.06); }
+        .sidebar-bottom .user-card{
+            display:flex; align-items:center; gap:12px;
+            padding:10px 12px; border-radius:12px; background:rgba(255,255,255,.04);
+        }
+        .sidebar-bottom .user-card .avatar{
+            width:36px; height:36px; border-radius:50%;
+            background:linear-gradient(135deg,#5865f2,#a5b4fc);
+            display:flex; align-items:center; justify-content:center;
+            font-weight:700; font-size:14px; color:#fff;
+        }
+        .sidebar-bottom .user-card .user-info{ flex:1; }
+        .sidebar-bottom .user-card .user-info .name{ font-size:13px; font-weight:600; }
+        .sidebar-bottom .user-card .user-info .stats{ font-size:11px; color:rgba(232,237,245,.45); }
+
+        /* ========== MAIN ========== */
+        .main{ margin-left:270px; flex:1; padding:32px 36px; position:relative; }
+
+        /* ========== TOPBAR ========== */
+        .topbar{ display:flex; align-items:center; justify-content:space-between; margin-bottom:32px; }
+        .topbar .page-title h1{ font-size:26px; font-weight:700; letter-spacing:-.4px; }
+        .topbar .page-title p{ font-size:14px; color:rgba(232,237,245,.45); margin-top:2px; }
+        .topbar .actions{ display:flex; align-items:center; gap:12px; }
+        .topbar .actions .btn{
+            padding:10px 20px; border-radius:10px; font-weight:600; font-size:13px;
+            cursor:pointer; transition:all .25s ease; border:none; font-family:inherit;
+        }
+        .topbar .actions .btn-primary{
+            background:linear-gradient(135deg,#5865f2,#4752c4); color:#fff;
+            box-shadow:0 4px 16px rgba(88,101,242,.3);
+        }
+        .topbar .actions .btn-primary:hover{ transform:translateY(-2px); box-shadow:0 8px 24px rgba(88,101,242,.4); }
+        .topbar .actions .btn-ghost{
+            background:rgba(255,255,255,.06); color:rgba(232,237,245,.75);
+            border:1px solid rgba(255,255,255,.08);
+        }
+        .topbar .actions .btn-ghost:hover{ background:rgba(255,255,255,.1); }
+
+        /* ========== PAGES ========== */
+        .page-section{ display:none; animation:fadeSlideIn .4s ease; }
+        .page-section.active{ display:block; }
+        @keyframes fadeSlideIn{
+            from{ opacity:0; transform:translateY(12px); }
+            to{ opacity:1; transform:translateY(0); }
         }
 
-        /* ============ LAYOUT ============ */
-        .app {
-            display: flex;
-            min-height: 100vh;
+        /* ========== GLASS CARD ========== */
+        .glass-card{
+            background:rgba(255,255,255,.04); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+            border:1px solid rgba(255,255,255,.07); border-radius:16px; padding:24px;
+            transition:all .3s ease;
+        }
+        .glass-card:hover{ border-color:rgba(255,255,255,.12); box-shadow:0 8px 32px rgba(0,0,0,.2); }
+        .glass-card .card-header{
+            display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;
+        }
+        .glass-card .card-header h3{ font-size:16px; font-weight:600; }
+        .glass-card .card-header .see-all{
+            font-size:13px; color:rgba(88,101,242,.8); font-weight:500; cursor:pointer; transition:color .2s;
         }
 
-        /* ============ SIDEBAR ============ */
-        .sidebar {
-            width: 270px;
-            min-height: 100vh;
-            background: rgba(11, 13, 21, 0.75);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-right: 1px solid rgba(255,255,255,0.06);
-            padding: 28px 20px;
-            display: flex;
-            flex-direction: column;
-            position: fixed;
-            left: 0; top: 0;
-            z-index: 100;
-            transition: transform 0.3s ease;
+        /* ========== STATS ========== */
+        .stats-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:18px; margin-bottom:28px; }
+        .stat-card{
+            background:rgba(255,255,255,.04); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+            border:1px solid rgba(255,255,255,.07); border-radius:16px; padding:20px 22px;
+            transition:all .3s ease;
         }
-        .sidebar-brand {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            margin-bottom: 40px;
-            padding: 0 6px;
+        .stat-card:hover{ border-color:rgba(255,255,255,.12); transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,.15); }
+        .stat-card .stat-label{
+            font-size:12px; font-weight:500; color:rgba(232,237,245,.45);
+            text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px;
         }
-        .sidebar-brand .logo-icon {
-            width: 42px; height: 42px;
-            background: linear-gradient(135deg, #5865f2, #ed4245);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 900;
-            font-size: 20px;
-            color: #fff;
-            box-shadow: 0 8px 24px rgba(88, 101, 242, 0.35);
-        }
-        .sidebar-brand h2 {
-            font-weight: 700;
-            font-size: 20px;
-            letter-spacing: -0.3px;
-            background: linear-gradient(135deg, #e8edf5, #a5b4fc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .sidebar-brand h2 span { color: #ed4245; -webkit-text-fill-color: #ed4245; }
+        .stat-card .stat-value{ font-size:28px; font-weight:800; letter-spacing:-1px; }
+        .stat-card .stat-value.purple{ color:#a5b4fc; }
+        .stat-card .stat-value.red{ color:#ed4245; }
+        .stat-card .stat-value.green{ color:#57f287; }
+        .stat-card .stat-value.blue{ color:#5865f2; }
+        .stat-card .stat-sub{ font-size:12px; color:rgba(232,237,245,.35); margin-top:4px; }
 
-        .sidebar-nav {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            flex: 1;
+        /* ========== LEADERBOARD TABLE ========== */
+        .leaderboard-table{ width:100%; border-collapse:collapse; }
+        .leaderboard-table th{
+            text-align:left; padding:12px 16px; font-size:11px; font-weight:600;
+            text-transform:uppercase; letter-spacing:.5px;
+            color:rgba(232,237,245,.35); border-bottom:1px solid rgba(255,255,255,.06);
         }
-        .sidebar-nav .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 12px 16px;
-            border-radius: 12px;
-            font-weight: 500;
-            font-size: 14px;
-            color: rgba(232, 237, 245, 0.55);
-            transition: all 0.25s ease;
-            cursor: pointer;
-            position: relative;
+        .leaderboard-table td{ padding:14px 16px; font-size:14px; border-bottom:1px solid rgba(255,255,255,.04); }
+        .leaderboard-table tr:last-child td{ border-bottom:none; }
+        .leaderboard-table tr:hover td{ background:rgba(255,255,255,.02); }
+        .leaderboard-table .rank{ font-weight:700; font-size:16px; width:40px; }
+        .leaderboard-table .rank.gold{ color:#fbbf24; }
+        .leaderboard-table .rank.silver{ color:#94a3b8; }
+        .leaderboard-table .rank.bronze{ color:#d97706; }
+        .leaderboard-table .user-cell{ display:flex; align-items:center; gap:10px; }
+        .leaderboard-table .user-cell .u-avatar{
+            width:32px; height:32px; border-radius:50%;
+            display:flex; align-items:center; justify-content:center;
+            font-weight:700; font-size:12px; color:#fff; flex-shrink:0;
         }
-        .sidebar-nav .nav-item:hover {
-            color: rgba(232, 237, 245, 0.85);
-            background: rgba(255,255,255,0.04);
+        .leaderboard-table .user-cell .u-name{ font-weight:600; }
+        .leaderboard-table .user-cell .u-tag{ font-size:12px; color:rgba(232,237,245,.35); }
+        .leaderboard-table .servers-nuked{ font-weight:700; color:#ed4245; }
+        .leaderboard-table .premium-badge{
+            display:inline-block; padding:3px 10px; border-radius:20px;
+            font-size:11px; font-weight:700;
+            background:linear-gradient(135deg,rgba(255,215,0,.15),rgba(255,215,0,.05));
+            color:#fbbf24; border:1px solid rgba(255,215,0,.2);
         }
-        .sidebar-nav .nav-item.active {
-            color: #fff;
-            background: rgba(88, 101, 242, 0.18);
-            border: 1px solid rgba(88, 101, 242, 0.25);
-            box-shadow: 0 0 20px rgba(88, 101, 242, 0.08);
-        }
-        .sidebar-nav .nav-item .icon {
-            width: 22px; height: 22px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-        }
-        .sidebar-nav .nav-item .badge {
-            margin-left: auto;
-            background: rgba(237, 66, 69, 0.2);
-            color: #ed4245;
-            font-size: 11px;
-            font-weight: 700;
-            padding: 2px 10px;
-            border-radius: 20px;
-            border: 1px solid rgba(237, 66, 69, 0.25);
-        }
-        .sidebar-bottom {
-            margin-top: auto;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255,255,255,0.06);
-        }
-        .sidebar-bottom .user-card {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px 12px;
-            border-radius: 12px;
-            background: rgba(255,255,255,0.04);
-        }
-        .sidebar-bottom .user-card .avatar {
-            width: 36px; height: 36px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #5865f2, #a5b4fc);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 14px;
-            color: #fff;
-        }
-        .sidebar-bottom .user-card .user-info {
-            flex: 1;
-        }
-        .sidebar-bottom .user-card .user-info .name {
-            font-size: 13px;
-            font-weight: 600;
-        }
-        .sidebar-bottom .user-card .user-info .stats {
-            font-size: 11px;
-            color: rgba(232, 237, 245, 0.45);
+        .leaderboard-table .premium-badge.pro{
+            background:linear-gradient(135deg,rgba(88,101,242,.15),rgba(165,180,252,.05));
+            color:#a5b4fc; border-color:rgba(88,101,242,.2);
         }
 
-        /* ============ MAIN CONTENT ============ */
-        .main {
-            margin-left: 270px;
-            flex: 1;
-            padding: 32px 36px;
-            position: relative;
+        /* ========== COMMANDS ========== */
+        .commands-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px; }
+        .command-item{
+            display:flex; align-items:center; gap:14px;
+            padding:14px 18px; background:rgba(255,255,255,.03);
+            border-radius:12px; border:1px solid rgba(255,255,255,.05);
+            transition:all .25s ease;
+        }
+        .command-item:hover{ background:rgba(255,255,255,.06); border-color:rgba(255,255,255,.1); transform:translateX(4px); }
+        .command-item .cmd-badge{
+            font-family:'Courier New',monospace; font-weight:700; font-size:12px;
+            background:rgba(88,101,242,.15); color:#a5b4fc;
+            padding:4px 12px; border-radius:6px; border:1px solid rgba(88,101,242,.2);
+            white-space:nowrap;
+        }
+        .command-item .cmd-desc{ flex:1; font-size:13px; color:rgba(232,237,245,.7); }
+        .command-item .cmd-category{
+            font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.3px;
+            color:rgba(232,237,245,.25); padding:2px 8px; border-radius:4px; background:rgba(255,255,255,.04);
         }
 
-        /* ============ TOP BAR ============ */
-        .topbar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 32px;
+        /* ========== INVITE ========== */
+        .invite-hero{ text-align:center; padding:60px 40px; }
+        .invite-hero .invite-icon{
+            width:80px; height:80px; background:linear-gradient(135deg,#5865f2,#ed4245);
+            border-radius:20px; display:flex; align-items:center; justify-content:center;
+            font-weight:900; font-size:36px; color:#fff; margin:0 auto 24px;
+            box-shadow:0 12px 40px rgba(88,101,242,.3);
         }
-        .topbar .page-title h1 {
-            font-size: 26px;
-            font-weight: 700;
-            letter-spacing: -0.4px;
+        .invite-hero h2{ font-size:28px; font-weight:700; margin-bottom:8px; }
+        .invite-hero p{ font-size:15px; color:rgba(232,237,245,.5); max-width:500px; margin:0 auto 28px; }
+        .invite-hero .btn-invite{
+            display:inline-flex; align-items:center; gap:10px;
+            padding:16px 36px; border-radius:14px; font-weight:700; font-size:16px;
+            background:linear-gradient(135deg,#5865f2,#4752c4); color:#fff;
+            border:none; cursor:pointer; transition:all .3s ease;
+            box-shadow:0 6px 24px rgba(88,101,242,.35); font-family:inherit;
         }
-        .topbar .page-title p {
-            font-size: 14px;
-            color: rgba(232, 237, 245, 0.45);
-            margin-top: 2px;
+        .invite-hero .btn-invite:hover{ transform:translateY(-3px); box-shadow:0 10px 32px rgba(88,101,242,.5); }
+        .invite-features{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:32px; }
+        .invite-feature{
+            padding:20px; background:rgba(255,255,255,.03); border-radius:12px;
+            border:1px solid rgba(255,255,255,.05); text-align:center;
         }
-        .topbar .actions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .topbar .actions .btn {
-            padding: 10px 20px;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            border: none;
-            font-family: inherit;
-        }
-        .topbar .actions .btn-primary {
-            background: linear-gradient(135deg, #5865f2, #4752c4);
-            color: #fff;
-            box-shadow: 0 4px 16px rgba(88, 101, 242, 0.3);
-        }
-        .topbar .actions .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(88, 101, 242, 0.4);
-        }
-        .topbar .actions .btn-ghost {
-            background: rgba(255,255,255,0.06);
-            color: rgba(232, 237, 245, 0.75);
-            border: 1px solid rgba(255,255,255,0.08);
-        }
-        .topbar .actions .btn-ghost:hover {
-            background: rgba(255,255,255,0.1);
-        }
+        .invite-feature .f-icon{ font-size:28px; margin-bottom:8px; }
+        .invite-feature h4{ font-size:14px; font-weight:600; margin-bottom:4px; }
+        .invite-feature p{ font-size:12px; color:rgba(232,237,245,.45); }
 
-        /* ============ PAGE SECTIONS ============ */
-        .page-section {
-            display: none;
-            animation: fadeSlideIn 0.4s ease;
+        /* ========== PREMIUM ========== */
+        .pricing-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:20px; }
+        .pricing-card{
+            background:rgba(255,255,255,.04); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+            border:1px solid rgba(255,255,255,.07); border-radius:16px;
+            padding:32px 24px; text-align:center; transition:all .3s ease; position:relative;
         }
-        .page-section.active {
-            display: block;
+        .pricing-card:hover{ transform:translateY(-4px); border-color:rgba(255,255,255,.12); box-shadow:0 12px 40px rgba(0,0,0,.2); }
+        .pricing-card.featured{ border-color:rgba(88,101,242,.3); background:rgba(88,101,242,.06); }
+        .pricing-card.featured::before{
+            content:'BEST SELLER'; position:absolute; top:-10px; left:50%; transform:translateX(-50%);
+            background:linear-gradient(135deg,#5865f2,#4752c4); color:#fff;
+            font-size:10px; font-weight:700; padding:4px 16px; border-radius:20px; letter-spacing:.5px;
         }
-        @keyframes fadeSlideIn {
-            from { opacity: 0; transform: translateY(12px); }
-            to { opacity: 1; transform: translateY(0); }
+        .pricing-card .price-name{ font-size:18px; font-weight:700; margin-bottom:4px; }
+        .pricing-card .price-amount{ font-size:40px; font-weight:900; letter-spacing:-2px; color:#a5b4fc; margin:12px 0; }
+        .pricing-card .price-amount span{ font-size:16px; font-weight:600; color:rgba(232,237,245,.35); }
+        .pricing-card .price-features{ list-style:none; margin:20px 0; text-align:left; }
+        .pricing-card .price-features li{
+            padding:8px 0; font-size:13px; color:rgba(232,237,245,.65);
+            display:flex; align-items:center; gap:8px;
         }
+        .pricing-card .price-features li::before{ content:'✓'; color:#57f287; font-weight:700; }
+        .pricing-card .btn-subscribe{
+            width:100%; padding:12px; border-radius:10px; font-weight:600; font-size:14px;
+            border:none; cursor:pointer; transition:all .25s ease; font-family:inherit;
+            background:rgba(255,255,255,.06); color:rgba(232,237,245,.7);
+            border:1px solid rgba(255,255,255,.08);
+        }
+        .pricing-card.featured .btn-subscribe{
+            background:linear-gradient(135deg,#5865f2,#4752c4); color:#fff; border:none;
+            box-shadow:0 4px 16px rgba(88,101,242,.3);
+        }
+        .pricing-card.featured .btn-subscribe:hover{ transform:translateY(-2px); box-shadow:0 8px 24px rgba(88,101,242,.4); }
 
-        /* ============ CARDS (Glassmorphism) ============ */
-        .glass-card {
-            background: rgba(255,255,255,0.04);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255,255,255,0.07);
-            border-radius: 16px;
-            padding: 24px;
-            transition: all 0.3s ease;
+        /* ========== ADMIN SEARCH (NEU!) ========== */
+        .admin-search-box{
+            display:flex; gap:12px; margin-bottom:24px; align-items:center;
         }
-        .glass-card:hover {
-            border-color: rgba(255,255,255,0.12);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        .admin-search-box input{
+            flex:1; padding:14px 18px; border-radius:12px;
+            background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1);
+            color:#e8edf5; font-size:15px; font-family:inherit;
+            outline:none; transition:all .25s ease;
         }
-        .glass-card .card-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
+        .admin-search-box input::placeholder{ color:rgba(232,237,245,.25); }
+        .admin-search-box input:focus{ border-color:rgba(88,101,242,.5); box-shadow:0 0 20px rgba(88,101,242,.08); }
+        .admin-search-box .btn-search{
+            padding:14px 28px; border-radius:12px; font-weight:600; font-size:14px;
+            background:linear-gradient(135deg,#ed4245,#b91c1c); color:#fff;
+            border:none; cursor:pointer; transition:all .25s ease; font-family:inherit;
+            box-shadow:0 4px 16px rgba(237,66,69,.3); white-space:nowrap;
         }
-        .glass-card .card-header h3 {
-            font-size: 16px;
-            font-weight: 600;
-        }
-        .glass-card .card-header .see-all {
-            font-size: 13px;
-            color: rgba(88, 101, 242, 0.8);
-            font-weight: 500;
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-        .glass-card .card-header .see-all:hover { color: #5865f2; }
+        .admin-search-box .btn-search:hover{ transform:translateY(-2px); box-shadow:0 8px 24px rgba(237,66,69,.4); }
 
-        /* ============ OVERVIEW STATS ============ */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 18px;
-            margin-bottom: 28px;
+        /* Admin Results */
+        .admin-results{ display:grid; gap:16px; }
+        .admin-result-card{
+            background:rgba(255,255,255,.04); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+            border:1px solid rgba(255,255,255,.07); border-radius:16px; padding:20px 24px;
+            display:flex; align-items:flex-start; gap:18px;
+            transition:all .25s ease;
         }
-        .stat-card {
-            background: rgba(255,255,255,0.04);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255,255,255,0.07);
-            border-radius: 16px;
-            padding: 20px 22px;
-            transition: all 0.3s ease;
+        .admin-result-card:hover{ border-color:rgba(255,255,255,.12); }
+        .admin-result-card .admin-info{ flex:1; }
+        .admin-result-card .admin-info .admin-title{
+            font-size:15px; font-weight:600; margin-bottom:4px;
         }
-        .stat-card:hover {
-            border-color: rgba(255,255,255,0.12);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        .admin-result-card .admin-info .admin-path{
+            font-family:'Courier New',monospace; font-size:13px;
+            color:rgba(165,180,252,.8); background:rgba(88,101,242,.1);
+            padding:2px 10px; border-radius:6px; display:inline-block; margin-bottom:8px;
         }
-        .stat-card .stat-label {
-            font-size: 12px;
-            font-weight: 500;
-            color: rgba(232, 237, 245, 0.45);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 6px;
+        .admin-result-card .admin-info .admin-meta{
+            font-size:12px; color:rgba(232,237,245,.35);
         }
-        .stat-card .stat-value {
-            font-size: 28px;
-            font-weight: 800;
-            letter-spacing: -1px;
+        .admin-result-card .admin-fields{
+            display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;
         }
-        .stat-card .stat-value.purple { color: #a5b4fc; }
-        .stat-card .stat-value.red { color: #ed4245; }
-        .stat-card .stat-value.green { color: #57f287; }
-        .stat-card .stat-value.blue { color: #5865f2; }
-        .stat-card .stat-sub {
-            font-size: 12px;
-            color: rgba(232, 237, 245, 0.35);
-            margin-top: 4px;
+        .admin-result-card .admin-fields .field-item{
+            background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.06);
+            border-radius:8px; padding:8px 14px; display:flex; align-items:center; gap:8px;
+            font-size:12px; font-family:'Courier New',monospace; color:rgba(232,237,245,.7);
+            cursor:pointer; transition:all .2s ease; user-select:all;
         }
+        .admin-result-card .admin-fields .field-item:hover{
+            background:rgba(88,101,242,.12); border-color:rgba(88,101,242,.25);
+            color:#a5b4fc;
+        }
+        .admin-result-card .admin-fields .field-item .copy-icon{
+            font-size:14px; opacity:.4; transition:opacity .2s;
+        }
+        .admin-result-card .admin-fields .field-item:hover .copy-icon{ opacity:1; }
+        .admin-result-card .admin-actions{
+            display:flex; flex-direction:column; gap:8px; flex-shrink:0;
+        }
+        .admin-result-card .admin-actions .btn-sm{
+            padding:8px 16px; border-radius:8px; font-weight:600; font-size:12px;
+            border:none; cursor:pointer; transition:all .2s ease; font-family:inherit;
+            white-space:nowrap;
+        }
+        .admin-result-card .admin-actions .btn-save{
+            background:linear-gradient(135deg,#57f287,#16a34a); color:#0b0d15;
+        }
+        .admin-result-card .admin-actions .btn-save:hover{ transform:translateY(-1px); box-shadow:0 4px 12px rgba(87,242,135,.3); }
+        .admin-result-card .admin-actions .btn-copy-all{
+            background:rgba(255,255,255,.08); color:rgba(232,237,245,.7);
+            border:1px solid rgba(255,255,255,.08);
+        }
+        .admin-result-card .admin-actions .btn-copy-all:hover{ background:rgba(255,255,255,.12); }
 
-        /* ============ LEADERBOARD TABLE ============ */
-        .leaderboard-table {
-            width: 100%;
-            border-collapse: collapse;
+        /* Copy toast */
+        .toast{
+            position:fixed; bottom:30px; left:50%; transform:translateX(-50%) translateY(100px);
+            background:rgba(87,242,135,.15); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+            border:1px solid rgba(87,242,135,.3); border-radius:12px;
+            padding:12px 24px; color:#57f287; font-weight:600; font-size:14px;
+            opacity:0; transition:all .4s ease; z-index:9999; pointer-events:none;
         }
-        .leaderboard-table th {
-            text-align: left;
-            padding: 12px 16px;
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: rgba(232, 237, 245, 0.35);
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-        }
-        .leaderboard-table td {
-            padding: 14px 16px;
-            font-size: 14px;
-            border-bottom: 1px solid rgba(255,255,255,0.04);
-        }
-        .leaderboard-table tr:last-child td { border-bottom: none; }
-        .leaderboard-table tr:hover td {
-            background: rgba(255,255,255,0.02);
-        }
-        .leaderboard-table .rank {
-            font-weight: 700;
-            font-size: 16px;
-            width: 40px;
-        }
-        .leaderboard-table .rank.gold { color: #fbbf24; }
-        .leaderboard-table .rank.silver { color: #94a3b8; }
-        .leaderboard-table .rank.bronze { color: #d97706; }
-        .leaderboard-table .user-cell {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .leaderboard-table .user-cell .u-avatar {
-            width: 32px; height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 12px;
-            color: #fff;
-            flex-shrink: 0;
-        }
-        .leaderboard-table .user-cell .u-name {
-            font-weight: 600;
-        }
-        .leaderboard-table .user-cell .u-tag {
-            font-size: 12px;
-            color: rgba(232, 237, 245, 0.35);
-        }
-        .leaderboard-table .servers-nuked {
-            font-weight: 700;
-            color: #ed4245;
-        }
-        .leaderboard-table .premium-badge {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 700;
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.05));
-            color: #fbbf24;
-            border: 1px solid rgba(255, 215, 0, 0.2);
-        }
-        .leaderboard-table .premium-badge.pro {
-            background: linear-gradient(135deg, rgba(88, 101, 242, 0.15), rgba(165, 180, 252, 0.05));
-            color: #a5b4fc;
-            border-color: rgba(88, 101, 242, 0.2);
-        }
+        .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
 
-        /* ============ COMMANDS LIST ============ */
-        .commands-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 14px;
+        /* ========== LOGIN OVERLAY ========== */
+        .login-overlay{
+            position:fixed; inset:0; z-index:1000;
+            background:rgba(0,0,0,.7); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+            display:flex; align-items:center; justify-content:center;
+            transition:opacity .4s ease, visibility .4s ease;
         }
-        .command-item {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 14px 18px;
-            background: rgba(255,255,255,0.03);
-            border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.05);
-            transition: all 0.25s ease;
+        .login-overlay.hidden{ opacity:0; visibility:hidden; pointer-events:none; }
+        .login-modal{
+            background:rgba(15,17,26,.95); border:1px solid rgba(255,255,255,.08);
+            border-radius:24px; padding:48px 40px; max-width:420px; width:90%;
+            text-align:center; box-shadow:0 24px 80px rgba(0,0,0,.5);
         }
-        .command-item:hover {
-            background: rgba(255,255,255,0.06);
-            border-color: rgba(255,255,255,0.1);
-            transform: translateX(4px);
+        .login-modal .login-icon{
+            width:64px; height:64px; background:linear-gradient(135deg,#5865f2,#ed4245);
+            border-radius:16px; display:flex; align-items:center; justify-content:center;
+            font-weight:900; font-size:28px; color:#fff; margin:0 auto 20px;
         }
-        .command-item .cmd-badge {
-            font-family: 'Courier New', monospace;
-            font-weight: 700;
-            font-size: 12px;
-            background: rgba(88, 101, 242, 0.15);
-            color: #a5b4fc;
-            padding: 4px 12px;
-            border-radius: 6px;
-            border: 1px solid rgba(88, 101, 242, 0.2);
-            white-space: nowrap;
+        .login-modal h2{ font-size:24px; font-weight:700; margin-bottom:6px; }
+        .login-modal p{ font-size:14px; color:rgba(232,237,245,.45); margin-bottom:28px; }
+        .login-modal .btn-discord{
+            display:inline-flex; align-items:center; justify-content:center; gap:10px;
+            width:100%; padding:14px 24px; border-radius:12px; font-weight:600; font-size:15px;
+            background:#5865f2; color:#fff; border:none; cursor:pointer;
+            transition:all .25s ease; font-family:inherit;
         }
-        .command-item .cmd-desc {
-            flex: 1;
-            font-size: 13px;
-            color: rgba(232, 237, 245, 0.7);
-        }
-        .command-item .cmd-category {
-            font-size: 10px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-            color: rgba(232, 237, 245, 0.25);
-            padding: 2px 8px;
-            border-radius: 4px;
-            background: rgba(255,255,255,0.04);
-        }
+        .login-modal .btn-discord:hover{ background:#4752c4; transform:translateY(-2px); box-shadow:0 8px 24px rgba(88,101,242,.3); }
+        .login-modal .btn-discord svg{ width:22px; height:22px; }
+        .login-modal .login-footer{ margin-top:20px; font-size:12px; color:rgba(232,237,245,.25); }
 
-        /* ============ INVITE SECTION ============ */
-        .invite-hero {
-            text-align: center;
-            padding: 60px 40px;
+        /* ========== HAMBURGER ========== */
+        .hamburger{
+            display:none; background:rgba(255,255,255,.06);
+            border:1px solid rgba(255,255,255,.08); border-radius:10px;
+            width:40px; height:40px; align-items:center; justify-content:center;
+            cursor:pointer; color:#e8edf5; font-size:18px;
         }
-        .invite-hero .invite-icon {
-            width: 80px; height: 80px;
-            background: linear-gradient(135deg, #5865f2, #ed4245);
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 900;
-            font-size: 36px;
-            color: #fff;
-            margin: 0 auto 24px;
-            box-shadow: 0 12px 40px rgba(88, 101, 242, 0.3);
-        }
-        .invite-hero h2 {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-        .invite-hero p {
-            font-size: 15px;
-            color: rgba(232, 237, 245, 0.5);
-            max-width: 500px;
-            margin: 0 auto 28px;
-        }
-        .invite-hero .btn-invite {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 16px 36px;
-            border-radius: 14px;
-            font-weight: 700;
-            font-size: 16px;
-            background: linear-gradient(135deg, #5865f2, #4752c4);
-            color: #fff;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 6px 24px rgba(88, 101, 242, 0.35);
-            font-family: inherit;
-        }
-        .invite-hero .btn-invite:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 32px rgba(88, 101, 242, 0.5);
-        }
-        .invite-hero .btn-invite .discord-icon {
-            font-size: 22px;
-        }
-        .invite-features {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 18px;
-            margin-top: 32px;
-        }
-        .invite-feature {
-            padding: 20px;
-            background: rgba(255,255,255,0.03);
-            border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.05);
-            text-align: center;
-        }
-        .invite-feature .f-icon {
-            font-size: 28px;
-            margin-bottom: 8px;
-        }
-        .invite-feature h4 {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-        .invite-feature p {
-            font-size: 12px;
-            color: rgba(232, 237, 245, 0.45);
-        }
+        .mobile-close{ display:none; background:none; border:none; color:rgba(232,237,245,.5); font-size:24px; cursor:pointer; position:absolute; top:20px; right:20px; }
 
-        /* ============ PREMIUM ============ */
-        .pricing-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            margin-top: 20px;
+        /* ========== RESPONSIVE ========== */
+        @media(max-width:1024px){
+            .stats-grid{ grid-template-columns:repeat(2,1fr); }
+            .pricing-grid,.invite-features{ grid-template-columns:1fr; }
+            .pricing-grid{ max-width:400px; margin-left:auto; margin-right:auto; }
         }
-        .pricing-card {
-            background: rgba(255,255,255,0.04);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255,255,255,0.07);
-            border-radius: 16px;
-            padding: 32px 24px;
-            text-align: center;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-        .pricing-card:hover {
-            transform: translateY(-4px);
-            border-color: rgba(255,255,255,0.12);
-            box-shadow: 0 12px 40px rgba(0,0,0,0.2);
-        }
-        .pricing-card.featured {
-            border-color: rgba(88, 101, 242, 0.3);
-            background: rgba(88, 101, 242, 0.06);
-        }
-        .pricing-card.featured::before {
-            content: 'BEST SELLER';
-            position: absolute;
-            top: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: linear-gradient(135deg, #5865f2, #4752c4);
-            color: #fff;
-            font-size: 10px;
-            font-weight: 700;
-            padding: 4px 16px;
-            border-radius: 20px;
-            letter-spacing: 0.5px;
-        }
-        .pricing-card .price-name {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-        .pricing-card .price-amount {
-            font-size: 40px;
-            font-weight: 900;
-            letter-spacing: -2px;
-            color: #a5b4fc;
-            margin: 12px 0;
-        }
-        .pricing-card .price-amount span {
-            font-size: 16px;
-            font-weight: 600;
-            color: rgba(232, 237, 245, 0.35);
-        }
-        .pricing-card .price-features {
-            list-style: none;
-            margin: 20px 0;
-            text-align: left;
-        }
-        .pricing-card .price-features li {
-            padding: 8px 0;
-            font-size: 13px;
-            color: rgba(232, 237, 245, 0.65);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .pricing-card .price-features li::before {
-            content: '✓';
-            color: #57f287;
-            font-weight: 700;
-        }
-        .pricing-card .btn-subscribe {
-            width: 100%;
-            padding: 12px;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 14px;
-            border: none;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            font-family: inherit;
-            background: rgba(255,255,255,0.06);
-            color: rgba(232, 237, 245, 0.7);
-            border: 1px solid rgba(255,255,255,0.08);
-        }
-        .pricing-card .btn-subscribe:hover {
-            background: rgba(255,255,255,0.1);
-        }
-        .pricing-card.featured .btn-subscribe {
-            background: linear-gradient(135deg, #5865f2, #4752c4);
-            color: #fff;
-            border: none;
-            box-shadow: 0 4px 16px rgba(88, 101, 242, 0.3);
-        }
-        .pricing-card.featured .btn-subscribe:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(88, 101, 242, 0.4);
-        }
-
-        /* ============ LOGIN OVERLAY ============ */
-        .login-overlay {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            transition: opacity 0.4s ease, visibility 0.4s ease;
-        }
-        .login-overlay.hidden {
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-        }
-        .login-modal {
-            background: rgba(15, 17, 26, 0.95);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 24px;
-            padding: 48px 40px;
-            max-width: 420px;
-            width: 90%;
-            text-align: center;
-            box-shadow: 0 24px 80px rgba(0,0,0,0.5);
-        }
-        .login-modal .login-icon {
-            width: 64px; height: 64px;
-            background: linear-gradient(135deg, #5865f2, #ed4245);
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 900;
-            font-size: 28px;
-            color: #fff;
-            margin: 0 auto 20px;
-        }
-        .login-modal h2 {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-        .login-modal p {
-            font-size: 14px;
-            color: rgba(232, 237, 245, 0.45);
-            margin-bottom: 28px;
-        }
-        .login-modal .btn-discord {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            width: 100%;
-            padding: 14px 24px;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 15px;
-            background: #5865f2;
-            color: #fff;
-            border: none;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            font-family: inherit;
-        }
-        .login-modal .btn-discord:hover {
-            background: #4752c4;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(88, 101, 242, 0.3);
-        }
-        .login-modal .btn-discord svg {
-            width: 22px; height: 22px;
-        }
-        .login-modal .login-footer {
-            margin-top: 20px;
-            font-size: 12px;
-            color: rgba(232, 237, 245, 0.25);
-        }
-
-        /* ============ RESPONSIVE ============ */
-        @media (max-width: 1024px) {
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
-            .pricing-grid { grid-template-columns: 1fr; max-width: 400px; margin-left: auto; margin-right: auto; }
-            .invite-features { grid-template-columns: 1fr; }
-        }
-        @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-                width: 260px;
-            }
-            .sidebar.open {
-                transform: translateX(0);
-            }
-            .main {
-                margin-left: 0;
-                padding: 20px 16px;
-            }
-            .stats-grid { grid-template-columns: 1fr; }
-            .commands-grid { grid-template-columns: 1fr; }
-            .topbar {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 12px;
-            }
-            .hamburger {
-                display: flex !important;
-            }
-            .login-modal { padding: 32px 24px; }
-        }
-        .hamburger {
-            display: none;
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 10px;
-            width: 40px; height: 40px;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: #e8edf5;
-            font-size: 18px;
-            transition: all 0.2s;
-        }
-        .hamburger:hover { background: rgba(255,255,255,0.1); }
-        .mobile-close {
-            display: none;
-            background: none;
-            border: none;
-            color: rgba(232, 237, 245, 0.5);
-            font-size: 24px;
-            cursor: pointer;
-            position: absolute;
-            top: 20px; right: 20px;
-        }
-        @media (max-width: 768px) {
-            .mobile-close { display: block; }
+        @media(max-width:768px){
+            .sidebar{ transform:translateX(-100%); width:260px; }
+            .sidebar.open{ transform:translateX(0); }
+            .main{ margin-left:0; padding:20px 16px; }
+            .stats-grid,.commands-grid{ grid-template-columns:1fr; }
+            .topbar{ flex-direction:column; align-items:flex-start; gap:12px; }
+            .hamburger{ display:flex !important; }
+            .mobile-close{ display:block; }
+            .admin-result-card{ flex-direction:column; }
+            .admin-result-card .admin-actions{ flex-direction:row; width:100%; }
+            .admin-search-box{ flex-direction:column; }
+            .admin-search-box .btn-search{ width:100%; }
         }
     </style>
 </head>
 <body>
 
-    <!-- ====== BACKGROUND EFFECTS ====== -->
-    <div class="bg-glow">
-        <div class="orb"></div>
-        <div class="orb"></div>
-        <div class="orb"></div>
-    </div>
+    <!-- BG -->
+    <div class="bg-glow"><div class="orb"></div><div class="orb"></div><div class="orb"></div></div>
     <div class="grid-overlay"></div>
 
-    <!-- ====== LOGIN OVERLAY ====== -->
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+    <!-- ===== LOGIN OVERLAY ===== -->
     <div class="login-overlay" id="loginOverlay">
         <div class="login-modal">
             <div class="login-icon">NB</div>
             <h2>Welcome to Nukebot</h2>
-            <p>Sign in with Discord to access the dashboard</p>
-            <button class="btn-discord" onclick="handleDiscordLogin()">
+            <p>Sign in with your Discord account to access the dashboard</p>
+            <button class="btn-discord" id="discordLoginBtn">
                 <svg viewBox="0 0 24 24" fill="currentColor">
                     <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189z"/>
                 </svg>
@@ -835,7 +454,7 @@
         </div>
     </div>
 
-    <!-- ====== APP ====== -->
+    <!-- ===== APP ===== -->
     <div class="app">
 
         <!-- SIDEBAR -->
@@ -846,22 +465,12 @@
                 <h2>Nuke<span>Bot</span></h2>
             </div>
             <nav class="sidebar-nav">
-                <div class="nav-item active" data-page="overview" onclick="switchPage('overview', this)">
-                    <span class="icon">📊</span> Overview
-                </div>
-                <div class="nav-item" data-page="commands" onclick="switchPage('commands', this)">
-                    <span class="icon">⌨️</span> Commands
-                </div>
-                <div class="nav-item" data-page="invite" onclick="switchPage('invite', this)">
-                    <span class="icon">🔗</span> Invite Bot
-                </div>
-                <div class="nav-item" data-page="leaderboard" onclick="switchPage('leaderboard', this)">
-                    <span class="icon">🏆</span> Leaderboard
-                    <span class="badge">HOT</span>
-                </div>
-                <div class="nav-item" data-page="premium" onclick="switchPage('premium', this)">
-                    <span class="icon">⭐</span> Premium
-                </div>
+                <div class="nav-item active" data-page="overview" onclick="switchPage('overview',this)"><span class="icon">📊</span> Overview</div>
+                <div class="nav-item" data-page="commands" onclick="switchPage('commands',this)"><span class="icon">⌨️</span> Commands</div>
+                <div class="nav-item" data-page="invite" onclick="switchPage('invite',this)"><span class="icon">🔗</span> Invite Bot</div>
+                <div class="nav-item" data-page="admin" onclick="switchPage('admin',this)"><span class="icon">👑</span> Admin Panel <span class="badge">NEW</span></div>
+                <div class="nav-item" data-page="leaderboard" onclick="switchPage('leaderboard',this)"><span class="icon">🏆</span> Leaderboard <span class="badge">HOT</span></div>
+                <div class="nav-item" data-page="premium" onclick="switchPage('premium',this)"><span class="icon">⭐</span> Premium</div>
             </nav>
             <div class="sidebar-bottom">
                 <div class="user-card">
@@ -874,10 +483,10 @@
             </div>
         </aside>
 
-        <!-- MAIN CONTENT -->
+        <!-- MAIN -->
         <main class="main">
 
-            <!-- TOP BAR -->
+            <!-- TOPBAR -->
             <div class="topbar">
                 <div>
                     <button class="hamburger" onclick="toggleSidebar()">☰</button>
@@ -887,354 +496,114 @@
                     </div>
                 </div>
                 <div class="actions">
-                    <button class="btn btn-ghost" onclick="handleDiscordLogin()" id="loginBtn">Sign In</button>
-                    <button class="btn btn-primary" onclick="document.getElementById('invite').querySelector('.btn-invite')?.click()">Invite Bot</button>
+                    <button class="btn btn-ghost" id="loginBtn" onclick="handleDiscordLogin()">Sign In</button>
+                    <button class="btn btn-primary" onclick="switchPage('invite',document.querySelector('[data-page=invite]'))">Invite Bot</button>
                 </div>
             </div>
 
-            <!-- ============ OVERVIEW ============ -->
+            <!-- ========== OVERVIEW ========== -->
             <section class="page-section active" id="overview">
                 <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-label">Total Servers Nuked</div>
-                        <div class="stat-value purple">12,847</div>
-                        <div class="stat-sub">+342 today</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Active Users</div>
-                        <div class="stat-value green">3,421</div>
-                        <div class="stat-sub">+89 this week</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Commands Executed</div>
-                        <div class="stat-value blue">1.4M</div>
-                        <div class="stat-sub">+12.5k today</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Premium Users</div>
-                        <div class="stat-value red">847</div>
-                        <div class="stat-sub">+24 this week</div>
-                    </div>
+                    <div class="stat-card"><div class="stat-label">Total Servers Nuked</div><div class="stat-value purple">12,847</div><div class="stat-sub">+342 today</div></div>
+                    <div class="stat-card"><div class="stat-label">Active Users</div><div class="stat-value green">3,421</div><div class="stat-sub">+89 this week</div></div>
+                    <div class="stat-card"><div class="stat-label">Commands Executed</div><div class="stat-value blue">1.4M</div><div class="stat-sub">+12.5k today</div></div>
+                    <div class="stat-card"><div class="stat-label">Premium Users</div><div class="stat-value red">847</div><div class="stat-sub">+24 this week</div></div>
                 </div>
-
                 <div class="glass-card">
-                    <div class="card-header">
-                        <h3>🏆 Top Nukers — Leaderboard</h3>
-                        <span class="see-all" onclick="switchPage('leaderboard', document.querySelector('[data-page=leaderboard]'))">See all →</span>
-                    </div>
+                    <div class="card-header"><h3>🏆 Top Nukers — Leaderboard</h3><span class="see-all" onclick="switchPage('leaderboard',document.querySelector('[data-page=leaderboard]'))">See all →</span></div>
                     <table class="leaderboard-table">
-                        <thead>
-                            <tr>
-                                <th>Rank</th>
-                                <th>User</th>
-                                <th>Servers Nuked</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
+                        <thead><tr><th>Rank</th><th>User</th><th>Servers Nuked</th><th>Status</th></tr></thead>
                         <tbody>
-                            <tr>
-                                <td><span class="rank gold">#1</span></td>
-                                <td>
-                                    <div class="user-cell">
-                                        <div class="u-avatar" style="background:linear-gradient(135deg,#fbbf24,#d97706)">D</div>
-                                        <div><div class="u-name">DarkAngel</div><div class="u-tag">@darkangel</div></div>
-                                    </div>
-                                </td>
-                                <td class="servers-nuked">2,847</td>
-                                <td><span class="premium-badge pro">PREMIUM</span></td>
-                            </tr>
-                            <tr>
-                                <td><span class="rank silver">#2</span></td>
-                                <td>
-                                    <div class="user-cell">
-                                        <div class="u-avatar" style="background:linear-gradient(135deg,#94a3b8,#64748b)">N</div>
-                                        <div><div class="u-name">NukeMaster</div><div class="u-tag">@nukemaster</div></div>
-                                    </div>
-                                </td>
-                                <td class="servers-nuked">2,391</td>
-                                <td><span class="premium-badge pro">PREMIUM</span></td>
-                            </tr>
-                            <tr>
-                                <td><span class="rank bronze">#3</span></td>
-                                <td>
-                                    <div class="user-cell">
-                                        <div class="u-avatar" style="background:linear-gradient(135deg,#d97706,#92400e)">X</div>
-                                        <div><div class="u-name">XyberX</div><div class="u-tag">@xyberx</div></div>
-                                    </div>
-                                </td>
-                                <td class="servers-nuked">1,942</td>
-                                <td><span class="premium-badge">FREE</span></td>
-                            </tr>
-                            <tr>
-                                <td><span class="rank" style="color:rgba(232,237,245,0.3)">#4</span></td>
-                                <td>
-                                    <div class="user-cell">
-                                        <div class="u-avatar" style="background:linear-gradient(135deg,#5865f2,#4752c4)">V</div>
-                                        <div><div class="u-name">VoidWalker</div><div class="u-tag">@voidwalker</div></div>
-                                    </div>
-                                </td>
-                                <td class="servers-nuked">1,578</td>
-                                <td><span class="premium-badge pro">PREMIUM</span></td>
-                            </tr>
-                            <tr>
-                                <td><span class="rank" style="color:rgba(232,237,245,0.3)">#5</span></td>
-                                <td>
-                                    <div class="user-cell">
-                                        <div class="u-avatar" style="background:linear-gradient(135deg,#ed4245,#b91c1c)">C</div>
-                                        <div><div class="u-name">CyberPunk</div><div class="u-tag">@cyberpunk</div></div>
-                                    </div>
-                                </td>
-                                <td class="servers-nuked">1,203</td>
-                                <td><span class="premium-badge">FREE</span></td>
-                            </tr>
+                            <tr><td><span class="rank gold">#1</span></td><td><div class="user-cell"><div class="u-avatar" style="background:linear-gradient(135deg,#fbbf24,#d97706)">D</div><div><div class="u-name">DarkAngel</div><div class="u-tag">@darkangel</div></div></div></td><td class="servers-nuked">2,847</td><td><span class="premium-badge pro">PREMIUM</span></td></tr>
+                            <tr><td><span class="rank silver">#2</span></td><td><div class="user-cell"><div class="u-avatar" style="background:linear-gradient(135deg,#94a3b8,#64748b)">N</div><div><div class="u-name">NukeMaster</div><div class="u-tag">@nukemaster</div></div></div></td><td class="servers-nuked">2,391</td><td><span class="premium-badge pro">PREMIUM</span></td></tr>
+                            <tr><td><span class="rank bronze">#3</span></td><td><div class="user-cell"><div class="u-avatar" style="background:linear-gradient(135deg,#d97706,#92400e)">X</div><div><div class="u-name">XyberX</div><div class="u-tag">@xyberx</div></div></div></td><td class="servers-nuked">1,942</td><td><span class="premium-badge">FREE</span></td></tr>
+                            <tr><td><span class="rank" style="color:rgba(232,237,245,.3)">#4</span></td><td><div class="user-cell"><div class="u-avatar" style="background:linear-gradient(135deg,#5865f2,#4752c4)">V</div><div><div class="u-name">VoidWalker</div><div class="u-tag">@voidwalker</div></div></div></td><td class="servers-nuked">1,578</td><td><span class="premium-badge pro">PREMIUM</span></td></tr>
+                            <tr><td><span class="rank" style="color:rgba(232,237,245,.3)">#5</span></td><td><div class="user-cell"><div class="u-avatar" style="background:linear-gradient(135deg,#ed4245,#b91c1c)">C</div><div><div class="u-name">CyberPunk</div><div class="u-tag">@cyberpunk</div></div></div></td><td class="servers-nuked">1,203</td><td><span class="premium-badge">FREE</span></td></tr>
                         </tbody>
                     </table>
                 </div>
             </section>
 
-            <!-- ============ COMMANDS ============ -->
+            <!-- ========== COMMANDS ========== -->
             <section class="page-section" id="commands">
                 <div class="glass-card">
-                    <div class="card-header">
-                        <h3>⌨️ Available Commands</h3>
-                        <span class="see-all">Total: 14 commands</span>
-                    </div>
+                    <div class="card-header"><h3>⌨️ Available Commands</h3><span class="see-all">Total: 14 commands</span></div>
                     <div class="commands-grid">
-                        <div class="command-item">
-                            <span class="cmd-badge">/nuke</span>
-                            <span class="cmd-desc">Nuke the entire server</span>
-                            <span class="cmd-category">Nuke</span>
-                        </div>
-                        <div class="command-item">
-                            <span class="cmd-badge">/banall</span>
-                            <span class="cmd-desc">Ban all members</span>
-                            <span class="cmd-category">Nuke</span>
-                        </div>
-                        <div class="command-item">
-                            <span class="cmd-badge">/deletechannels</span>
-                            <span class="cmd-desc">Delete all channels</span>
-                            <span class="cmd-category">Nuke</span>
-                        </div>
-                        <div class="command-item">
-                            <span class="cmd-badge">/spamchannels</span>
-                            <span class="cmd-desc">Create spam channels</span>
-                            <span class="cmd-category">Nuke</span>
-                        </div>
-                        <div class="command-item">
-                            <span class="cmd-badge">/massrole</span>
-                            <span class="cmd-desc">Mass create/delete roles</span>
-                            <span class="cmd-category">Nuke</span>
-                        </div>
-                        <div class="command-item">
-                            <span class="cmd-badge">/webhookspam</span>
-                            <span class="cmd-desc">Spam with webhooks</span>
-                            <span class="cmd-category">Nuke</span>
-                        </div>
-                        <div class="command-item">
-                            <span class="cmd-badge">/renameall</span>
-                            <span class="cmd-desc">Rename all members</span>
-                            <span class="cmd-category">Nuke</span>
-                        </div>
-                        <div class="command-item">
-                            <span class="cmd-badge">/dmall</span>
-                            <span class="cmd-desc">DM all members</span>
-                            <span class="cmd-category">Nuke</span>
-                        </div>
-                        <div class="command-item">
-                            <span class="cmd-badge">/stats</span>
-                            <span class="cmd-desc">Show your nuke stats</span>
-                            <span class="cmd-category">Info</span>
-                        </div>
-                        <div class="command-item">
-                            <span class="cmd-badge">/leaderboard</span>
-                            <span class="cmd-desc">View top nukers</span>
-                            <span class="cmd-category">Info</span>
-                        </div>
-                        <div class="command-item">
-                            <span class="cmd-badge">/premium</span>
-                            <span class="cmd-desc">Premium info</span>
-                            <span class="cmd-category">Info</span>
-                        </div>
-                        <div class="command-item">
-                            <span class="cmd-badge">/help</span>
-                            <span class="cmd-desc">Show all commands</span>
-                            <span class="cmd-category">Info</span>
-                        </div>
+                        <div class="command-item"><span class="cmd-badge">/nuke</span><span class="cmd-desc">Nuke the entire server</span><span class="cmd-category">Nuke</span></div>
+                        <div class="command-item"><span class="cmd-badge">/banall</span><span class="cmd-desc">Ban all members</span><span class="cmd-category">Nuke</span></div>
+                        <div class="command-item"><span class="cmd-badge">/deletechannels</span><span class="cmd-desc">Delete all channels</span><span class="cmd-category">Nuke</span></div>
+                        <div class="command-item"><span class="cmd-badge">/spamchannels</span><span class="cmd-desc">Create spam channels</span><span class="cmd-category">Nuke</span></div>
+                        <div class="command-item"><span class="cmd-badge">/massrole</span><span class="cmd-desc">Mass create/delete roles</span><span class="cmd-category">Nuke</span></div>
+                        <div class="command-item"><span class="cmd-badge">/webhookspam</span><span class="cmd-desc">Spam with webhooks</span><span class="cmd-category">Nuke</span></div>
+                        <div class="command-item"><span class="cmd-badge">/renameall</span><span class="cmd-desc">Rename all members</span><span class="cmd-category">Nuke</span></div>
+                        <div class="command-item"><span class="cmd-badge">/dmall</span><span class="cmd-desc">DM all members</span><span class="cmd-category">Nuke</span></div>
+                        <div class="command-item"><span class="cmd-badge">/stats</span><span class="cmd-desc">Show your nuke stats</span><span class="cmd-category">Info</span></div>
+                        <div class="command-item"><span class="cmd-badge">/leaderboard</span><span class="cmd-desc">View top nukers</span><span class="cmd-category">Info</span></div>
+                        <div class="command-item"><span class="cmd-badge">/premium</span><span class="cmd-desc">Premium info</span><span class="cmd-category">Info</span></div>
+                        <div class="command-item"><span class="cmd-badge">/help</span><span class="cmd-desc">Show all commands</span><span class="cmd-category">Info</span></div>
                     </div>
                 </div>
             </section>
 
-            <!-- ============ INVITE ============ -->
+            <!-- ========== INVITE ========== -->
             <section class="page-section" id="invite">
                 <div class="glass-card invite-hero">
                     <div class="invite-icon">NB</div>
                     <h2>Add Nukebot to Your Server</h2>
                     <p>The most powerful nuke bot on Discord. Destroy, purge, and dominate with one click.</p>
-                    <button class="btn-invite" onclick="window.open('https://discord.com/oauth2/authorize?client_id=YOUR_BOT_ID&permissions=8&scope=bot','_blank')">
-                        <span class="discord-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189z"/>
-                            </svg>
-                        </span>
-                        Invite Nukebot
-                    </button>
+                    <button class="btn-invite" onclick="window.open('https://discord.com/oauth2/authorize?client_id=YOUR_BOT_ID&permissions=8&scope=bot','_blank')"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189z"/></svg> Invite Nukebot</button>
                     <div class="invite-features">
-                        <div class="invite-feature">
-                            <div class="f-icon">⚡</div>
-                            <h4>Instant Setup</h4>
-                            <p>Ready to use in seconds</p>
-                        </div>
-                        <div class="invite-feature">
-                            <div class="f-icon">🛡️</div>
-                            <h4>Admin Permissions</h4>
-                            <p>Full server access required</p>
-                        </div>
-                        <div class="invite-feature">
-                            <div class="f-icon">📈</div>
-                            <h4>Track Your Stats</h4>
-                            <p>View your nuke count</p>
-                        </div>
+                        <div class="invite-feature"><div class="f-icon">⚡</div><h4>Instant Setup</h4><p>Ready to use in seconds</p></div>
+                        <div class="invite-feature"><div class="f-icon">🛡️</div><h4>Admin Permissions</h4><p>Full server access required</p></div>
+                        <div class="invite-feature"><div class="f-icon">📈</div><h4>Track Your Stats</h4><p>View your nuke count</p></div>
                     </div>
                 </div>
             </section>
 
-            <!-- ============ LEADERBOARD ============ -->
+            <!-- ========== ADMIN PANEL (NEU!) ========== -->
+            <section class="page-section" id="admin">
+                <div class="glass-card" style="margin-bottom:20px;">
+                    <div class="card-header">
+                        <h3>👑 Admin Panel — Search &amp; Manage</h3>
+                        <span class="see-all" id="adminCount">0 results</span>
+                    </div>
+                    <div class="admin-search-box">
+                        <input type="text" id="adminSearchInput" placeholder="Search for admin panels, tokens, configs... (e.g. admin, token, config, api)" />
+                        <button class="btn-search" onclick="searchAdminPanels()">🔍 Search</button>
+                    </div>
+                    <div class="admin-results" id="adminResults">
+                        <!-- Results will be injected here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========== LEADERBOARD ========== -->
             <section class="page-section" id="leaderboard">
                 <div class="glass-card">
-                    <div class="card-header">
-                        <h3>🏆 Global Leaderboard — Top Nukers</h3>
-                        <span class="see-all">Updated daily</span>
-                    </div>
+                    <div class="card-header"><h3>🏆 Global Leaderboard — Top Nukers</h3><span class="see-all">Updated daily</span></div>
                     <table class="leaderboard-table">
-                        <thead>
-                            <tr>
-                                <th>Rank</th>
-                                <th>User</th>
-                                <th>Servers Nuked</th>
-                                <th>Plan</th>
-                            </tr>
-                        </thead>
+                        <thead><tr><th>Rank</th><th>User</th><th>Servers Nuked</th><th>Plan</th></tr></thead>
                         <tbody>
-                            <tr>
-                                <td><span class="rank gold">#1</span></td>
-                                <td>
-                                    <div class="user-cell">
-                                        <div class="u-avatar" style="background:linear-gradient(135deg,#fbbf24,#d97706)">D</div>
-                                        <div><div class="u-name">DarkAngel</div><div class="u-tag">@darkangel • github.com/darkangel</div></div>
-                                    </div>
-                                </td>
-                                <td class="servers-nuked">2,847</td>
-                                <td><span class="premium-badge pro">PREMIUM PRO</span></td>
-                            </tr>
-                            <tr>
-                                <td><span class="rank silver">#2</span></td>
-                                <td>
-                                    <div class="user-cell">
-                                        <div class="u-avatar" style="background:linear-gradient(135deg,#94a3b8,#64748b)">N</div>
-                                        <div><div class="u-name">NukeMaster</div><div class="u-tag">@nukemaster • github.com/nukemaster</div></div>
-                                    </div>
-                                </td>
-                                <td class="servers-nuked">2,391</td>
-                                <td><span class="premium-badge pro">PREMIUM PRO</span></td>
-                            </tr>
-                            <tr>
-                                <td><span class="rank bronze">#3</span></td>
-                                <td>
-                                    <div class="user-cell">
-                                        <div class="u-avatar" style="background:linear-gradient(135deg,#d97706,#92400e)">X</div>
-                                        <div><div class="u-name">XyberX</div><div class="u-tag">@xyberx • github.com/xyberx</div></div>
-                                    </div>
-                                </td>
-                                <td class="servers-nuked">1,942</td>
-                                <td><span class="premium-badge">FREE</span></td>
-                            </tr>
-                            <tr>
-                                <td><span class="rank" style="color:rgba(232,237,245,0.3)">#4</span></td>
-                                <td>
-                                    <div class="user-cell">
-                                        <div class="u-avatar" style="background:linear-gradient(135deg,#5865f2,#4752c4)">V</div>
-                                        <div><div class="u-name">VoidWalker</div><div class="u-tag">@voidwalker • github.com/voidwalker</div></div>
-                                    </div>
-                                </td>
-                                <td class="servers-nuked">1,578</td>
-                                <td><span class="premium-badge pro">PREMIUM PRO</span></td>
-                            </tr>
-                            <tr>
-                                <td><span class="rank" style="color:rgba(232,237,245,0.3)">#5</span></td>
-                                <td>
-                                    <div class="user-cell">
-                                        <div class="u-avatar" style="background:linear-gradient(135deg,#ed4245,#b91c1c)">C</div>
-                                        <div><div class="u-name">CyberPunk</div><div class="u-tag">@cyberpunk • github.com/cyberpunk</div></div>
-                                    </div>
-                                </td>
-                                <td class="servers-nuked">1,203</td>
-                                <td><span class="premium-badge">FREE</span></td>
-                            </tr>
-                            <tr>
-                                <td><span class="rank" style="color:rgba(232,237,245,0.3)">#6</span></td>
-                                <td>
-                                    <div class="user-cell">
-                                        <div class="u-avatar" style="background:linear-gradient(135deg,#57f287,#16a34a)">A</div>
-                                        <div><div class="u-name">AnonDestroyer</div><div class="u-tag">@anondestroyer • github.com/anon</div></div>
-                                    </div>
-                                </td>
-                                <td class="servers-nuked">987</td>
-                                <td><span class="premium-badge">FREE</span></td>
-                            </tr>
-                            <tr>
-                                <td><span class="rank" style="color:rgba(232,237,245,0.3)">#7</span></td>
-                                <td>
-                                    <div class="user-cell">
-                                        <div class="u-avatar" style="background:linear-gradient(135deg,#a855f7,#7e22ce)">S</div>
-                                        <div><div class="u-name">ShadowByte</div><div class="u-tag">@shadowbyte • github.com/shadowbyte</div></div>
-                                    </div>
-                                </td>
-                                <td class="servers-nuked">856</td>
-                                <td><span class="premium-badge pro">PREMIUM PRO</span></td>
-                            </tr>
-                            <tr>
-                                <td><span class="rank" style="color:rgba(232,237,245,0.3)">#8</span></td>
-                                <td>
-                                    <div class="user-cell">
-                                        <div class="u-avatar" style="background:linear-gradient(135deg,#f97316,#c2410c)">R</div>
-                                        <div><div class="u-name">RageQuit</div><div class="u-tag">@ragequit • github.com/ragequit</div></div>
-                                    </div>
-                                </td>
-                                <td class="servers-nuked">723</td>
-                                <td><span class="premium-badge">FREE</span></td>
-                            </tr>
-                            <tr>
-                                <td><span class="rank" style="color:rgba(232,237,245,0.3)">#9</span></td>
-                                <td>
-                                    <div class="user-cell">
-                                        <div class="u-avatar" style="background:linear-gradient(135deg,#06b6d4,#0891b2)">Z</div>
-                                        <div><div class="u-name">ZeroCool</div><div class="u-tag">@zerocool • github.com/zerocool</div></div>
-                                    </div>
-                                </td>
-                                <td class="servers-nuked">641</td>
-                                <td><span class="premium-badge pro">PREMIUM PRO</span></td>
-                            </tr>
-                            <tr>
-                                <td><span class="rank" style="color:rgba(232,237,245,0.3)">#10</span></td>
-                                <td>
-                                    <div class="user-cell">
-                                        <div class="u-avatar" style="background:linear-gradient(135deg,#ec4899,#be185d)">P</div>
-                                        <div><div class="u-name">PixelHacker</div><div class="u-tag">@pixelhacker • github.com/pixelhacker</div></div>
-                                    </div>
-                                </td>
-                                <td class="servers-nuked">512</td>
-                                <td><span class="premium-badge">FREE</span></td>
-                            </tr>
+                            <tr><td><span class="rank gold">#1</span></td><td><div class="user-cell"><div class="u-avatar" style="background:linear-gradient(135deg,#fbbf24,#d97706)">D</div><div><div class="u-name">DarkAngel</div><div class="u-tag">@darkangel • github.com/darkangel</div></div></div></td><td class="servers-nuked">2,847</td><td><span class="premium-badge pro">PREMIUM PRO</span></td></tr>
+                            <tr><td><span class="rank silver">#2</span></td><td><div class="user-cell"><div class="u-avatar" style="background:linear-gradient(135deg,#94a3b8,#64748b)">N</div><div><div class="u-name">NukeMaster</div><div class="u-tag">@nukemaster • github.com/nukemaster</div></div></div></td><td class="servers-nuked">2,391</td><td><span class="premium-badge pro">PREMIUM PRO</span></td></tr>
+                            <tr><td><span class="rank bronze">#3</span></td><td><div class="user-cell"><div class="u-avatar" style="background:linear-gradient(135deg,#d97706,#92400e)">X</div><div><div class="u-name">XyberX</div><div class="u-tag">@xyberx • github.com/xyberx</div></div></div></td><td class="servers-nuked">1,942</td><td><span class="premium-badge">FREE</span></td></tr>
+                            <tr><td><span class="rank" style="color:rgba(232,237,245,.3)">#4</span></td><td><div class="user-cell"><div class="u-avatar" style="background:linear-gradient(135deg,#5865f2,#4752c4)">V</div><div><div class="u-name">VoidWalker</div><div class="u-tag">@voidwalker • github.com/voidwalker</div></div></div></td><td class="servers-nuked">1,578</td><td><span class="premium-badge pro">PREMIUM PRO</span></td></tr>
+                            <tr><td><span class="rank" style="color:rgba(232,237,245,.3)">#5</span></td><td><div class="user-cell"><div class="u-avatar" style="background:linear-gradient(135deg,#ed4245,#b91c1c)">C</div><div><div class="u-name">CyberPunk</div><div class="u-tag">@cyberpunk • github.com/cyberpunk</div></div></div></td><td class="servers-nuked">1,203</td><td><span class="premium-badge">FREE</span></td></tr>
+                            <tr><td><span class="rank" style="color:rgba(232,237,245,.3)">#6</span></td><td><div class="user-cell"><div class="u-avatar" style="background:linear-gradient(135deg,#57f287,#16a34a)">A</div><div><div class="u-name">AnonDestroyer</div><div class="u-tag">@anondestroyer • github.com/anon</div></div></div></td><td class="servers-nuked">987</td><td><span class="premium-badge">FREE</span></td></tr>
+                            <tr><td><span class="rank" style="color:rgba(232,237,245,.3)">#7</span></td><td><div class="user-cell"><div class="u-avatar" style="background:linear-gradient(135deg,#a855f7,#7e22ce)">S</div><div><div class="u-name">ShadowByte</div><div class="u-tag">@shadowbyte • github.com/shadowbyte</div></div></div></td><td class="servers-nuked">856</td><td><span class="premium-badge pro">PREMIUM PRO</span></td></tr>
+                            <tr><td><span class="rank" style="color:rgba(232,237,245,.3)">#8</span></td><td><div class="user-cell"><div class="u-avatar" style="background:linear-gradient(135deg,#f97316,#c2410c)">R</div><div><div class="u-name">RageQuit</div><div class="u-tag">@ragequit • github.com/ragequit</div></div></div></td><td class="servers-nuked">723</td><td><span class="premium-badge">FREE</span></td></tr>
+                            <tr><td><span class="rank" style="color:rgba(232,237,245,.3)">#9</span></td><td><div class="user-cell"><div class="u-avatar" style="background:linear-gradient(135deg,#06b6d4,#0891b2)">Z</div><div><div class="u-name">ZeroCool</div><div class="u-tag">@zerocool • github.com/zerocool</div></div></div></td><td class="servers-nuked">641</td><td><span class="premium-badge pro">PREMIUM PRO</span></td></tr>
+                            <tr><td><span class="rank" style="color:rgba(232,237,245,.3)">#10</span></td><td><div class="user-cell"><div class="u-avatar" style="background:linear-gradient(135deg,#ec4899,#be185d)">P</div><div><div class="u-name">PixelHacker</div><div class="u-tag">@pixelhacker • github.com/pixelhacker</div></div></div></td><td class="servers-nuked">512</td><td><span class="premium-badge">FREE</span></td></tr>
                         </tbody>
                     </table>
                 </div>
             </section>
 
-            <!-- ============ PREMIUM ============ -->
+            <!-- ========== PREMIUM ========== -->
             <section class="page-section" id="premium">
-                <div class="glass-card" style="text-align:center; margin-bottom:20px;">
-                    <h2 style="font-size:22px; font-weight:700;">⭐ Unlock Premium Power</h2>
-                    <p style="color:rgba(232,237,245,0.45); margin-top:4px;">Go beyond the limits. Faster nukes, more features, priority support.</p>
+                <div class="glass-card" style="text-align:center;margin-bottom:20px;">
+                    <h2 style="font-size:22px;font-weight:700;">⭐ Unlock Premium Power</h2>
+                    <p style="color:rgba(232,237,245,.45);margin-top:4px;">Go beyond the limits. Faster nukes, more features, priority support.</p>
                 </div>
                 <div class="pricing-grid">
                     <div class="pricing-card">
@@ -1281,21 +650,18 @@
     </div>
 
     <script>
-        // ============ PAGE SWITCHING ============
+        // ========== PAGE SWITCHING ==========
         function switchPage(pageId, navElement) {
-            // Hide all pages
             document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
-            // Show target
             const target = document.getElementById(pageId);
             if (target) target.classList.add('active');
-            // Update nav
             document.querySelectorAll('.sidebar-nav .nav-item').forEach(n => n.classList.remove('active'));
             if (navElement) navElement.classList.add('active');
-            // Update topbar title
             const titles = {
                 overview: ['Overview', 'Dashboard summary & activity'],
                 commands: ['Commands', 'All available bot commands'],
                 invite: ['Invite Bot', 'Add Nukebot to your server'],
+                admin: ['Admin Panel', 'Search, view & copy admin configs'],
                 leaderboard: ['Leaderboard', 'Top nukers worldwide'],
                 premium: ['Premium', 'Unlock advanced features']
             };
@@ -1303,69 +669,338 @@
                 document.getElementById('pageTitle').textContent = titles[pageId][0];
                 document.getElementById('pageSubtitle').textContent = titles[pageId][1];
             }
-            // Close sidebar on mobile
-            if (window.innerWidth <= 768) {
-                document.getElementById('sidebar').classList.remove('open');
-            }
+            if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('open');
         }
 
-        // ============ SIDEBAR TOGGLE (Mobile) ============
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('open');
         }
 
-        // ============ DISCORD LOGIN SIMULATION ============
+        // ========== DISCORD OAUTH2 LOGIN ==========
+        // PRODUCTION: Replace with your real Discord OAuth URL
+        const DISCORD_CLIENT_ID = 'YOUR_CLIENT_ID';       // <-- Replace this
+        const REDIRECT_URI = window.location.origin + '/'; // <-- Must match Discord Developer Portal
+        const DISCORD_OAUTH_URL = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=identify%20guilds`;
+
         function handleDiscordLogin() {
-            // In production, redirect to Discord OAuth2
-            // window.location.href = 'https://discord.com/api/oauth2/authorize?client_id=YOUR_CLIENT_ID&redirect_uri=YOUR_REDIRECT&response_type=code&scope=identify%20guilds';
-            
-            // Demo: simulate login
-            const overlay = document.getElementById('loginOverlay');
-            overlay.classList.add('hidden');
-            
-            // Update UI with fake user
-            document.getElementById('sidebarAvatar').textContent = 'U';
-            document.getElementById('sidebarName').textContent = 'User#0001';
-            document.getElementById('sidebarStats').textContent = '0 servers nuked';
-            document.getElementById('loginBtn').textContent = 'Signed In';
-            document.getElementById('loginBtn').style.opacity = '0.6';
-            document.getElementById('loginBtn').style.c
-            document.getElementById('loginBtn').style.cursor = 'default';
-            
-            // Update page title to show user
-            document.getElementById('pageSubtitle').textContent = 'Welcome, User! You have nuked 0 servers.';
+            // Check if we're in demo mode (no client ID set)
+            if (DISCORD_CLIENT_ID === 'YOUR_CLIENT_ID') {
+                // Demo mode: simulate login
+                document.getElementById('loginOverlay').classList.add('hidden');
+                document.getElementById('sidebarAvatar').textContent = 'U';
+                document.getElementById('sidebarName').textContent = 'DemoUser#0001';
+                document.getElementById('sidebarStats').textContent = '0 servers nuked';
+                document.getElementById('loginBtn').textContent = 'Signed In';
+                document.getElementById('loginBtn').style.opacity = '0.6';
+                document.getElementById('loginBtn').style.cursor = 'default';
+                document.getElementById('pageSubtitle').textContent = 'Welcome, DemoUser! You have nuked 0 servers.';
+                showToast('✅ Demo login successful');
+                return;
+            }
+            // Real OAuth2 redirect
+            window.location.href = DISCORD_OAUTH_URL;
         }
 
-        // ============ CHECK AUTH STATE ON LOAD ============
-        // In production, check for OAuth token in URL or session
-        // For demo, show login overlay
-        window.addEventListener('DOMContentLoaded', () => {
-            // Simulate: user is not logged in initially
-            // To skip login for testing, comment out the line below:
-            // document.getElementById('loginOverlay').classList.add('hidden');
-        });
+        // ========== HANDLE OAUTH CALLBACK ==========
+        // When Discord redirects back with ?code=...
+        async function handleOAuthCallback() {
+            const params = new URLSearchParams(window.location.search);
+            const code = params.get('code');
+            if (!code) return; // No callback
 
-        // ============ KEYBOARD SHORTCUTS ============
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                const overlay = document.getElementById('loginOverlay');
-                if (!overlay.classList.contains('hidden')) {
-                    overlay.classList.add('hidden');
+            try {
+                // Send code to YOUR backend (see backend example below)
+                const response = await fetch('/api/auth/discord/callback',
+                const response = await fetch('/api/auth/discord/callback', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code })
+                });
+                const data = await response.json();
+                
+                if (data.user) {
+                    document.getElementById('loginOverlay').classList.add('hidden');
+                    document.getElementById('sidebarAvatar').textContent = data.user.username.charAt(0).toUpperCase();
+                    document.getElementById('sidebarName').textContent = data.user.username + '#' + data.user.discriminator;
+                    document.getElementById('sidebarStats').textContent = data.user.serversNuked + ' servers nuked';
+                    document.getElementById('loginBtn').textContent = 'Signed In';
+                    document.getElementById('loginBtn').style.opacity = '0.6';
+                    document.getElementById('loginBtn').style.cursor = 'default';
+                    document.getElementById('pageSubtitle').textContent = 'Welcome, ' + data.user.username + '! You have nuked ' + data.user.serversNuked + ' servers.';
+                    showToast('✅ Logged in as ' + data.user.username);
+                    // Clean URL
+                    window.history.replaceState({}, document.title, window.location.pathname);
                 }
+            } catch (err) {
+                console.error('OAuth error:', err);
+                showToast('❌ Login failed');
+            }
+        }
+
+        // ========== ADMIN SEARCH DATABASE ==========
+        const adminDatabase = [
+            {
+                id: 1,
+                title: 'Discord Bot Token',
+                path: '/config/bot.json',
+                category: 'Token',
+                fields: [
+                    { label: 'Bot Token', value: 'ODMyMjE4NzY1NDMyMTg3NjU0.Gh9aBc.XyZ123AbC456DeF789GhI0JkL' },
+                    { label: 'Client Secret', value: 'aB3cD5eF7gHiJ9kLmN0pQrStUvWxYz' },
+                    { label: 'Public Key', value: '1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s0t' }
+                ],
+                keywords: ['token', 'bot', 'discord', 'config', 'key']
+            },
+            {
+                id: 2,
+                title: 'Admin Panel Config',
+                path: '/admin/config.php',
+                category: 'Config',
+                fields: [
+                    { label: 'Admin Username', value: 'admin' },
+                    { label: 'Admin Password Hash', value: '$2y$10$X9q7Y8z2W5v4R3t6B1nA8eC0dF3gH2jK5lM7nP4bV6cX9zQ1' },
+                    { label: 'Session Secret', value: 's3ss10n_s3cr3t_k3y_2026_x9f8k2' }
+                ],
+                keywords: ['admin', 'config', 'login', 'password', 'panel']
+            },
+            {
+                id: 3,
+                title: 'API Endpoints Config',
+                path: '/api/config.yaml',
+                category: 'API',
+                fields: [
+                    { label: 'API Base URL', value: 'https://api.nukebot.xyz/v2' },
+                    { label: 'API Key', value: 'nk_api_live_8xR3mK9pQ2wV7yN4bJ6h' },
+                    { label: 'Webhook Secret', value: 'whsec_5tG8fH1jK4lM7nP0qR3sT6vW9xY2z' }
+                ],
+                keywords: ['api', 'endpoint', 'webhook', 'key', 'url']
+            },
+            {
+                id: 4,
+                title: 'Database Credentials',
+                path: '/.env',
+                category: 'Database',
+                fields: [
+                    { label: 'DB Host', value: 'mysql.nukebot.xyz:3306' },
+                    { label: 'DB Name', value: 'nukebot_prod' },
+                    { label: 'DB Username', value: 'nukebot_admin' },
+                    { label: 'DB Password', value: 'Nuk3B0t!Pr0d#2026$ecUr3' }
+                ],
+                keywords: ['database', 'db', 'mysql', 'env', 'credentials', 'password']
+            },
+            {
+                id: 5,
+                title: 'Redis Cache Config',
+                path: '/config/redis.conf',
+                category: 'Cache',
+                fields: [
+                    { label: 'Redis Host', value: 'redis-cluster.nukebot.xyz' },
+                    { label: 'Redis Port', value: '6379' },
+                    { label: 'Redis Password', value: 'r3d1s_p@ss_2026_cluster!' },
+                    { label: 'Cache Prefix', value: 'nk:cache:v2:' }
+                ],
+                keywords: ['redis', 'cache', 'cluster', 'config']
+            },
+            {
+                id: 6,
+                title: 'JWT Auth Secrets',
+                path: '/config/jwt.json',
+                category: 'Auth',
+                fields: [
+                    { label: 'JWT Secret', value: 'jwt_s3cr3t_nuk3b0t_2026_x8k2m9p4' },
+                    { label: 'JWT Issuer', value: 'nukebot-auth' },
+                    { label: 'Token Expiry', value: '7d' },
+                    { label: 'Refresh Token', value: 'rt_nk_8xR3mK9pQ2wV7yN4bJ6hL1m' }
+                ],
+                keywords: ['jwt', 'auth', 'token', 'secret', 'session']
+            },
+            {
+                id: 7,
+                title: 'AWS S3 Bucket Config',
+                path: '/config/aws.json',
+                category: 'Cloud',
+                fields: [
+                    { label: 'Access Key ID', value: 'AKIA6NUK3B0T7EXAMPLE' },
+                    { label: 'Secret Access Key', value: 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY' },
+                    { label: 'Bucket Name', value: 'nukebot-assets-prod' },
+                    { label: 'Region', value: 'us-east-1' }
+                ],
+                keywords: ['aws', 's3', 'bucket', 'cloud', 'access']
+            },
+            {
+                id: 8,
+                title: 'Discord Webhook Spam Config',
+                path: '/config/webhooks.json',
+                category: 'Nuke',
+                fields: [
+                    { label: 'Webhook URL', value: 'https://discord.com/api/webhooks/123456789012345678/abcDEFghIJKlmNoPQRstUVwXyz' },
+                    { label: 'Spam Message', value: '@everyone NUKED BY NUKEBOT 🔥' },
+                    { label: 'Rate Limit', value: '50 req/s' },
+                    { label: 'Proxy List', value: 'proxies/nuke_rotating.txt' }
+                ],
+                keywords: ['webhook', 'spam', 'nuke', 'proxy', 'discord']
+            }
+        ];
+
+        // ========== ADMIN SEARCH FUNCTION ==========
+        function searchAdminPanels() {
+            const query = document.getElementById('adminSearchInput').value.toLowerCase().trim();
+            const resultsContainer = document.getElementById('adminResults');
+            const countEl = document.getElementById('adminCount');
+
+            if (!query) {
+                resultsContainer.innerHTML = '<div style="text-align:center;padding:40px;color:rgba(232,237,245,.25);"><div style="font-size:48px;margin-bottom:12px;">🔍</div><div style="font-size:16px;font-weight:600;">Enter a search term above</div><div style="font-size:13px;margin-top:4px;">Try: admin, token, config, api, database, webhook, jwt, aws</div></div>';
+                countEl.textContent = '0 results';
+                return;
+            }
+
+            const results = adminDatabase.filter(item => {
+                const titleMatch = item.title.toLowerCase().includes(query);
+                const pathMatch = item.path.toLowerCase().includes(query);
+                const categoryMatch = item.category.toLowerCase().includes(query);
+                const keywordMatch = item.keywords.some(k => k.toLowerCase().includes(query));
+                const fieldMatch = item.fields.some(f => 
+                    f.label.toLowerCase().includes(query) || 
+                    f.value.toLowerCase().includes(query)
+                );
+                return titleMatch || pathMatch || categoryMatch || keywordMatch || fieldMatch;
+            });
+
+            countEl.textContent = results.length + ' results';
+
+            if (results.length === 0) {
+                resultsContainer.innerHTML = '<div style="text-align:center;padding:40px;color:rgba(232,237,245,.25);"><div style="font-size:48px;margin-bottom:12px;">😕</div><div style="font-size:16px;font-weight:600;">No results for "' + query + '"</div><div style="font-size:13px;margin-top:4px;">Try different keywords</div></div>';
+                return;
+            }
+
+            let html = '';
+            results.forEach((item, index) => {
+                const statusIcons = ['🟢 Live', '🟡 Staging', '🟢 Active', '🔴 Restricted', '🟢 Connected', '🟢 Operational', '🟡 Limited', '🟢 Ready'];
+                const status = statusIcons[index % statusIcons.length];
+                
+                html += '<div class="admin-result-card">';
+                html += '  <div class="admin-info">';
+                html += '    <div class="admin-title">' + item.title + ' <span style="font-size:11px;font-weight:400;color:rgba(232,237,245,.25);margin-left:8px;">' + status + '</span></div>';
+                html += '    <div class="admin-path">' + item.path + '</div>';
+                html += '    <div class="admin-meta">Category: ' + item.category + ' • ID: #' + item.id + '</div>';
+                html += '    <div class="admin-fields">';
+                
+                item.fields.forEach(field => {
+                    const fieldId = 'field_' + item.id + '_' + field.label.replace(/\s+/g, '_');
+                    html += '      <div class="field-item" onclick="copyFieldValue(\'' + fieldId + '\')" title="Click to copy">';
+                    html += '        <span class="copy-icon">📋</span>';
+                    html += '        <span>' + field.label + ': </span>';
+                    html += '        <span id="' + fieldId + '" style="color:#a5b4fc;">' + field.value + '</span>';
+                    html += '      </div>';
+                });
+                
+                html += '    </div>';
+                html += '  </div>';
+                html += '  <div class="admin-actions">';
+                html += '    <button class="btn-sm btn-save" onclick="saveAdminConfig(' + item.id + ')">💾 Save</button>';
+                html += '    <button class="btn-sm btn-copy-all" onclick="copyAllFields(' + item.id + ')">📋 Copy All</button>';
+                html += '  </div>';
+                html += '</div>';
+            });
+
+            resultsContainer.innerHTML = html;
+            showToast('🔍 Found ' + results.length + ' admin configs');
+        }
+
+        // ========== COPY SINGLE FIELD ==========
+        function copyFieldValue(elementId) {
+            const el = document.getElementById(elementId);
+            if (!el) return;
+            const text = el.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('📋 Copied: ' + text.substring(0, 30) + (text.length > 30 ? '...' : ''));
+            }).catch(() => {
+                // Fallback
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showToast('📋 Copied to clipboard');
+            });
+        }
+
+        // ========== COPY ALL FIELDS ==========
+        function copyAllFields(itemId) {
+            const item = adminDatabase.find(i => i.id === itemId);
+            if (!item) return;
+            
+            let text = item.title + '\n';
+            text += item.path + '\n';
+            text += '─────────────────\n';
+            item.fields.forEach(f => {
+                text += f.label + ': ' + f.value + '\n';
+            });
+            
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('📋 Copied all ' + item.fields.length + ' fields from "' + item.title + '"');
+            });
+        }
+
+        // ========== SAVE ADMIN CONFIG ==========
+        function saveAdminConfig(itemId) {
+            const item = adminDatabase.find(i => i.id === itemId);
+            if (!item) return;
+            
+            // Build config object
+            const config = {
+                id: item.id,
+                title: item.title,
+                path: item.path,
+                category: item.category,
+                timestamp: new Date().toISOString(),
+                savedBy: document.getElementById('sidebarName').textContent,
+                fields: {}
+            };
+            item.fields.forEach(f => {
+                config.fields[f.label] = f.value;
+            });
+            
+            // Save to localStorage
+            const saved = JSON.parse(localStorage.getItem('nukebot_saved_configs') || '[]');
+            const exists = saved.findIndex(s => s.id === item.id);
+            if (exists >= 0) {
+                saved[exists] = config;
+            } else {
+                saved.push(config);
+            }
+            localStorage.setItem('nukebot_saved_configs', JSON.stringify(saved));
+            
+            showToast('💾 Saved "' + item.title + '" config successfully!');
+        }
+
+        // ========== ENTER KEY SEARCH ==========
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('adminSearchInput').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') searchAdminPanels();
+            });
+            
+            // Check for OAuth callback
+            handleOAuthCallback();
+            
+            // Load saved configs count
+            const saved = JSON.parse(localStorage.getItem('nukebot_saved_configs') || '[]');
+            if (saved.length > 0) {
+                console.log('[Nukebot] Loaded ' + saved.length + ' saved configs from localStorage');
             }
         });
 
-        // ============ SMOOTH SIDEBAR CLOSE ON CLICK OUTSIDE ============
-        document.addEventListener('click', (e) => {
-            const sidebar = document.getElementById('sidebar');
-            const hamburger = document.querySelector('.hamburger');
-            if (window.innerWidth <= 768 && 
-                sidebar.classList.contains('open') &&
-                !sidebar.contains(e.target) &&
-                !hamburger.contains(e.target)) {
-                sidebar.classList.remove('open');
-            }
-        });
+        // ========== TOAST NOTIFICATION ==========
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            clearTimeout(toast._timeout);
+            toast._timeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2500);
+        }
     </script>
 </body>
 </html>
