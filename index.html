@@ -1,1086 +1,1371 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NukeBot – Dashboard</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NUKEBOT — Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        /* ============ RESET & BASE ============ */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
         body {
             font-family: 'Inter', sans-serif;
             background: #0b0d15;
-            color: #e2e8f0;
+            color: #e8edf5;
             min-height: 100vh;
-            display: flex;
+            overflow-x: hidden;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0b0d15; }
+        ::-webkit-scrollbar-thumb { background: rgba(88, 101, 242, 0.4); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(88, 101, 242, 0.7); }
+        a { text-decoration: none; color: inherit; }
+
+        /* ============ ANIMATED BG ============ */
+        .bg-glow {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -2;
             overflow: hidden;
         }
+        .bg-glow .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.35;
+            animation: orbFloat 20s ease-in-out infinite alternate;
+        }
+        .bg-glow .orb:nth-child(1) {
+            width: 600px; height: 600px;
+            background: #5865f2;
+            top: -10%; left: -10%;
+            animation-duration: 25s;
+        }
+        .bg-glow .orb:nth-child(2) {
+            width: 500px; height: 500px;
+            background: #ed4245;
+            bottom: -10%; right: -10%;
+            animation-duration: 20s;
+            animation-delay: -5s;
+        }
+        .bg-glow .orb:nth-child(3) {
+            width: 400px; height: 400px;
+            background: #57f287;
+            top: 40%; left: 50%;
+            animation-duration: 18s;
+            animation-delay: -10s;
+            opacity: 0.15;
+        }
+        @keyframes orbFloat {
+            0% { transform: translate(0,0) scale(1); }
+            33% { transform: translate(60px,-40px) scale(1.05); }
+            66% { transform: translate(-30px,50px) scale(0.95); }
+            100% { transform: translate(40px,20px) scale(1.02); }
+        }
 
-        /* ===== ANIMATED GLASS BACKGROUND ===== */
-        body::before {
-            content: '';
+        /* ============ GRID OVERLAY ============ */
+        .grid-overlay {
             position: fixed;
-            inset: 0;
-            background:
-                radial-gradient(ellipse 80% 60% at 0% 20%, rgba(120, 60, 255, 0.15), transparent 70%),
-                radial-gradient(ellipse 60% 50% at 100% 80%, rgba(255, 50, 100, 0.12), transparent 70%),
-                radial-gradient(ellipse 50% 40% at 50% 0%, rgba(0, 200, 255, 0.08), transparent 60%);
-            z-index: 0;
-            animation: bgShift 12s ease-in-out infinite alternate;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -1;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
         }
 
-        @keyframes bgShift {
-            0% { transform: scale(1) translate(0, 0); }
-            100% { transform: scale(1.1) translate(-2%, 2%); }
+        /* ============ LAYOUT ============ */
+        .app {
+            display: flex;
+            min-height: 100vh;
         }
 
-        /* ===== SIDEBAR ===== */
+        /* ============ SIDEBAR ============ */
         .sidebar {
-            position: fixed;
-            left: 0;
-            top: 0;
-            height: 100vh;
-            width: 260px;
-            background: rgba(18, 22, 33, 0.7);
-            backdrop-filter: blur(24px) saturate(180%);
-            -webkit-backdrop-filter: blur(24px) saturate(180%);
-            border-right: 1px solid rgba(255, 255, 255, 0.06);
-            z-index: 100;
+            width: 270px;
+            min-height: 100vh;
+            background: rgba(11, 13, 21, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255,255,255,0.06);
+            padding: 28px 20px;
             display: flex;
             flex-direction: column;
-            padding: 28px 20px;
+            position: fixed;
+            left: 0; top: 0;
+            z-index: 100;
             transition: transform 0.3s ease;
         }
-
-        .sidebar-logo {
+        .sidebar-brand {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
             margin-bottom: 40px;
-            padding-left: 4px;
+            padding: 0 6px;
         }
-
-        .sidebar-logo .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #ff3b5c, #c62840);
+        .sidebar-brand .logo-icon {
+            width: 42px; height: 42px;
+            background: linear-gradient(135deg, #5865f2, #ed4245);
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-weight: 900;
             font-size: 20px;
-            font-weight: 800;
             color: #fff;
-            box-shadow: 0 4px 16px rgba(255, 59, 92, 0.35);
+            box-shadow: 0 8px 24px rgba(88, 101, 242, 0.35);
         }
-
-        .sidebar-logo h1 {
-            font-size: 20px;
+        .sidebar-brand h2 {
             font-weight: 700;
-            background: linear-gradient(135deg, #f0f4ff, #a0b4e0);
+            font-size: 20px;
+            letter-spacing: -0.3px;
+            background: linear-gradient(135deg, #e8edf5, #a5b4fc);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
+        .sidebar-brand h2 span { color: #ed4245; -webkit-text-fill-color: #ed4245; }
 
-        .sidebar-logo h1 span {
-            font-weight: 400;
-            -webkit-text-fill-color: rgba(160, 180, 224, 0.5);
-        }
-
-        .nav-list {
-            list-style: none;
-            flex: 1;
+        .sidebar-nav {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 6px;
+            flex: 1;
         }
-
-        .nav-list li {
+        .sidebar-nav .nav-item {
             display: flex;
             align-items: center;
             gap: 14px;
             padding: 12px 16px;
             border-radius: 12px;
-            cursor: pointer;
             font-weight: 500;
-            font-size: 15px;
-            color: rgba(226, 232, 240, 0.55);
+            font-size: 14px;
+            color: rgba(232, 237, 245, 0.55);
             transition: all 0.25s ease;
+            cursor: pointer;
             position: relative;
         }
-
-        .nav-list li i {
-            width: 20px;
-            text-align: center;
-            font-size: 16px;
+        .sidebar-nav .nav-item:hover {
+            color: rgba(232, 237, 245, 0.85);
+            background: rgba(255,255,255,0.04);
         }
-
-        .nav-list li:hover {
-            color: #e2e8f0;
-            background: rgba(255, 255, 255, 0.04);
-        }
-
-        .nav-list li.active {
+        .sidebar-nav .nav-item.active {
             color: #fff;
-            background: rgba(255, 59, 92, 0.15);
-            box-shadow: inset 3px 0 0 #ff3b5c;
+            background: rgba(88, 101, 242, 0.18);
+            border: 1px solid rgba(88, 101, 242, 0.25);
+            box-shadow: 0 0 20px rgba(88, 101, 242, 0.08);
         }
-
-        .nav-list li.active::before {
-            content: '';
-            position: absolute;
-            left: -20px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 4px;
-            height: 24px;
-            background: #ff3b5c;
-            border-radius: 0 4px 4px 0;
+        .sidebar-nav .nav-item .icon {
+            width: 22px; height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
         }
-
-        .nav-list li .badge {
+        .sidebar-nav .nav-item .badge {
             margin-left: auto;
-            background: rgba(255, 59, 92, 0.2);
-            color: #ff6b81;
+            background: rgba(237, 66, 69, 0.2);
+            color: #ed4245;
             font-size: 11px;
             font-weight: 700;
             padding: 2px 10px;
             border-radius: 20px;
+            border: 1px solid rgba(237, 66, 69, 0.25);
         }
-
-        .sidebar-user {
+        .sidebar-bottom {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+        }
+        .sidebar-bottom .user-card {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 16px 12px;
-            margin-top: 8px;
-            border-radius: 14px;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            cursor: pointer;
-            transition: all 0.25s ease;
-        }
-
-        .sidebar-user:hover {
-            background: rgba(255, 255, 255, 0.07);
-        }
-
-        .sidebar-user img {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .sidebar-user .user-info {
-            flex: 1;
-        }
-
-        .sidebar-user .user-info .name {
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .sidebar-user .user-info .tag {
-            font-size: 12px;
-            color: rgba(226, 232, 240, 0.45);
-        }
-
-        .sidebar-user .user-status {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #22c55e;
-            box-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
-        }
-
-        /* ===== MAIN CONTENT ===== */
-        .main {
-            margin-left: 260px;
-            flex: 1;
-            position: relative;
-            z-index: 1;
-            padding: 32px 40px;
-            height: 100vh;
-            overflow-y: auto;
-        }
-
-        .main::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .main::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .main::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 10px;
-        }
-
-        .topbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 32px;
-        }
-
-        .topbar h2 {
-            font-size: 26px;
-            font-weight: 700;
-        }
-
-        .topbar h2 span {
-            color: rgba(226, 232, 240, 0.4);
-            font-weight: 400;
-            font-size: 16px;
-        }
-
-        .topbar-actions {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .topbar-actions .search-box {
-            display: flex;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 10px 12px;
             border-radius: 12px;
-            padding: 8px 16px;
-            gap: 10px;
-            transition: all 0.25s ease;
+            background: rgba(255,255,255,0.04);
         }
-
-        .topbar-actions .search-box:focus-within {
-            border-color: rgba(255, 59, 92, 0.3);
-            background: rgba(255, 255, 255, 0.08);
-        }
-
-        .topbar-actions .search-box i {
-            color: rgba(226, 232, 240, 0.3);
-        }
-
-        .topbar-actions .search-box input {
-            background: none;
-            border: none;
-            outline: none;
-            color: #e2e8f0;
-            font-size: 14px;
-            width: 180px;
-        }
-
-        .topbar-actions .search-box input::placeholder {
-            color: rgba(226, 232, 240, 0.25);
-        }
-
-        /* ===== GLASS CARD ===== */
-        .glass-card {
-            background: rgba(18, 22, 33, 0.55);
-            backdrop-filter: blur(20px) saturate(160%);
-            -webkit-backdrop-filter: blur(20px) saturate(160%);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 20px;
-            padding: 28px 32px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            transition: all 0.3s ease;
-        }
-
-        .glass-card:hover {
-            border-color: rgba(255, 255, 255, 0.1);
-            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4);
-        }
-
-        .glass-card .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .glass-card .card-header h3 {
-            font-size: 18px;
-            font-weight: 600;
-        }
-
-        .glass-card .card-header a {
-            color: rgba(255, 59, 92, 0.7);
-            font-size: 13px;
-            font-weight: 500;
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-
-        .glass-card .card-header a:hover {
-            color: #ff3b5c;
-        }
-
-        /* ===== STATS GRID ===== */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            margin-bottom: 28px;
-        }
-
-        .stat-card {
-            background: rgba(18, 22, 33, 0.55);
-            backdrop-filter: blur(20px) saturate(160%);
-            -webkit-backdrop-filter: blur(20px) saturate(160%);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 18px;
-            padding: 22px 24px;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-
-        .stat-card:hover {
-            transform: translateY(-3px);
-            border-color: rgba(255, 255, 255, 0.12);
-        }
-
-        .stat-card .stat-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: 14px;
+        .sidebar-bottom .user-card .avatar {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #5865f2, #a5b4fc);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
-            margin-bottom: 14px;
-        }
-
-        .stat-card .stat-icon.red {
-            background: rgba(255, 59, 92, 0.15);
-            color: #ff6b81;
-        }
-
-        .stat-card .stat-icon.blue {
-            background: rgba(59, 130, 246, 0.15);
-            color: #60a5fa;
-        }
-
-        .stat-card .stat-icon.green {
-            background: rgba(34, 197, 94, 0.15);
-            color: #4ade80;
-        }
-
-        .stat-card .stat-icon.purple {
-            background: rgba(168, 85, 247, 0.15);
-            color: #a78bfa;
-        }
-
-        .stat-card .stat-value {
-            font-size: 28px;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-        }
-
-        .stat-card .stat-label {
-            font-size: 13px;
-            color: rgba(226, 232, 240, 0.45);
-            margin-top: 4px;
-        }
-
-        /* ===== LEADERBOARD TABLE ===== */
-        .leaderboard-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 4px;
-        }
-
-        .leaderboard-table thead th {
-            text-align: left;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            color: rgba(226, 232, 240, 0.3);
-            padding-bottom: 14px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .leaderboard-table tbody tr {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-            transition: background 0.2s;
-        }
-
-        .leaderboard-table tbody tr:hover {
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        .leaderboard-table tbody td {
-            padding: 14px 0;
-            font-size: 14px;
-        }
-
-        .leaderboard-table .rank {
             font-weight: 700;
-            width: 36px;
-            color: rgba(226, 232, 240, 0.3);
+            font-size: 14px;
+            color: #fff;
+        }
+        .sidebar-bottom .user-card .user-info {
+            flex: 1;
+        }
+        .sidebar-bottom .user-card .user-info .name {
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .sidebar-bottom .user-card .user-info .stats {
+            font-size: 11px;
+            color: rgba(232, 237, 245, 0.45);
         }
 
-        .leaderboard-table .rank.gold { color: #fbbf24; }
-        .leaderboard-table .rank.silver { color: #94a3b8; }
-        .leaderboard-table .rank.bronze { color: #d97706; }
+        /* ============ MAIN CONTENT ============ */
+        .main {
+            margin-left: 270px;
+            flex: 1;
+            padding: 32px 36px;
+            position: relative;
+        }
 
-        .leaderboard-table .user-cell {
+        /* ============ TOP BAR ============ */
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
+        }
+        .topbar .page-title h1 {
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: -0.4px;
+        }
+        .topbar .page-title p {
+            font-size: 14px;
+            color: rgba(232, 237, 245, 0.45);
+            margin-top: 2px;
+        }
+        .topbar .actions {
             display: flex;
             align-items: center;
             gap: 12px;
         }
-
-        .leaderboard-table .user-cell img {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            border: 2px solid rgba(255, 255, 255, 0.06);
+        .topbar .actions .btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            border: none;
+            font-family: inherit;
+        }
+        .topbar .actions .btn-primary {
+            background: linear-gradient(135deg, #5865f2, #4752c4);
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(88, 101, 242, 0.3);
+        }
+        .topbar .actions .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(88, 101, 242, 0.4);
+        }
+        .topbar .actions .btn-ghost {
+            background: rgba(255,255,255,0.06);
+            color: rgba(232, 237, 245, 0.75);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .topbar .actions .btn-ghost:hover {
+            background: rgba(255,255,255,0.1);
         }
 
-        .leaderboard-table .user-cell .uname {
+        /* ============ PAGE SECTIONS ============ */
+        .page-section {
+            display: none;
+            animation: fadeSlideIn 0.4s ease;
+        }
+        .page-section.active {
+            display: block;
+        }
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ============ CARDS (Glassmorphism) ============ */
+        .glass-card {
+            background: rgba(255,255,255,0.04);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover {
+            border-color: rgba(255,255,255,0.12);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+        .glass-card .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .glass-card .card-header h3 {
+            font-size: 16px;
             font-weight: 600;
         }
-
-        .leaderboard-table .user-cell .utag {
-            font-size: 12px;
-            color: rgba(226, 232, 240, 0.3);
-        }
-
-        .leaderboard-table .user-cell .github-link {
-            margin-left: 8px;
-            color: rgba(226, 232, 240, 0.2);
+        .glass-card .card-header .see-all {
             font-size: 13px;
+            color: rgba(88, 101, 242, 0.8);
+            font-weight: 500;
+            cursor: pointer;
             transition: color 0.2s;
         }
+        .glass-card .card-header .see-all:hover { color: #5865f2; }
 
-        .leaderboard-table .user-cell .github-link:hover {
-            color: #60a5fa;
+        /* ============ OVERVIEW STATS ============ */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 28px;
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.04);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 16px;
+            padding: 20px 22px;
+            transition: all 0.3s ease;
+        }
+        .stat-card:hover {
+            border-color: rgba(255,255,255,0.12);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+        .stat-card .stat-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: rgba(232, 237, 245, 0.45);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+        .stat-card .stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+        .stat-card .stat-value.purple { color: #a5b4fc; }
+        .stat-card .stat-value.red { color: #ed4245; }
+        .stat-card .stat-value.green { color: #57f287; }
+        .stat-card .stat-value.blue { color: #5865f2; }
+        .stat-card .stat-sub {
+            font-size: 12px;
+            color: rgba(232, 237, 245, 0.35);
+            margin-top: 4px;
         }
 
+        /* ============ LEADERBOARD TABLE ============ */
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .leaderboard-table th {
+            text-align: left;
+            padding: 12px 16px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: rgba(232, 237, 245, 0.35);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .leaderboard-table td {
+            padding: 14px 16px;
+            font-size: 14px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+        .leaderboard-table tr:last-child td { border-bottom: none; }
+        .leaderboard-table tr:hover td {
+            background: rgba(255,255,255,0.02);
+        }
+        .leaderboard-table .rank {
+            font-weight: 700;
+            font-size: 16px;
+            width: 40px;
+        }
+        .leaderboard-table .rank.gold { color: #fbbf24; }
+        .leaderboard-table .rank.silver { color: #94a3b8; }
+        .leaderboard-table .rank.bronze { color: #d97706; }
+        .leaderboard-table .user-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .leaderboard-table .user-cell .u-avatar {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 12px;
+            color: #fff;
+            flex-shrink: 0;
+        }
+        .leaderboard-table .user-cell .u-name {
+            font-weight: 600;
+        }
+        .leaderboard-table .user-cell .u-tag {
+            font-size: 12px;
+            color: rgba(232, 237, 245, 0.35);
+        }
         .leaderboard-table .servers-nuked {
             font-weight: 700;
-            color: #ff6b81;
+            color: #ed4245;
+        }
+        .leaderboard-table .premium-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.05));
+            color: #fbbf24;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+        .leaderboard-table .premium-badge.pro {
+            background: linear-gradient(135deg, rgba(88, 101, 242, 0.15), rgba(165, 180, 252, 0.05));
+            color: #a5b4fc;
+            border-color: rgba(88, 101, 242, 0.2);
         }
 
-        .leaderboard-table .progress-bar {
-            width: 120px;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.06);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .leaderboard-table .progress-bar .fill {
-            height: 100%;
-            border-radius: 10px;
-            background: linear-gradient(90deg, #ff3b5c, #c62840);
-        }
-
-        /* ===== COMMANDS GRID ===== */
+        /* ============ COMMANDS LIST ============ */
         .commands-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 12px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 14px;
         }
-
-        .cmd-item {
+        .command-item {
             display: flex;
             align-items: center;
             gap: 14px;
             padding: 14px 18px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 14px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.05);
             transition: all 0.25s ease;
         }
-
-        .cmd-item:hover {
-            background: rgba(255, 255, 255, 0.06);
-            border-color: rgba(255, 255, 255, 0.08);
+        .command-item:hover {
+            background: rgba(255,255,255,0.06);
+            border-color: rgba(255,255,255,0.1);
             transform: translateX(4px);
         }
-
-        .cmd-item .cmd-key {
-            font-family: 'Inter', monospace;
+        .command-item .cmd-badge {
+            font-family: 'Courier New', monospace;
             font-weight: 700;
-            font-size: 13px;
-            background: rgba(255, 59, 92, 0.1);
-            color: #ff6b81;
+            font-size: 12px;
+            background: rgba(88, 101, 242, 0.15);
+            color: #a5b4fc;
             padding: 4px 12px;
-            border-radius: 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(88, 101, 242, 0.2);
             white-space: nowrap;
         }
-
-        .cmd-item .cmd-desc {
-            font-size: 13px;
-            color: rgba(226, 232, 240, 0.5);
+        .command-item .cmd-desc {
             flex: 1;
+            font-size: 13px;
+            color: rgba(232, 237, 245, 0.7);
+        }
+        .command-item .cmd-category {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            color: rgba(232, 237, 245, 0.25);
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: rgba(255,255,255,0.04);
         }
 
-        /* ===== INVITE SECTION ===== */
-        .invite-card {
+        /* ============ INVITE SECTION ============ */
+        .invite-hero {
             text-align: center;
-            padding: 40px 32px;
+            padding: 60px 40px;
         }
-
-        .invite-card .invite-icon {
-            font-size: 48px;
-            color: rgba(255, 255, 255, 0.06);
-            margin-bottom: 16px;
+        .invite-hero .invite-icon {
+            width: 80px; height: 80px;
+            background: linear-gradient(135deg, #5865f2, #ed4245);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 36px;
+            color: #fff;
+            margin: 0 auto 24px;
+            box-shadow: 0 12px 40px rgba(88, 101, 242, 0.3);
         }
-
-        .invite-card h3 {
-            font-size: 22px;
+        .invite-hero h2 {
+            font-size: 28px;
             font-weight: 700;
             margin-bottom: 8px;
         }
-
-        .invite-card p {
-            color: rgba(226, 232, 240, 0.45);
-            font-size: 14px;
-            margin-bottom: 24px;
+        .invite-hero p {
+            font-size: 15px;
+            color: rgba(232, 237, 245, 0.5);
+            max-width: 500px;
+            margin: 0 auto 28px;
         }
-
-        .invite-btn {
+        .invite-hero .btn-invite {
             display: inline-flex;
             align-items: center;
-            gap: 12px;
-            padding: 14px 40px;
+            gap: 10px;
+            padding: 16px 36px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 16px;
             background: linear-gradient(135deg, #5865f2, #4752c4);
             color: #fff;
-            font-weight: 600;
-            font-size: 16px;
             border: none;
-            border-radius: 14px;
             cursor: pointer;
             transition: all 0.3s ease;
-            text-decoration: none;
-            box-shadow: 0 6px 24px rgba(88, 101, 242, 0.3);
+            box-shadow: 0 6px 24px rgba(88, 101, 242, 0.35);
+            font-family: inherit;
+        }
+        .invite-hero .btn-invite:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 32px rgba(88, 101, 242, 0.5);
+        }
+        .invite-hero .btn-invite .discord-icon {
+            font-size: 22px;
+        }
+        .invite-features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin-top: 32px;
+        }
+        .invite-feature {
+            padding: 20px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.05);
+            text-align: center;
+        }
+        .invite-feature .f-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        .invite-feature h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .invite-feature p {
+            font-size: 12px;
+            color: rgba(232, 237, 245, 0.45);
         }
 
-        .invite-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 32px rgba(88, 101, 242, 0.45);
+        /* ============ PREMIUM ============ */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 20px;
         }
-
-        .invite-btn i {
-            font-size: 20px;
-        }
-
-        /* ===== SECTION TOGGLING ===== */
-        .section {
-            display: none;
-        }
-
-        .section.active {
-            display: block;
-            animation: fadeIn 0.35s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ===== DISCORD LOGIN OVERLAY ===== */
-        .login-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(11, 13, 21, 0.85);
+        .pricing-card {
+            background: rgba(255,255,255,0.04);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-        }
-
-        .login-overlay.hidden {
-            display: none;
-        }
-
-        .login-modal {
-            background: rgba(18, 22, 33, 0.8);
-            backdrop-filter: blur(32px) saturate(180%);
-            -webkit-backdrop-filter: blur(32px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 24px;
-            padding: 48px 40px;
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 16px;
+            padding: 32px 24px;
             text-align: center;
-            max-width: 420px;
-            width: 90%;
-            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .pricing-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255,255,255,0.12);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+        }
+        .pricing-card.featured {
+            border-color: rgba(88, 101, 242, 0.3);
+            background: rgba(88, 101, 242, 0.06);
+        }
+        .pricing-card.featured::before {
+            content: 'BEST SELLER';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #5865f2, #4752c4);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 4px 16px;
+            border-radius: 20px;
+            letter-spacing: 0.5px;
+        }
+        .pricing-card .price-name {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .pricing-card .price-amount {
+            font-size: 40px;
+            font-weight: 900;
+            letter-spacing: -2px;
+            color: #a5b4fc;
+            margin: 12px 0;
+        }
+        .pricing-card .price-amount span {
+            font-size: 16px;
+            font-weight: 600;
+            color: rgba(232, 237, 245, 0.35);
+        }
+        .pricing-card .price-features {
+            list-style: none;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .pricing-card .price-features li {
+            padding: 8px 0;
+            font-size: 13px;
+            color: rgba(232, 237, 245, 0.65);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .pricing-card .price-features li::before {
+            content: '✓';
+            color: #57f287;
+            font-weight: 700;
+        }
+        .pricing-card .btn-subscribe {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-family: inherit;
+            background: rgba(255,255,255,0.06);
+            color: rgba(232, 237, 245, 0.7);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .pricing-card .btn-subscribe:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        .pricing-card.featured .btn-subscribe {
+            background: linear-gradient(135deg, #5865f2, #4752c4);
+            color: #fff;
+            border: none;
+            box-shadow: 0 4px 16px rgba(88, 101, 242, 0.3);
+        }
+        .pricing-card.featured .btn-subscribe:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(88, 101, 242, 0.4);
         }
 
-        .login-modal .login-icon {
-            width: 64px;
-            height: 64px;
-            background: linear-gradient(135deg, #5865f2, #4752c4);
-            border-radius: 18px;
+        /* ============ LOGIN OVERLAY ============ */
+        .login-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             display: flex;
             align-items: center;
             justify-content: center;
+            z-index: 1000;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+        .login-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        .login-modal {
+            background: rgba(15, 17, 26, 0.95);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 24px;
+            padding: 48px 40px;
+            max-width: 420px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+        }
+        .login-modal .login-icon {
+            width: 64px; height: 64px;
+            background: linear-gradient(135deg, #5865f2, #ed4245);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
             font-size: 28px;
             color: #fff;
             margin: 0 auto 20px;
-            box-shadow: 0 8px 32px rgba(88, 101, 242, 0.35);
         }
-
         .login-modal h2 {
             font-size: 24px;
             font-weight: 700;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
-
         .login-modal p {
-            color: rgba(226, 232, 240, 0.45);
             font-size: 14px;
+            color: rgba(232, 237, 245, 0.45);
             margin-bottom: 28px;
-            line-height: 1.6;
         }
-
-        .login-modal .discord-login-btn {
+        .login-modal .btn-discord {
             display: inline-flex;
             align-items: center;
-            gap: 12px;
-            padding: 14px 36px;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 15px;
             background: #5865f2;
             color: #fff;
-            font-weight: 600;
-            font-size: 16px;
             border: none;
-            border-radius: 14px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            box-shadow: 0 6px 24px rgba(88, 101, 242, 0.3);
+            transition: all 0.25s ease;
+            font-family: inherit;
         }
-
-        .login-modal .discord-login-btn:hover {
+        .login-modal .btn-discord:hover {
             background: #4752c4;
             transform: translateY(-2px);
-            box-shadow: 0 10px 32px rgba(88, 101, 242, 0.45);
+            box-shadow: 0 8px 24px rgba(88, 101, 242, 0.3);
         }
-
-        .login-modal .login-badges {
-            display: flex;
-            justify-content: center;
-            gap: 24px;
-            margin-top: 24px;
+        .login-modal .btn-discord svg {
+            width: 22px; height: 22px;
+        }
+        .login-modal .login-footer {
+            margin-top: 20px;
             font-size: 12px;
-            color: rgba(226, 232, 240, 0.25);
+            color: rgba(232, 237, 245, 0.25);
         }
 
-        .login-modal .login-badges i {
-            margin-right: 4px;
-        }
-
-        /* ===== RESPONSIVE ===== */
+        /* ============ RESPONSIVE ============ */
         @media (max-width: 1024px) {
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .pricing-grid { grid-template-columns: 1fr; max-width: 400px; margin-left: auto; margin-right: auto; }
+            .invite-features { grid-template-columns: 1fr; }
         }
-
         @media (max-width: 768px) {
             .sidebar {
                 transform: translateX(-100%);
+                width: 260px;
             }
             .sidebar.open {
                 transform: translateX(0);
             }
             .main {
                 margin-left: 0;
-                padding: 20px;
+                padding: 20px 16px;
             }
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
+            .stats-grid { grid-template-columns: 1fr; }
+            .commands-grid { grid-template-columns: 1fr; }
             .topbar {
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 12px;
             }
-            .topbar-actions {
-                width: 100%;
-            }
-            .topbar-actions .search-box {
-                flex: 1;
-            }
-            .topbar-actions .search-box input {
-                width: 100%;
-            }
-            .mobile-toggle {
+            .hamburger {
                 display: flex !important;
             }
+            .login-modal { padding: 32px 24px; }
         }
-
-        .mobile-toggle {
+        .hamburger {
+            display: none;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            width: 40px; height: 40px;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #e8edf5;
+            font-size: 18px;
+            transition: all 0.2s;
+        }
+        .hamburger:hover { background: rgba(255,255,255,0.1); }
+        .mobile-close {
             display: none;
             background: none;
             border: none;
-            color: #e2e8f0;
+            color: rgba(232, 237, 245, 0.5);
             font-size: 24px;
             cursor: pointer;
-            padding: 4px;
+            position: absolute;
+            top: 20px; right: 20px;
+        }
+        @media (max-width: 768px) {
+            .mobile-close { display: block; }
         }
     </style>
 </head>
 <body>
 
-    <!-- ===== LOGIN OVERLAY ===== -->
+    <!-- ====== BACKGROUND EFFECTS ====== -->
+    <div class="bg-glow">
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+    </div>
+    <div class="grid-overlay"></div>
+
+    <!-- ====== LOGIN OVERLAY ====== -->
     <div class="login-overlay" id="loginOverlay">
         <div class="login-modal">
-            <div class="login-icon">
-                <i class="fab fa-discord"></i>
-            </div>
-            <h2>Willkommen bei NukeBot</h2>
-            <p>
-                Melde dich mit Discord an, um auf das Dashboard zuzugreifen.<br />
-                Wir greifen nur auf dein öffentliches Profil zu.
-            </p>
-            <button class="discord-login-btn" onclick="handleLogin()">
-                <i class="fab fa-discord"></i> Mit Discord anmelden
+            <div class="login-icon">NB</div>
+            <h2>Welcome to Nukebot</h2>
+            <p>Sign in with Discord to access the dashboard</p>
+            <button class="btn-discord" onclick="handleDiscordLogin()">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189z"/>
+                </svg>
+                Sign in with Discord
             </button>
-            <div class="login-badges">
-                <span><i class="fas fa-shield-alt"></i> 100% Sicher</span>
-                <span><i class="fas fa-lock"></i> Verschlüsselt</span>
-                <span><i class="fas fa-check-circle"></i> Offizielle API</span>
-            </div>
+            <div class="login-footer">By signing in, you agree to our Terms of Service</div>
         </div>
     </div>
 
-    <!-- ===== SIDEBAR ===== -->
-    <nav class="sidebar" id="sidebar">
-        <div class="sidebar-logo">
-            <div class="logo-icon">N</div>
-            <h1>Nuke<span>Bot</span></h1>
-        </div>
+    <!-- ====== APP ====== -->
+    <div class="app">
 
-        <ul class="nav-list">
-            <li class="active" data-section="overview" onclick="switchSection('overview', this)">
-                <i class="fas fa-th-large"></i> Overview
-                <span class="badge">Live</span>
-            </li>
-            <li data-section="commands" onclick="switchSection('commands', this)">
-                <i class="fas fa-terminal"></i> Commands
-            </li>
-            <li data-section="invite" onclick="switchSection('invite', this)">
-                <i class="fas fa-plus-circle"></i> Invite Bot
-            </li>
-            <li data-section="leaderboard" onclick="switchSection('leaderboard', this)">
-                <i class="fas fa-trophy"></i> Leaderboard
-            </li>
-        </ul>
-
-        <div class="sidebar-user" id="sidebarUser" onclick="alert('Profilseite (Coming Soon)')">
-            <img id="userAvatar" src="https://cdn.discordapp.com/embed/avatars/0.png" alt="Avatar" />
-            <div class="user-info">
-                <div class="name" id="userName">Nicht angemeldet</div>
-                <div class="tag" id="userTag">#0000</div>
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <button class="mobile-close" onclick="toggleSidebar()">✕</button>
+            <div class="sidebar-brand">
+                <div class="logo-icon">NB</div>
+                <h2>Nuke<span>Bot</span></h2>
             </div>
-            <div class="user-status"></div>
-        </div>
-    </nav>
-
-    <!-- ===== MAIN CONTENT ===== -->
-    <div class="main">
-        <div class="topbar">
-            <div>
-                <button class="mobile-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <h2 id="pageTitle">Overview <span>Dashboard</span></h2>
-            </div>
-            <div class="topbar-actions">
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Suche..." />
+            <nav class="sidebar-nav">
+                <div class="nav-item active" data-page="overview" onclick="switchPage('overview', this)">
+                    <span class="icon">📊</span> Overview
+                </div>
+                <div class="nav-item" data-page="commands" onclick="switchPage('commands', this)">
+                    <span class="icon">⌨️</span> Commands
+                </div>
+                <div class="nav-item" data-page="invite" onclick="switchPage('invite', this)">
+                    <span class="icon">🔗</span> Invite Bot
+                </div>
+                <div class="nav-item" data-page="leaderboard" onclick="switchPage('leaderboard', this)">
+                    <span class="icon">🏆</span> Leaderboard
+                    <span class="badge">HOT</span>
+                </div>
+                <div class="nav-item" data-page="premium" onclick="switchPage('premium', this)">
+                    <span class="icon">⭐</span> Premium
+                </div>
+            </nav>
+            <div class="sidebar-bottom">
+                <div class="user-card">
+                    <div class="avatar" id="sidebarAvatar">U</div>
+                    <div class="user-info">
+                        <div class="name" id="sidebarName">Not signed in</div>
+                        <div class="stats" id="sidebarStats">0 servers nuked</div>
+                    </div>
                 </div>
             </div>
-        </div>
+        </aside>
 
-        <!-- ===== SECTION: OVERVIEW ===== -->
-        <div class="section active" id="section-overview">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon red"><i class="fas fa-bomb"></i></div>
-                    <div class="stat-value" id="totalNuked">12,847</div>
-                    <div class="stat-label">Server genuked</div>
+        <!-- MAIN CONTENT -->
+        <main class="main">
+
+            <!-- TOP BAR -->
+            <div class="topbar">
+                <div>
+                    <button class="hamburger" onclick="toggleSidebar()">☰</button>
+                    <div class="page-title">
+                        <h1 id="pageTitle">Overview</h1>
+                        <p id="pageSubtitle">Dashboard summary &amp; activity</p>
+                    </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon blue"><i class="fas fa-users"></i></div>
-                    <div class="stat-value" id="totalUsers">3,421</div>
-                    <div class="stat-label">aktive User</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon green"><i class="fas fa-robot"></i></div>
-                    <div class="stat-value" id="totalServers">5,230</div>
-                    <div class="stat-label">Server mit Bot</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon purple"><i class="fas fa-bolt"></i></div>
-                    <div class="stat-value" id="onlineNow">98%</div>
-                    <div class="stat-label">Uptime</div>
+                <div class="actions">
+                    <button class="btn btn-ghost" onclick="handleDiscordLogin()" id="loginBtn">Sign In</button>
+                    <button class="btn btn-primary" onclick="document.getElementById('invite').querySelector('.btn-invite')?.click()">Invite Bot</button>
                 </div>
             </div>
 
-            <!-- Leaderboard Preview -->
-            <div class="glass-card">
-                <div class="card-header">
-                    <h3><i class="fas fa-trophy" style="color: #fbbf24; margin-right: 10px;"></i> Top Nuker – Leaderboard</h3>
-                    <a href="#" onclick="switchSection('leaderboard', document.querySelector('[data-section=leaderboard]')); return false;">Alle anzeigen →</a>
+            <!-- ============ OVERVIEW ============ -->
+            <section class="page-section active" id="overview">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Total Servers Nuked</div>
+                        <div class="stat-value purple">12,847</div>
+                        <div class="stat-sub">+342 today</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Active Users</div>
+                        <div class="stat-value green">3,421</div>
+                        <div class="stat-sub">+89 this week</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Commands Executed</div>
+                        <div class="stat-value blue">1.4M</div>
+                        <div class="stat-sub">+12.5k today</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Premium Users</div>
+                        <div class="stat-value red">847</div>
+                        <div class="stat-sub">+24 this week</div>
+                    </div>
                 </div>
-                <table class="leaderboard-table" id="leaderboardPreview">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>User</th>
-                            <th>Server genuked</th>
-                            <th>Progress</th>
-                        </tr>
-                    </thead>
-                    <tbody id="leaderboardBody">
-                        <!-- Wird per JS befüllt -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
 
-        <!-- ===== SECTION: COMMANDS ===== -->
-        <div class="section" id="section-commands">
-            <div class="glass-card">
-                <div class="card-header">
-                    <h3><i class="fas fa-terminal" style="color: #60a5fa; margin-right: 10px;"></i> Alle Commands</h3>
-                    <span style="font-size:13px;color:rgba(226,232,240,0.3);">Prefix: <code style="background:rgba(255,59,92,0.1);padding:2px 8px;border-radius:6px;color:#ff6b81;">/</code></span>
+                <div class="glass-card">
+                    <div class="card-header">
+                        <h3>🏆 Top Nukers — Leaderboard</h3>
+                        <span class="see-all" onclick="switchPage('leaderboard', document.querySelector('[data-page=leaderboard]'))">See all →</span>
+                    </div>
+                    <table class="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>User</th>
+                                <th>Servers Nuked</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="rank gold">#1</span></td>
+                                <td>
+                                    <div class="user-cell">
+                                        <div class="u-avatar" style="background:linear-gradient(135deg,#fbbf24,#d97706)">D</div>
+                                        <div><div class="u-name">DarkAngel</div><div class="u-tag">@darkangel</div></div>
+                                    </div>
+                                </td>
+                                <td class="servers-nuked">2,847</td>
+                                <td><span class="premium-badge pro">PREMIUM</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="rank silver">#2</span></td>
+                                <td>
+                                    <div class="user-cell">
+                                        <div class="u-avatar" style="background:linear-gradient(135deg,#94a3b8,#64748b)">N</div>
+                                        <div><div class="u-name">NukeMaster</div><div class="u-tag">@nukemaster</div></div>
+                                    </div>
+                                </td>
+                                <td class="servers-nuked">2,391</td>
+                                <td><span class="premium-badge pro">PREMIUM</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="rank bronze">#3</span></td>
+                                <td>
+                                    <div class="user-cell">
+                                        <div class="u-avatar" style="background:linear-gradient(135deg,#d97706,#92400e)">X</div>
+                                        <div><div class="u-name">XyberX</div><div class="u-tag">@xyberx</div></div>
+                                    </div>
+                                </td>
+                                <td class="servers-nuked">1,942</td>
+                                <td><span class="premium-badge">FREE</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="rank" style="color:rgba(232,237,245,0.3)">#4</span></td>
+                                <td>
+                                    <div class="user-cell">
+                                        <div class="u-avatar" style="background:linear-gradient(135deg,#5865f2,#4752c4)">V</div>
+                                        <div><div class="u-name">VoidWalker</div><div class="u-tag">@voidwalker</div></div>
+                                    </div>
+                                </td>
+                                <td class="servers-nuked">1,578</td>
+                                <td><span class="premium-badge pro">PREMIUM</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="rank" style="color:rgba(232,237,245,0.3)">#5</span></td>
+                                <td>
+                                    <div class="user-cell">
+                                        <div class="u-avatar" style="background:linear-gradient(135deg,#ed4245,#b91c1c)">C</div>
+                                        <div><div class="u-name">CyberPunk</div><div class="u-tag">@cyberpunk</div></div>
+                                    </div>
+                                </td>
+                                <td class="servers-nuked">1,203</td>
+                                <td><span class="premium-badge">FREE</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-                <div class="commands-grid" id="commandsGrid">
-                    <!-- Wird per JS befüllt -->
-                </div>
-            </div>
-        </div>
+            </section>
 
-        <!-- ===== SECTION: INVITE ===== -->
-        <div class="section" id="section-invite">
-            <div class="glass-card invite-card">
-                <div class="invite-icon">
-                    <i class="fab fa-discord"></i>
+            <!-- ============ COMMANDS ============ -->
+            <section class="page-section" id="commands">
+                <div class="glass-card">
+                    <div class="card-header">
+                        <h3>⌨️ Available Commands</h3>
+                        <span class="see-all">Total: 14 commands</span>
+                    </div>
+                    <div class="commands-grid">
+                        <div class="command-item">
+                            <span class="cmd-badge">/nuke</span>
+                            <span class="cmd-desc">Nuke the entire server</span>
+                            <span class="cmd-category">Nuke</span>
+                        </div>
+                        <div class="command-item">
+                            <span class="cmd-badge">/banall</span>
+                            <span class="cmd-desc">Ban all members</span>
+                            <span class="cmd-category">Nuke</span>
+                        </div>
+                        <div class="command-item">
+                            <span class="cmd-badge">/deletechannels</span>
+                            <span class="cmd-desc">Delete all channels</span>
+                            <span class="cmd-category">Nuke</span>
+                        </div>
+                        <div class="command-item">
+                            <span class="cmd-badge">/spamchannels</span>
+                            <span class="cmd-desc">Create spam channels</span>
+                            <span class="cmd-category">Nuke</span>
+                        </div>
+                        <div class="command-item">
+                            <span class="cmd-badge">/massrole</span>
+                            <span class="cmd-desc">Mass create/delete roles</span>
+                            <span class="cmd-category">Nuke</span>
+                        </div>
+                        <div class="command-item">
+                            <span class="cmd-badge">/webhookspam</span>
+                            <span class="cmd-desc">Spam with webhooks</span>
+                            <span class="cmd-category">Nuke</span>
+                        </div>
+                        <div class="command-item">
+                            <span class="cmd-badge">/renameall</span>
+                            <span class="cmd-desc">Rename all members</span>
+                            <span class="cmd-category">Nuke</span>
+                        </div>
+                        <div class="command-item">
+                            <span class="cmd-badge">/dmall</span>
+                            <span class="cmd-desc">DM all members</span>
+                            <span class="cmd-category">Nuke</span>
+                        </div>
+                        <div class="command-item">
+                            <span class="cmd-badge">/stats</span>
+                            <span class="cmd-desc">Show your nuke stats</span>
+                            <span class="cmd-category">Info</span>
+                        </div>
+                        <div class="command-item">
+                            <span class="cmd-badge">/leaderboard</span>
+                            <span class="cmd-desc">View top nukers</span>
+                            <span class="cmd-category">Info</span>
+                        </div>
+                        <div class="command-item">
+                            <span class="cmd-badge">/premium</span>
+                            <span class="cmd-desc">Premium info</span>
+                            <span class="cmd-category">Info</span>
+                        </div>
+                        <div class="command-item">
+                            <span class="cmd-badge">/help</span>
+                            <span class="cmd-desc">Show all commands</span>
+                            <span class="cmd-category">Info</span>
+                        </div>
+                    </div>
                 </div>
-                <h3>NukeBot einladen</h3>
-                <p>Füge NukeBot zu deinem Discord-Server hinzu und lege los.</p>
-                <a class="invite-btn" href="https://discord.com/oauth2/authorize?client_id=YOUR_CLIENT_ID&permissions=8&scope=bot" target="_blank">
-                    <i class="fab fa-discord"></i> Invite NukeBot
-                </a>
-                <p style="margin-top:20px;font-size:12px;color:rgba(226,232,240,0.25);">
-                    <i class="fas fa-shield-alt"></i> Administrator-Berechtigungen erforderlich
-                </p>
-            </div>
-        </div>
+            </section>
 
-        <!-- ===== SECTION: LEADERBOARD (Full) ===== -->
-        <div class="section" id="section-leaderboard">
-            <div class="glass-card">
-                <div class="card-header">
-                    <h3><i class="fas fa-trophy" style="color: #fbbf24; margin-right: 10px;"></i> Vollständiges Leaderboard</h3>
-                    <span style="font-size:13px;color:rgba(226,232,240,0.3);">Top Nuker weltweit</span>
+            <!-- ============ INVITE ============ -->
+            <section class="page-section" id="invite">
+                <div class="glass-card invite-hero">
+                    <div class="invite-icon">NB</div>
+                    <h2>Add Nukebot to Your Server</h2>
+                    <p>The most powerful nuke bot on Discord. Destroy, purge, and dominate with one click.</p>
+                    <button class="btn-invite" onclick="window.open('https://discord.com/oauth2/authorize?client_id=YOUR_BOT_ID&permissions=8&scope=bot','_blank')">
+                        <span class="discord-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189z"/>
+                            </svg>
+                        </span>
+                        Invite Nukebot
+                    </button>
+                    <div class="invite-features">
+                        <div class="invite-feature">
+                            <div class="f-icon">⚡</div>
+                            <h4>Instant Setup</h4>
+                            <p>Ready to use in seconds</p>
+                        </div>
+                        <div class="invite-feature">
+                            <div class="f-icon">🛡️</div>
+                            <h4>Admin Permissions</h4>
+                            <p>Full server access required</p>
+                        </div>
+                        <div class="invite-feature">
+                            <div class="f-icon">📈</div>
+                            <h4>Track Your Stats</h4>
+                            <p>View your nuke count</p>
+                        </div>
+                    </div>
                 </div>
-                <table class="leaderboard-table">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>User</th>
-                            <th>/username</th>
-                            <th>Server genuked</th>
-                            <th>Progress</th>
-                        </tr>
-                    </thead>
-                    <tbody id="leaderboardFullBody">
-                        <!-- Wird per JS befüllt -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
+            </section>
+
+            <!-- ============ LEADERBOARD ============ -->
+            <section class="page-section" id="leaderboard">
+                <div class="glass-card">
+                    <div class="card-header">
+                        <h3>🏆 Global Leaderboard — Top Nukers</h3>
+                        <span class="see-all">Updated daily</span>
+                    </div>
+                    <table class="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>User</th>
+                                <th>Servers Nuked</th>
+                                <th>Plan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="rank gold">#1</span></td>
+                                <td>
+                                    <div class="user-cell">
+                                        <div class="u-avatar" style="background:linear-gradient(135deg,#fbbf24,#d97706)">D</div>
+                                        <div><div class="u-name">DarkAngel</div><div class="u-tag">@darkangel • github.com/darkangel</div></div>
+                                    </div>
+                                </td>
+                                <td class="servers-nuked">2,847</td>
+                                <td><span class="premium-badge pro">PREMIUM PRO</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="rank silver">#2</span></td>
+                                <td>
+                                    <div class="user-cell">
+                                        <div class="u-avatar" style="background:linear-gradient(135deg,#94a3b8,#64748b)">N</div>
+                                        <div><div class="u-name">NukeMaster</div><div class="u-tag">@nukemaster • github.com/nukemaster</div></div>
+                                    </div>
+                                </td>
+                                <td class="servers-nuked">2,391</td>
+                                <td><span class="premium-badge pro">PREMIUM PRO</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="rank bronze">#3</span></td>
+                                <td>
+                                    <div class="user-cell">
+                                        <div class="u-avatar" style="background:linear-gradient(135deg,#d97706,#92400e)">X</div>
+                                        <div><div class="u-name">XyberX</div><div class="u-tag">@xyberx • github.com/xyberx</div></div>
+                                    </div>
+                                </td>
+                                <td class="servers-nuked">1,942</td>
+                                <td><span class="premium-badge">FREE</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="rank" style="color:rgba(232,237,245,0.3)">#4</span></td>
+                                <td>
+                                    <div class="user-cell">
+                                        <div class="u-avatar" style="background:linear-gradient(135deg,#5865f2,#4752c4)">V</div>
+                                        <div><div class="u-name">VoidWalker</div><div class="u-tag">@voidwalker • github.com/voidwalker</div></div>
+                                    </div>
+                                </td>
+                                <td class="servers-nuked">1,578</td>
+                                <td><span class="premium-badge pro">PREMIUM PRO</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="rank" style="color:rgba(232,237,245,0.3)">#5</span></td>
+                                <td>
+                                    <div class="user-cell">
+                                        <div class="u-avatar" style="background:linear-gradient(135deg,#ed4245,#b91c1c)">C</div>
+                                        <div><div class="u-name">CyberPunk</div><div class="u-tag">@cyberpunk • github.com/cyberpunk</div></div>
+                                    </div>
+                                </td>
+                                <td class="servers-nuked">1,203</td>
+                                <td><span class="premium-badge">FREE</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="rank" style="color:rgba(232,237,245,0.3)">#6</span></td>
+                                <td>
+                                    <div class="user-cell">
+                                        <div class="u-avatar" style="background:linear-gradient(135deg,#57f287,#16a34a)">A</div>
+                                        <div><div class="u-name">AnonDestroyer</div><div class="u-tag">@anondestroyer • github.com/anon</div></div>
+                                    </div>
+                                </td>
+                                <td class="servers-nuked">987</td>
+                                <td><span class="premium-badge">FREE</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="rank" style="color:rgba(232,237,245,0.3)">#7</span></td>
+                                <td>
+                                    <div class="user-cell">
+                                        <div class="u-avatar" style="background:linear-gradient(135deg,#a855f7,#7e22ce)">S</div>
+                                        <div><div class="u-name">ShadowByte</div><div class="u-tag">@shadowbyte • github.com/shadowbyte</div></div>
+                                    </div>
+                                </td>
+                                <td class="servers-nuked">856</td>
+                                <td><span class="premium-badge pro">PREMIUM PRO</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="rank" style="color:rgba(232,237,245,0.3)">#8</span></td>
+                                <td>
+                                    <div class="user-cell">
+                                        <div class="u-avatar" style="background:linear-gradient(135deg,#f97316,#c2410c)">R</div>
+                                        <div><div class="u-name">RageQuit</div><div class="u-tag">@ragequit • github.com/ragequit</div></div>
+                                    </div>
+                                </td>
+                                <td class="servers-nuked">723</td>
+                                <td><span class="premium-badge">FREE</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="rank" style="color:rgba(232,237,245,0.3)">#9</span></td>
+                                <td>
+                                    <div class="user-cell">
+                                        <div class="u-avatar" style="background:linear-gradient(135deg,#06b6d4,#0891b2)">Z</div>
+                                        <div><div class="u-name">ZeroCool</div><div class="u-tag">@zerocool • github.com/zerocool</div></div>
+                                    </div>
+                                </td>
+                                <td class="servers-nuked">641</td>
+                                <td><span class="premium-badge pro">PREMIUM PRO</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="rank" style="color:rgba(232,237,245,0.3)">#10</span></td>
+                                <td>
+                                    <div class="user-cell">
+                                        <div class="u-avatar" style="background:linear-gradient(135deg,#ec4899,#be185d)">P</div>
+                                        <div><div class="u-name">PixelHacker</div><div class="u-tag">@pixelhacker • github.com/pixelhacker</div></div>
+                                    </div>
+                                </td>
+                                <td class="servers-nuked">512</td>
+                                <td><span class="premium-badge">FREE</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ============ PREMIUM ============ -->
+            <section class="page-section" id="premium">
+                <div class="glass-card" style="text-align:center; margin-bottom:20px;">
+                    <h2 style="font-size:22px; font-weight:700;">⭐ Unlock Premium Power</h2>
+                    <p style="color:rgba(232,237,245,0.45); margin-top:4px;">Go beyond the limits. Faster nukes, more features, priority support.</p>
+                </div>
+                <div class="pricing-grid">
+                    <div class="pricing-card">
+                        <div class="price-name">Free</div>
+                        <div class="price-amount">$0 <span>/ month</span></div>
+                        <ul class="price-features">
+                            <li>Basic nuke commands</li>
+                            <li>5 servers per day</li>
+                            <li>Standard speed</li>
+                            <li>No priority queue</li>
+                        </ul>
+                        <button class="btn-subscribe">Current Plan</button>
+                    </div>
+                    <div class="pricing-card featured">
+                        <div class="price-name">Premium Pro</div>
+                        <div class="price-amount">$9.99 <span>/ month</span></div>
+                        <ul class="price-features">
+                            <li>All nuke commands</li>
+                            <li>Unlimited servers</li>
+                            <li>Turbo speed (2x)</li>
+                            <li>Priority queue</li>
+                            <li>Premium leaderboard badge</li>
+                            <li>Early access to new features</li>
+                        </ul>
+                        <button class="btn-subscribe" onclick="alert('Premium Pro subscription coming soon!')">Subscribe Now</button>
+                    </div>
+                    <div class="pricing-card">
+                        <div class="price-name">Enterprise</div>
+                        <div class="price-amount">$24.99 <span>/ month</span></div>
+                        <ul class="price-features">
+                            <li>Everything in Premium Pro</li>
+                            <li>Max speed (5x)</li>
+                            <li>Dedicated API access</li>
+                            <li>Custom command setup</li>
+                            <li>24/7 priority support</li>
+                            <li>White-label option</li>
+                        </ul>
+                        <button class="btn-subscribe" onclick="alert('Enterprise subscription coming soon!')">Contact Sales</button>
+                    </div>
+                </div>
+            </section>
+
+        </main>
     </div>
 
     <script>
-        // ============================================================
-        // SIMULIERTE DATEN (in der Praxis von deinem Backend/API)
-        // ============================================================
-        const USERS = [
-            { id: '1', name: 'xNoctis', tag: '6666', avatar: 'https://cdn.discordapp.com/embed/avatars/1.png', github: 'xnoctis', nuked: 2847 },
-            { id: '2', name: 'Vanta', tag: '1337', avatar: 'https://cdn.discordapp.com/embed/avatars/2.png', github: 'vanta1337', nuked: 2103 },
-            { id: '3', name: 'cryptic', tag: '9999', avatar: 'https://cdn.discordapp.com/embed/avatars/3.png', github: 'crypticdev', nuked: 1892 },
-            { id: '4', name: 'ragequit', tag: '0420', avatar: 'https://cdn.discordapp.com/embed/avatars/4.png', github: 'ragequithq', nuked: 1567 },
-            { id: '5', name: 'nullptr', tag: '0007', avatar: 'https://cdn.discordapp.com/embed/avatars/0.png', github: 'nullptr7', nuked: 1344 },
-            { id: '6', name: 'syndicate', tag: '2024', avatar: 'https://cdn.discordapp.com/embed/avatars/1.png', github: 'syndic8', nuked: 1123 },
-            { id: '7', name: 'wraith', tag: '8008', avatar: 'https://cdn.discordapp.com/embed/avatars/2.png', github: 'wraithsec', nuked: 987 },
-            { id: '8', name: 'toxicity', tag: '6969', avatar: 'https://cdn.discordapp.com/embed/avatars/3.png', github: 'toxicbot', nuked: 854 },
-            { id: '9', name: 'shadow', tag: '4040', avatar: 'https://cdn.discordapp.com/embed/avatars/4.png', github: 'shadowdev', nuked: 721 },
-            { id: '10', name: 'zeroday', tag: '2600', avatar: 'https://cdn.discordapp.com/embed/avatars/0.png', github: 'zer0day', nuked: 612 },
-        ];
-
-        const COMMANDS = [
-            { cmd: '/nuke', desc: 'Löscht alle Kanäle & Rollen' },
-            { cmd: '/banall', desc: 'Bannt alle Mitglieder' },
-            { cmd: '/massrole', desc: 'Erstellt 100+ Rollen' },
-            { cmd: '/spam', desc: 'Spamt Nachrichten in alle Kanäle' },
-            { cmd: '/webhook', desc: 'Erstellt Webhooks & spamt' },
-            { cmd: '/channel', desc: 'Erstellt 200 Kanäle' },
-            { cmd: '/rename', desc: 'Benennt alle Member um' },
-            { cmd: '/nickall', desc: 'Ändert alle Nicknames' },
-            { cmd: '/emoji', desc: 'Löscht alle Emojis' },
-            { cmd: '/slowmode', desc: 'Setzt Slowmode auf 6h' },
-            { cmd: '/icon', desc: 'Ändert Server-Icon' },
-            { cmd: '/name', desc: 'Ändert Server-Namen' },
-        ];
-
-        // Simulierter angemeldeter User
-        let currentUser = null;
-
-        // ============================================================
-        // SECTION SWITCHING
-        // ============================================================
-        function switchSection(id, el) {
-            // Alle sections ausblenden
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.getElementById('section-' + id).classList.add('active');
-
-            // Nav aktualisieren
-            document.querySelectorAll('.nav-list li').forEach(li => li.classList.remove('active'));
-            if (el) el.classList.add('active');
-
-            // Title updaten
+        // ============ PAGE SWITCHING ============
+        function switchPage(pageId, navElement) {
+            // Hide all pages
+            document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
+            // Show target
+            const target = document.getElementById(pageId);
+            if (target) target.classList.add('active');
+            // Update nav
+            document.querySelectorAll('.sidebar-nav .nav-item').forEach(n => n.classList.remove('active'));
+            if (navElement) navElement.classList.add('active');
+            // Update topbar title
             const titles = {
-                overview: 'Overview',
-                commands: 'Commands',
-                invite: 'Invite Bot',
-                leaderboard: 'Leaderboard'
+                overview: ['Overview', 'Dashboard summary & activity'],
+                commands: ['Commands', 'All available bot commands'],
+                invite: ['Invite Bot', 'Add Nukebot to your server'],
+                leaderboard: ['Leaderboard', 'Top nukers worldwide'],
+                premium: ['Premium', 'Unlock advanced features']
             };
-            document.getElementById('pageTitle').innerHTML = titles[id] + ' <span>Dashboard</span>';
-
-            // Mobile Sidebar schließen
-            document.getElementById('sidebar').classList.remove('open');
+            if (titles[pageId]) {
+                document.getElementById('pageTitle').textContent = titles[pageId][0];
+                document.getElementById('pageSubtitle').textContent = titles[pageId][1];
+            }
+            // Close sidebar on mobile
+            if (window.innerWidth <= 768) {
+                document.getElementById('sidebar').classList.remove('open');
+            }
         }
 
-        // ============================================================
-        // LEADERBOARD RENDER
-        // ============================================================
-        function renderLeaderboard() {
-            const sorted = [...USERS].sort((a, b) => b.nuked - a.nuked);
-            const maxNuked = sorted[0]?.nuked || 1;
-
-            const renderRow = (user, index, withUsername = true) => {
-                const rank = index + 1;
-                let rankClass = '';
-                if (rank === 1) rankClass = 'gold';
-                else if (rank === 2) rankClass = 'silver';
-                else if (rank === 3) rankClass = 'bronze';
-
-                const progressPct = Math.round((user.nuked / maxNuked) * 100);
-
-                return `
-                    <tr>
-                        <td class="rank ${rankClass}">${rank}</td>
-                        <td>
-                            <div class="user-cell">
-                                <img src="${user.avatar}" alt="${user.name}" />
-                                <div>
-                                    <div class="uname">${user.name}</div>
-                                    <div class="utag">#${user.tag}</div>
-                                </div>
-                                <a href="https://github.com/${user.github}" target="_blank" class="github-link" title="GitHub: ${user.github}">
-                                    <i class="fab fa-github"></i>
-                                </a>
-                            </div>
-                        </td>
-                        ${withUsername ? `<td><code style="background:rgba(255,255,255,0.04);padding:4px 10px;border-radius:8px;font-size:13px;color:rgba(226,232,240,0.5);">/${user.name.toLowerCase()}</code></td>` : ''}
-                        <td class="servers-nuked">${user.nuked.toLocaleString()}</td>
-                        <td>
-                            <div class="progress-bar">
-                                <div class="fill" style="width:${progressPct}%"></div>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            };
-
-            // Preview (top 5, ohne /username)
-            const previewBody = document.getElementById('leaderboardBody');
-            previewBody.innerHTML = sorted.slice(0, 5).map((u, i) => renderRow(u, i, false)).join('');
-
-            // Full (alle 10, mit /username)
-            const fullBody = document.getElementById('leaderboardFullBody');
-            fullBody.innerHTML = sorted.map((u, i) => renderRow(u, i, true)).join('');
+        // ============ SIDEBAR TOGGLE (Mobile) ============
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
         }
 
-        // ============================================================
-        // COMMANDS RENDER
-        // ============================================================
-        function renderCommands() {
-            const grid = document.getElementById('commandsGrid');
-            grid.innerHTML = COMMANDS.map(c => `
-                <div class="cmd-item">
-                    <span class="cmd-key">${c.cmd}</span>
-                    <span class="cmd-desc">${c.desc}</span>
-                </div>
-            `).join('');
+        // ============ DISCORD LOGIN SIMULATION ============
+        function handleDiscordLogin() {
+            // In production, redirect to Discord OAuth2
+            // window.location.href = 'https://discord.com/api/oauth2/authorize?client_id=YOUR_CLIENT_ID&redirect_uri=YOUR_REDIRECT&response_type=code&scope=identify%20guilds';
+            
+            // Demo: simulate login
+            const overlay = document.getElementById('loginOverlay');
+            overlay.classList.add('hidden');
+            
+            // Update UI with fake user
+            document.getElementById('sidebarAvatar').textContent = 'U';
+            document.getElementById('sidebarName').textContent = 'User#0001';
+            document.getElementById('sidebarStats').textContent = '0 servers nuked';
+            document.getElementById('loginBtn').textContent = 'Signed In';
+            document.getElementById('loginBtn').style.opacity = '0.6';
+            document.getElementById('loginBtn').style.c
+            document.getElementById('loginBtn').style.cursor = 'default';
+            
+            // Update page title to show user
+            document.getElementById('pageSubtitle').textContent = 'Welcome, User! You have nuked 0 servers.';
         }
 
-        // ============================================================
-        // DISCORD LOGIN SIMULATION
-        // ============================================================
-        function handleLogin() {
-            // Simuliere Discord OAuth – in der Praxis redirect zu /auth/discord
-            // Wir nehmen einfach den ersten User als "angemeldeten" User
-            currentUser = USERS[0];
+        // ============ CHECK AUTH STATE ON LOAD ============
+        // In production, check for OAuth token in URL or session
+        // For demo, show login overlay
+        window.addEventListener('DOMContentLoaded', () => {
+            // Simulate: user is not logged in initially
+            // To skip login for testing, comment out the line below:
+            // document.getElementById('loginOverlay').classList.add('hidden');
+        });
 
-            // UI updaten
-            document.getElementById('userAvatar').src = currentUser.avatar;
-            document.getElementById('userName').textContent = currentUser.name;
-            document.getElementById('userTag').textContent = '#' + currentUser.tag;
+        // ============ KEYBOARD SHORTCUTS ============
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const overlay = document.getElementById('loginOverlay');
+                if (!overlay.classList.contains('hidden')) {
+                    overlay.classList.add('hidden');
+                }
+            }
+        });
 
-            // Eigene Nuked-Zahl im Sidebar-Kontext (optional)
-            // Login-Overlay ausblenden
-            document.getElementById('loginOverlay').classList.add('hidden');
-
-            // Kleines Feedback
-            console.log(`Angemeldet als ${currentUser.name}#${currentUser.tag}`);
-        }
-
-        // ============================================================
-        // STATS RANDOMISIEREN (DEMO)
-        // ============================================================
-        function randomizeStats() {
-            const total = USERS.reduce((sum, u) => sum + u.nuked, 0);
-            document.getElementById('totalNuked').textContent = total.toLocaleString();
-            document.getElementById('totalUsers').textContent = USERS.length.toLocaleString();
-            document.getElementById('totalServers').textContent = (USERS.length * 1.5).toFixed(0).toLocaleString();
-        }
-
-        // ============================================================
-        // INIT
-        // ============================================================
-        renderLeaderboard();
-        renderCommands();
-        randomizeStats();
-
-        // Prüfe ob bereits eingeloggt (z.B. über Session/Cookie)
-        // Für Demo: per default bleibt Login-Overlay sichtbar
-        // Zum Testen kann man handleLogin() manuell aufrufen
-        console.log('NukeBot Dashboard geladen. Klicke auf "Mit Discord anmelden" um fortzufahren.');
-
-        // Auto-Login für Demo (entfernen für Produktion)
-        // setTimeout(handleLogin, 500); // <- auskommentiert, damit Login-Overlay sichtbar bleibt
+        // ============ SMOOTH SIDEBAR CLOSE ON CLICK OUTSIDE ============
+        document.addEventListener('click', (e) => {
+            const sidebar = document.getElementById('sidebar');
+            const hamburger = document.querySelector('.hamburger');
+            if (window.innerWidth <= 768 && 
+                sidebar.classList.contains('open') &&
+                !sidebar.contains(e.target) &&
+                !hamburger.contains(e.target)) {
+                sidebar.classList.remove('open');
+            }
+        });
     </script>
-
 </body>
 </html>
