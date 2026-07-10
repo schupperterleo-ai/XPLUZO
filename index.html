@@ -1,985 +1,859 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Silent Net — Dashboard</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <style>
-        /* ===== RESET & BASE ===== */
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-        html { font-size: 14px; scroll-behavior: smooth; }
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+        html { font-size:14px; scroll-behavior:smooth; }
         body {
-            font-family: 'Inter', sans-serif;
-            background: #07080b;
-            color: #e2e4ea;
-            min-height: 100vh;
-            display: flex;
-            overflow: hidden;
+            font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+            background:#080b10; color:#d0d4dd;
+            min-height:100vh; display:flex; overflow:hidden;
         }
-        a { text-decoration: none; color: inherit; }
-        ul { list-style: none; }
-        ::-webkit-scrollbar { width: 5px; height: 5px; }
-        ::-webkit-scrollbar-track { background: #0e0f14; }
-        ::-webkit-scrollbar-thumb { background: #2a2d3a; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #3e4256; }
+        ::-webkit-scrollbar { width:4px; height:4px; }
+        ::-webkit-scrollbar-track { background:#0e111a; }
+        ::-webkit-scrollbar-thumb { background:#242838; border-radius:3px; }
+        ::-webkit-scrollbar-thumb:hover { background:#343a52; }
 
-        /* ===== VARIABLES ===== */
         :root {
-            --bg-primary: #07080b;
-            --bg-secondary: #0e0f14;
-            --bg-surface: #15171e;
-            --bg-card: #1b1d26;
-            --bg-card-hover: #212330;
-            --bg-input: #0e0f14;
-            --border-color: #262836;
-            --border-accent: #2e334a;
-            --text-primary: #e2e4ea;
-            --text-secondary: #9094a6;
-            --text-muted: #5c6072;
-            --accent: #00f0aa;
-            --accent-dim: rgba(0, 240, 170, 0.12);
-            --accent-glow: rgba(0, 240, 170, 0.25);
-            --red: #f7525c;
-            --red-dim: rgba(247, 82, 92, 0.12);
-            --orange: #f0a030;
-            --orange-dim: rgba(240, 160, 48, 0.12);
-            --green: #34d399;
-            --green-dim: rgba(52, 211, 153, 0.12);
-            --blue: #5699ff;
-            --blue-dim: rgba(86, 153, 255, 0.12);
-            --purple: #a78bfa;
-            --sidebar-w: 240px;
-            --header-h: 56px;
-            --radius: 8px;
-            --radius-lg: 12px;
-            --shadow: 0 1px 3px rgba(0,0,0,.3), 0 1px 2px rgba(0,0,0,.4);
+            --bg1:#080b10; --bg2:#0e111a; --bg3:#131724; --bg4:#191e2e;
+            --bg5:#1e2338; --bd:#232840; --bd2:#2a3050;
+            --text:#d0d4dd; --text2:#7a809e; --text3:#4a4f6e;
+            --accent:#00e5a0; --accent-d:rgba(0,229,160,0.1);
+            --accent-g:rgba(0,229,160,0.25);
+            --red:#ec4a58; --red-d:rgba(236,74,88,0.12);
+            --orange:#e0902a; --orange-d:rgba(224,144,42,0.12);
+            --green:#2abd80; --green-d:rgba(42,189,128,0.12);
+            --blue:#4a85f0; --blue-d:rgba(74,133,240,0.12);
+            --purple:#9474f0;
+            --w:220px; --h:54px; --r:6px; --rl:10px;
         }
 
-        /* ===== SIDEBAR ===== */
         .sidebar {
-            width: var(--sidebar-w);
-            min-height: 100vh;
-            background: var(--bg-secondary);
-            border-right: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            flex-shrink: 0;
-            z-index: 100;
-            transition: transform .25s ease;
+            width:var(--w); min-height:100vh;
+            background:var(--bg2); border-right:1px solid var(--bd);
+            display:flex; flex-direction:column; flex-shrink:0; z-index:100;
+            transition:transform .25s cubic-bezier(.4,0,.2,1);
         }
-        .sidebar-brand {
-            height: var(--header-h);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 0 18px;
-            border-bottom: 1px solid var(--border-color);
-            font-weight: 700;
-            font-size: 1.15rem;
-            letter-spacing: .02em;
+        .s-brand {
+            height:var(--h); display:flex; align-items:center; gap:9px;
+            padding:0 14px; border-bottom:1px solid var(--bd);
+            font-weight:700; font-size:1rem; background:#0c0f18;
         }
-        .sidebar-brand .logo-icon {
-            width: 28px; height: 28px;
-            background: var(--accent);
-            border-radius: 6px;
-            display: flex; align-items: center; justify-content: center;
-            color: #07080b;
-            font-size: .85rem;
-            font-weight: 800;
+        .s-brand .l {
+            width:24px; height:24px;
+            background:linear-gradient(135deg,var(--accent),#00b87a);
+            border-radius:5px; display:flex; align-items:center; justify-content:center;
+            color:#080b10; font-size:.7rem; font-weight:800;
         }
-        .sidebar-brand span { color: var(--text-primary); }
-        .sidebar-brand small {
-            font-size: .6rem;
-            font-weight: 500;
-            color: var(--accent);
-            background: var(--accent-dim);
-            padding: 1px 6px;
-            border-radius: 4px;
-            margin-left: auto;
-            letter-spacing: .03em;
+        .s-brand span { color:var(--text); }
+        .s-brand small {
+            font-size:.5rem; font-weight:500; color:var(--accent);
+            background:var(--accent-d); padding:1px 5px; border-radius:3px;
+            margin-left:auto; letter-spacing:.03em;
         }
+        .s-nav { flex:1; overflow-y:auto; padding:6px 6px; }
 
-        .sidebar-nav { flex: 1; overflow-y: auto; padding: 10px 10px; }
+        .nt {
+            font-size:.5rem; text-transform:uppercase; letter-spacing:.1em;
+            color:var(--text3); padding:10px 8px 3px; font-weight:600;
+        }
+        .ni {
+            display:flex; align-items:center; gap:8px;
+            padding:6px 8px; border-radius:var(--r);
+            color:var(--text2); font-size:.75rem; font-weight:500;
+            cursor:pointer; transition:all .1s ease; position:relative;
+        }
+        .ni i { width:15px; text-align:center; font-size:.75rem; flex-shrink:0; }
+        .ni:hover { background:var(--bg4); color:var(--text); }
+        .ni.act { background:var(--accent-d); color:var(--accent); }
+        .ni.act::before {
+            content:''; position:absolute; left:-6px; top:50%; transform:translateY(-50%);
+            width:2px; height:14px; background:var(--accent); border-radius:0 2px 2px 0;
+        }
+        .ni .b {
+            margin-left:auto; font-size:.55rem; background:var(--bg4);
+            padding:0 5px; border-radius:6px; color:var(--text2);
+        }
+        .ni.act .b { background:var(--accent); color:#080b10; font-weight:600; }
+        .ni.sub { padding-left:28px; font-size:.7rem; }
 
-        .nav-section-title {
-            font-size: .6rem;
-            text-transform: uppercase;
-            letter-spacing: .08em;
-            color: var(--text-muted);
-            padding: 14px 10px 6px;
-            font-weight: 600;
-        }
+        .collapse-grp .ni.sub { display:none; }
+        .collapse-grp.open .ni.sub { display:flex; }
 
-        .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 10px;
-            border-radius: var(--radius);
-            color: var(--text-secondary);
-            font-size: .82rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all .15s ease;
-            position: relative;
-        }
-        .nav-item i { width: 18px; text-align: center; font-size: .85rem; flex-shrink: 0; }
-        .nav-item:hover { background: var(--bg-card); color: var(--text-primary); }
-        .nav-item.active {
-            background: var(--accent-dim);
-            color: var(--accent);
-        }
-        .nav-item.active::before {
-            content: '';
-            position: absolute;
-            left: -10px;
-            top: 50%; transform: translateY(-50%);
-            width: 3px; height: 18px;
-            background: var(--accent);
-            border-radius: 0 3px 3px 0;
-        }
-        .nav-item .badge {
-            margin-left: auto;
-            font-size: .65rem;
-            background: var(--bg-card);
-            padding: 1px 7px;
-            border-radius: 10px;
-            color: var(--text-secondary);
-        }
-        .nav-item.active .badge { background: var(--accent); color: #07080b; font-weight: 600; }
+        .main { flex:1; display:flex; flex-direction:column; min-width:0; height:100vh; }
 
-        .nav-item.sub {
-            padding-left: 32px;
-            font-size: .78rem;
-        }
-        .nav-item .chevron { margin-left: auto; font-size: .6rem; transition: transform .2s; }
-        .nav-item.open .chevron { transform: rotate(90deg); }
-
-        /* ===== MAIN ===== */
-        .main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
-
-        /* ===== HEADER ===== */
         .header {
-            height: var(--header-h);
-            background: var(--bg-secondary);
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            padding: 0 24px;
-            gap: 16px;
-            flex-shrink: 0;
+            height:var(--h); background:var(--bg2); border-bottom:1px solid var(--bd);
+            display:flex; align-items:center; padding:0 18px; gap:12px; flex-shrink:0;
         }
-        .header-left { display: flex; align-items: center; gap: 16px; }
-        .menu-toggle {
-            display: none;
-            background: none; border: none;
-            color: var(--text-secondary);
-            font-size: 1.2rem;
-            cursor: pointer;
-            padding: 4px;
+        .mt { display:none; background:none; border:none; color:var(--text2); font-size:1rem; cursor:pointer; padding:3px; }
+        .h-search {
+            display:flex; align-items:center;
+            background:var(--bg1); border:1px solid var(--bd);
+            border-radius:var(--r); padding:0 9px; gap:6px; width:240px;
+            transition:border-color .2s;
         }
-        .header-search {
-            display: flex; align-items: center;
-            background: var(--bg-input);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius);
-            padding: 0 12px;
-            gap: 8px;
-            width: 280px;
-            transition: border-color .2s;
+        .h-search:focus-within { border-color:var(--accent); }
+        .h-search i { color:var(--text3); font-size:.7rem; }
+        .h-search input {
+            background:none; border:none; outline:none;
+            color:var(--text); font-size:.75rem;
+            padding:5px 0; width:100%; font-family:inherit;
         }
-        .header-search:focus-within { border-color: var(--accent); }
-        .header-search i { color: var(--text-muted); font-size: .8rem; }
-        .header-search input {
-            background: none; border: none; outline: none;
-            color: var(--text-primary);
-            font-size: .8rem;
-            padding: 7px 0;
-            width: 100%;
-            font-family: inherit;
+        .h-search input::placeholder { color:var(--text3); }
+        .h-search kbd {
+            font-size:.5rem; color:var(--text3); background:var(--bg3);
+            padding:0 4px; border-radius:2px; border:1px solid var(--bd);
+            font-family:inherit;
         }
-        .header-search input::placeholder { color: var(--text-muted); }
+        .hr { margin-left:auto; display:flex; align-items:center; gap:8px; }
+        .hb {
+            width:30px; height:30px; border-radius:var(--r);
+            border:1px solid var(--bd); background:var(--bg4);
+            color:var(--text2); display:flex; align-items:center; justify-content:center;
+            cursor:pointer; transition:all .1s; position:relative; font-size:.8rem;
+        }
+        .hb:hover { border-color:var(--bd2); color:var(--text); background:var(--bg5); }
+        .hb .d { position:absolute; top:4px; right:4px; width:4px; height:4px; border-radius:50%; background:var(--red); }
+        .ha {
+            width:26px; height:26px; border-radius:50%;
+            background:linear-gradient(135deg,var(--accent),#0ea5e9);
+            display:flex; align-items:center; justify-content:center;
+            font-weight:600; font-size:.6rem; color:#080b10; cursor:pointer;
+        }
+        .hbal {
+            display:flex; align-items:center; gap:4px;
+            font-size:.7rem; color:var(--text2); background:var(--bg3);
+            padding:3px 8px; border-radius:var(--r); border:1px solid var(--bd);
+        }
+        .hbal i { color:var(--accent); font-size:.6rem; }
 
-        .header-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
-        .header-btn {
-            width: 34px; height: 34px;
-            border-radius: var(--radius);
-            border: 1px solid var(--border-color);
-            background: var(--bg-card);
-            color: var(--text-secondary);
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer;
-            transition: all .15s;
-            position: relative;
-            font-size: .9rem;
-        }
-        .header-btn:hover { border-color: var(--border-accent); color: var(--text-primary); background: var(--bg-card-hover); }
-        .header-btn .dot {
-            position: absolute;
-            top: 5px; right: 5px;
-            width: 6px; height: 6px;
-            border-radius: 50%;
-            background: var(--red);
-        }
-        .header-avatar {
-            width: 30px; height: 30px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent), #0ea5e9);
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 600; font-size: .7rem;
-            color: #07080b;
-            cursor: pointer;
-        }
+        .content { flex:1; padding:16px 20px; overflow-y:auto; }
 
-        /* ===== CONTENT ===== */
-        .content {
-            flex: 1;
-            padding: 20px 24px;
-            overflow-y: auto;
+        .tabs {
+            display:flex; gap:1px; margin-bottom:16px;
+            background:var(--bg3); border-radius:var(--rl);
+            padding:2px; border:1px solid var(--bd); width:fit-content;
         }
+        .tab {
+            padding:6px 16px; border-radius:calc(var(--rl)-3px);
+            font-size:.75rem; font-weight:500; color:var(--text2);
+            cursor:pointer; transition:all .12s; border:none;
+            background:none; font-family:inherit; white-space:nowrap;
+        }
+        .tab:hover { color:var(--text); }
+        .tab.act { background:var(--accent); color:#080b10; font-weight:600; }
 
-        /* ===== STATS ROW ===== */
-        .stats-row {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 14px;
-            margin-bottom: 20px;
-        }
-        .stat-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            padding: 16px 18px;
-            transition: all .2s;
-        }
-        .stat-card:hover { border-color: var(--border-accent); background: var(--bg-card-hover); }
-        .stat-card .stat-label {
-            font-size: .7rem;
-            text-transform: uppercase;
-            letter-spacing: .06em;
-            color: var(--text-muted);
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
-        .stat-card .stat-value {
-            font-size: 1.65rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            font-family: 'JetBrains Mono', monospace;
-        }
-        .stat-card .stat-sub {
-            font-size: .72rem;
-            color: var(--text-secondary);
-            margin-top: 4px;
-        }
-        .stat-card .stat-sub i { margin-right: 4px; }
-        .stat-card .stat-sub .up { color: var(--green); }
-        .stat-card .stat-sub .down { color: var(--red); }
-        .stat-card.accent { border-color: var(--accent); }
-        .stat-card.accent .stat-value { color: var(--accent); }
+        .section { display:none; }
+        .section.act { display:block; animation:fadeUp .2s ease; }
+        @keyframes fadeUp { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
 
-        /* ===== SECTION HEADER ===== */
-        .section-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 14px;
-            flex-wrap: wrap;
-            gap: 10px;
+        .builder-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+        @media(max-width:900px){ .builder-grid{grid-template-columns:1fr} }
+
+        .card {
+            background:var(--bg4); border:1px solid var(--bd);
+            border-radius:var(--rl); padding:16px;
         }
-        .section-header h2 {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--text-primary);
+        .ct {
+            font-size:.78rem; font-weight:600; color:var(--text);
+            margin-bottom:12px; display:flex; align-items:center; gap:7px;
         }
-        .section-header h2 i { color: var(--accent); margin-right: 8px; }
-        .section-actions {
-            display: flex;
-            gap: 8px;
-            align-items: center;
+        .ct i { color:var(--accent); }
+        .ct .sub { font-weight:400; color:var(--text3); font-size:.65rem; margin-left:auto; }
+
+        .fg { margin-bottom:11px; }
+        .fg label {
+            display:block; font-size:.65rem; font-weight:500;
+            color:var(--text2); margin-bottom:3px;
         }
+        .fg label i { margin-right:3px; color:var(--text3); }
+
+        .fc {
+            width:100%; padding:7px 10px; background:var(--bg2);
+            border:1px solid var(--bd); border-radius:var(--r);
+            color:var(--text); font-size:.77rem; font-family:inherit;
+            transition:border-color .2s; outline:none;
+        }
+        .fc:focus { border-color:var(--accent); }
+        .fc::placeholder { color:var(--text3); }
+        textarea.fc { resize:vertical; min-height:70px; font-family:'JetBrains Mono',monospace; font-size:.68rem; }
+        select.fc { cursor:pointer; }
+        .fr { display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+
+        .tg { display:flex; flex-wrap:wrap; gap:5px; }
+        .tb {
+            padding:4px 11px; border-radius:4px; border:1px solid var(--bd);
+            background:var(--bg2); color:var(--text2); font-size:.66rem;
+            cursor:pointer; transition:all .1s; font-family:inherit; font-weight:500;
+        }
+        .tb:hover { border-color:var(--bd2); color:var(--text); }
+        .tb.on { background:var(--accent-d); border-color:var(--accent); color:var(--accent); }
+
         .btn {
-            padding: 6px 14px;
-            border-radius: var(--radius);
-            border: 1px solid var(--border-color);
-            background: var(--bg-card);
-            color: var(--text-secondary);
-            font-size: .75rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all .15s;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-family: inherit;
+            padding:6px 14px; border-radius:var(--r);
+            border:1px solid var(--bd); background:var(--bg4);
+            color:var(--text2); font-size:.72rem; font-weight:500;
+            cursor:pointer; transition:all .1s;
+            display:inline-flex; align-items:center; gap:5px; font-family:inherit;
         }
-        .btn:hover { border-color: var(--border-accent); color: var(--text-primary); background: var(--bg-card-hover); }
-        .btn-primary {
-            background: var(--accent);
-            color: #07080b;
-            border-color: var(--accent);
-            font-weight: 600;
+        .btn:hover { border-color:var(--bd2); color:var(--text); background:var(--bg5); }
+        .btn-p {
+            background:linear-gradient(135deg,var(--accent),#00c080);
+            color:#080b10; border-color:var(--accent); font-weight:600;
         }
-        .btn-primary:hover { background: #00d89a; border-color: #00d89a; color: #07080b; }
-        .btn-danger {
-            background: var(--red-dim);
-            color: var(--red);
-            border-color: transparent;
-        }
-        .btn-danger:hover { background: rgba(247,82,92,.22); }
-        .btn-sm { padding: 4px 10px; font-size: .7rem; }
+        .btn-p:hover { filter:brightness(1.08); color:#080b10; }
+        .btn-d { background:var(--red-d); color:var(--red); border-color:transparent; }
+        .btn-d:hover { background:rgba(236,74,88,.22); }
+        .btn-s { background:var(--green-d); color:var(--green); border-color:transparent; }
+        .btn-s:hover { background:rgba(42,189,128,.22); }
+        .btn-sm { padding:3px 8px; font-size:.64rem; }
+        .btn-lg { padding:9px 20px; font-size:.8rem; }
+        .btn-b { width:100%; justify-content:center; }
+        .btn:disabled { opacity:.45; cursor:not-allowed; }
 
-        /* ===== TABLE ===== */
-        .table-wrap {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            overflow: hidden;
+        .stats-row {
+            display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+            gap:11px; margin-bottom:14px;
         }
-        .table-wrap .table-scroll {
-            overflow-x: auto;
+        .sc {
+            background:var(--bg4); border:1px solid var(--bd);
+            border-radius:var(--rl); padding:12px 14px; transition:all .15s;
         }
-        .table-wrap table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: .75rem;
-            min-width: 1200px;
+        .sc:hover { border-color:var(--bd2); background:var(--bg5); }
+        .sc .sl { font-size:.6rem; text-transform:uppercase; letter-spacing:.06em; color:var(--text3); font-weight:600; margin-bottom:3px; }
+        .sc .sv { font-size:1.35rem; font-weight:700; color:var(--text); font-family:'JetBrains Mono',monospace; }
+        .sc .ss { font-size:.65rem; color:var(--text2); margin-top:2px; }
+        .sc .ss .up { color:var(--green); }
+        .sc .ss .dn { color:var(--red); }
+        .sc.accent { border-color:var(--accent); }
+        .sc.accent .sv { color:var(--accent); }
+
+        .tw {
+            background:var(--bg4); border:1px solid var(--bd);
+            border-radius:var(--rl); overflow:hidden;
         }
-        .table-wrap table thead {
-            background: var(--bg-surface);
+        .tw .scrl { overflow-x:auto; }
+        .tw table { width:100%; border-collapse:collapse; font-size:.7rem; min-width:1100px; }
+        .tw table thead { background:var(--bg3); }
+        .tw table th {
+            text-align:left; padding:8px 10px; font-weight:600;
+            font-size:.57rem; text-transform:uppercase; letter-spacing:.05em;
+            color:var(--text3); border-bottom:1px solid var(--bd);
+            white-space:nowrap; cursor:pointer; user-select:none;
         }
-        .table-wrap table th {
-            text-align: left;
-            padding: 10px 12px;
-            font-weight: 600;
-            font-size: .65rem;
-            text-transform: uppercase;
-            letter-spacing: .05em;
-            color: var(--text-muted);
-            border-bottom: 1px solid var(--border-color);
-            white-space: nowrap;
-            cursor: pointer;
-            user-select: none;
-            transition: color .15s;
-        }
-        .table-wrap table th:hover { color: var(--text-secondary); }
-        .table-wrap table th i { margin-left: 3px; font-size: .6rem; }
-        .table-wrap table td {
-            padding: 10px 12px;
-            border-bottom: 1px solid var(--border-color);
-            color: var(--text-primary);
-            white-space: nowrap;
-        }
-        .table-wrap table tr:last-child td { border-bottom: none; }
-        .table-wrap table tr:hover td { background: rgba(255,255,255,.02); }
+        .tw table th:hover { color:var(--text2); }
+        .tw table th i { margin-left:2px; font-size:.5rem; }
+        .tw table td { padding:8px 10px; border-bottom:1px solid var(--bd); color:var(--text); white-space:nowrap; }
+        .tw table tr:last-child td { border-bottom:none; }
+        .tw table tr:hover td { background:rgba(255,255,255,.012); }
 
         .tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: .65rem;
-            font-weight: 600;
-            background: var(--bg-surface);
-            color: var(--text-secondary);
+            display:inline-flex; align-items:center; gap:2px;
+            padding:0 6px; border-radius:3px; font-size:.6rem; font-weight:600;
+            background:var(--bg3); color:var(--text2);
         }
-        .tag i { font-size: .5rem; }
-        .tag.green { background: var(--green-dim); color: var(--green); }
-        .tag.orange { background: var(--orange-dim); color: var(--orange); }
-        .tag.blue { background: var(--blue-dim); color: var(--blue); }
-        .tag.red { background: var(--red-dim); color: var(--red); }
+        .tag i { font-size:.4rem; }
+        .tag.gn { background:var(--green-d); color:var(--green); }
+        .tag.og { background:var(--orange-d); color:var(--orange); }
+        .tag.bl { background:var(--blue-d); color:var(--blue); }
+        .tag.rd { background:var(--red-d); color:var(--red); }
+        .tag.pl { background:rgba(148,116,240,.12); color:var(--purple); }
 
-        .country-flag { width: 16px; height: 11px; border-radius: 2px; vertical-align: middle; margin-right: 4px; }
-        .client-name {
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-        .client-name small {
-            display: block;
-            font-weight: 400;
-            color: var(--text-muted);
-            font-size: .65rem;
-        }
+        .cn { font-weight:600; color:var(--text); }
+        .cn small { display:block; font-weight:400; color:var(--text3); font-size:.57rem; }
 
-        .fav-star {
-            color: var(--orange);
-            cursor: pointer;
-            transition: transform .15s;
-        }
-        .fav-star:hover { transform: scale(1.2); }
-        .fav-star.inactive { color: var(--text-muted); }
+        .fs { color:var(--orange); cursor:pointer; transition:transform .1s; }
+        .fs:hover { transform:scale(1.15); }
+        .fs.off { color:var(--text3); }
 
-        .actions-cell .btn { padding: 3px 8px; font-size: .65rem; }
-        .actions-cell { display: flex; gap: 4px; }
+        .ac { display:flex; gap:3px; }
+        .ac .btn { padding:1px 6px; font-size:.57rem; }
 
-        /* ===== PAGINATION ===== */
-        .table-footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 14px;
-            border-top: 1px solid var(--border-color);
-            font-size: .72rem;
-            color: var(--text-muted);
+        .tf {
+            display:flex; align-items:center; justify-content:space-between;
+            padding:7px 12px; border-top:1px solid var(--bd);
+            font-size:.65rem; color:var(--text3);
         }
-        .pagination {
-            display: flex;
-            gap: 4px;
+        .pag { display:flex; gap:2px; }
+        .pag button {
+            width:24px; height:24px; border-radius:4px;
+            border:1px solid var(--bd); background:transparent;
+            color:var(--text2); font-size:.62rem; cursor:pointer;
+            font-family:inherit; transition:all .1s;
         }
-        .pagination button {
-            width: 28px; height: 28px;
-            border-radius: 6px;
-            border: 1px solid var(--border-color);
-            background: transparent;
-            color: var(--text-secondary);
-            font-size: .7rem;
-            cursor: pointer;
-            font-family: inherit;
-            transition: all .15s;
-        }
-        .pagination button:hover { border-color: var(--border-accent); color: var(--text-primary); background: var(--bg-card); }
-        .pagination button.active {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: #07080b;
-            font-weight: 600;
-        }
+        .pag button:hover { border-color:var(--bd2); color:var(--text); background:var(--bg4); }
+        .pag button.act { background:var(--accent); border-color:var(--accent); color:#080b10; font-weight:600; }
 
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 1024px) {
-            .stats-row { grid-template-columns: repeat(2, 1fr); }
+        .bl {
+            background:#060810; border:1px solid var(--bd);
+            border-radius:var(--r); padding:10px;
+            font-family:'JetBrains Mono',monospace; font-size:.65rem;
+            color:var(--text2); min-height:80px; max-height:180px;
+            overflow-y:auto; margin-top:10px; line-height:1.5;
         }
-        @media (max-width: 768px) {
-            .sidebar {
-                position: fixed;
-                top: 0; left: 0;
-                transform: translateX(-100%);
-                width: 260px;
-                box-shadow: 4px 0 20px rgba(0,0,0,.5);
-            }
-            .sidebar.open { transform: translateX(0); }
-            .menu-toggle { display: block; }
-            .header-search { width: 160px; }
-            .stats-row { grid-template-columns: 1fr; }
-            .content { padding: 14px 16px; }
-        }
+        .bl .info { color:var(--blue); }
+        .bl .ok { color:var(--green); }
+        .bl .warn { color:var(--orange); }
+        .bl .err { color:var(--red); }
 
-        /* ===== OVERLAY ===== */
-        .sidebar-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,.5);
-            z-index: 99;
-        }
-        .sidebar-overlay.show { display: block; }
+        .dl-area { display:none; align-items:center; gap:8px; padding:8px 12px; background:var(--green-d); border:1px solid var(--green); border-radius:var(--r); margin-top:8px; font-size:.74rem; color:var(--green); }
+        .dl-area.show { display:flex; }
+        .dl-area i { font-size:.85rem; }
 
-        /* ===== ANIMATIONS ===== */
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: .5; }
-        }
-        .pulse { animation: pulse 2s ease-in-out infinite; }
+        .ov { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:99; }
+        .ov.show { display:block; }
 
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
+        .tst-c {
+            position:fixed; bottom:16px; right:16px; z-index:999;
+            display:flex; flex-direction:column; gap:6px;
         }
-        .stat-card { animation: slideUp .3s ease; }
-        .stat-card:nth-child(2) { animation-delay: .05s; }
-        .stat-card:nth-child(3) { animation-delay: .1s; }
-        .stat-card:nth-child(4) { animation-delay: .15s; }
+        .tst {
+            padding:8px 14px; border-radius:var(--r);
+            font-size:.72rem; font-weight:500;
+            background:var(--bg4); border:1px solid var(--bd);
+            color:var(--text); box-shadow:0 3px 12px rgba(0,0,0,.5);
+            animation:slideIn .2s ease;
+            display:flex; align-items:center; gap:7px;
+        }
+        .tst.ok { border-color:var(--green); }
+        .tst.err { border-color:var(--red); }
+        .tst.ok i { color:var(--green); }
+        .tst.err i { color:var(--red); }
+        @keyframes slideIn { from{opacity:0;transform:translateX(16px)} to{opacity:1;transform:translateX(0)} }
 
-        /* ===== COLLAPSE GROUPS ===== */
-        .collapse-group .nav-item.sub { display: none; }
-        .collapse-group.open .nav-item.sub { display: flex; }
+        @media(max-width:768px){
+            .sidebar{position:fixed;top:0;left:0;transform:translateX(-100%);width:260px;box-shadow:4px 0 24px rgba(0,0,0,.5)}
+            .sidebar.open{transform:translateX(0)}
+            .mt{display:block}
+            .h-search{width:100px}
+            .content{padding:10px 12px}
+            .stats-row{grid-template-columns:1fr 1fr}
+            .tabs{width:100%;overflow-x:auto}
+            .tab{padding:5px 10px;font-size:.68rem}
+            .hbal span{display:none}
+        }
+        @media(max-width:480px){ .stats-row{grid-template-columns:1fr} .fr{grid-template-columns:1fr} }
     </style>
 </head>
 <body>
 
-<!-- ===== SIDEBAR OVERLAY (mobile) ===== -->
-<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<div class="ov" id="ov"></div>
 
-<!-- ===== SIDEBAR ===== -->
-<aside class="sidebar" id="sidebar">
-    <div class="sidebar-brand">
-        <div class="logo-icon">SN</div>
+<aside class="sidebar" id="sb">
+    <div class="s-brand">
+        <div class="l">S</div>
         <span>Silent Net</span>
-        <small>v3.2</small>
+        <small>v3.3</small>
     </div>
-    <nav class="sidebar-nav">
+    <nav class="s-nav">
+        <div class="nt">Overview</div>
+        <div class="ni act" data-tab="dashboard"><i class="fas fa-th-large"></i> Dashboard</div>
+        <div class="ni"><i class="fas fa-cog"></i> Settings</div>
+        <div class="ni"><i class="fas fa-user-circle"></i> Account</div>
+        <div class="ni"><i class="fas fa-star"></i> Features</div>
+        <div class="ni"><i class="fas fa-book"></i> Tutorials</div>
+        <div class="ni"><i class="fas fa-lightbulb"></i> Suggestions</div>
+        <div class="ni"><i class="fas fa-poll"></i> Surveys</div>
+        <div class="ni"><i class="fas fa-share-alt"></i> Socials</div>
 
-        <div class="nav-section-title">Overview</div>
-        <div class="nav-item active">
-            <i class="fas fa-th-large"></i> Dashboard
-        </div>
-        <div class="nav-item">
-            <i class="fas fa-cog"></i> Settings
-        </div>
-        <div class="nav-item">
-            <i class="fas fa-user-circle"></i> Account
-        </div>
-        <div class="nav-item">
-            <i class="fas fa-star"></i> Features
-        </div>
-        <div class="nav-item">
-            <i class="fas fa-book"></i> Tutorials
-        </div>
-        <div class="nav-item">
-            <i class="fas fa-lightbulb"></i> Suggestions
-        </div>
-        <div class="nav-item">
-            <i class="fas fa-poll"></i> Surveys
-        </div>
-        <div class="nav-item">
-            <i class="fas fa-share-alt"></i> Socials
-        </div>
+        <div class="nt">Stealer</div>
+        <div class="ni act" data-tab="builder"><i class="fas fa-hammer"></i> Builder <span class="b">New</span></div>
+        <div class="ni" data-tab="hits"><i class="fas fa-chart-bar"></i> Overview <span class="b" id="hb">12</span></div>
 
-        <div class="nav-section-title">Stealer</div>
-        <div class="nav-item active">
-            <i class="fas fa-building"></i> Builder
-            <span class="badge">New</span>
+        <div class="nt">Remote</div>
+        <div class="ni" onclick="this.classList.toggle('open')" style="cursor:pointer;">
+            <i class="fas fa-terminal"></i> Remote <span class="b">Pro</span>
         </div>
-        <div class="nav-item">
-            <i class="fas fa-chart-bar"></i> Overview
-            <span class="badge">12</span>
-        </div>
+        <div class="ni sub"><i class="fas fa-shield-alt"></i> UAC Bypass</div>
+        <div class="ni sub"><i class="fas fa-terminal"></i> Remote Shell</div>
+        <div class="ni sub"><i class="fas fa-folder-open"></i> File Manager</div>
+        <div class="ni sub"><i class="fas fa-microchip"></i> Task Manager</div>
+        <div class="ni sub"><i class="fas fa-play-circle"></i> Run EXE</div>
+        <div class="ni sub"><i class="fas fa-desktop"></i> Live Screen</div>
+        <div class="ni sub"><i class="fas fa-video"></i> Webcam</div>
+        <div class="ni sub"><i class="fas fa-music"></i> Audio Stream</div>
+        <div class="ni sub"><i class="fas fa-keyboard"></i> Keylogger</div>
+        <div class="ni sub"><i class="fas fa-power-off"></i> Power Control</div>
+        <div class="ni sub"><i class="fas fa-smile"></i> Trolling</div>
+        <div class="ni sub"><i class="fas fa-globe"></i> Open URL</div>
+        <div class="ni sub"><i class="fas fa-comment"></i> Message Box</div>
+        <div class="ni sub"><i class="fas fa-coins"></i> Crypto Clipper</div>
 
-        <div class="nav-section-title">Remote</div>
-        <div class="nav-item collapse-group open" data-collapse="remote">
-            <i class="fas fa-terminal"></i> Overview
-            <span class="chevron"><i class="fas fa-chevron-right"></i></span>
-        </div>
-        <div class="nav-item sub"><i class="fab fa-microsoft"></i> PS Commands</div>
-        <div class="nav-item sub"><i class="fas fa-coins"></i> Crypto Clipper</div>
-        <div class="nav-item sub"><i class="fas fa-bell"></i> Window Notifier</div>
-        <div class="nav-item sub" style="color: var(--accent);"><i class="fas fa-crown"></i> Premium</div>
-
-        <div class="nav-section-title">Premium</div>
-        <div class="nav-item">
-            <i class="fas fa-compress-alt"></i> Collapse All
-        </div>
-
-        <!-- Extra Remote Features listing -->
-        <div class="nav-section-title">Remote Features</div>
-
-        <div class="nav-item sub"><i class="fas fa-shield-alt"></i> Elevate to Admin (UAC Bypass)</div>
-        <div class="nav-item sub"><i class="fas fa-terminal"></i> Interactive Command Shell</div>
-        <div class="nav-item sub"><i class="fab fa-microsoft"></i> PowerShell</div>
-        <div class="nav-item sub"><i class="fas fa-window-maximize"></i> CMD</div>
-        <div class="nav-item sub"><i class="fas fa-folder-open"></i> File System Access</div>
-        <div class="nav-item sub"><i class="fas fa-upload"></i> Upload</div>
-        <div class="nav-item sub"><i class="fas fa-download"></i> Download</div>
-        <div class="nav-item sub"><i class="fas fa-trash"></i> Delete</div>
-        <div class="nav-item sub"><i class="fas fa-microchip"></i> Process Manager</div>
-        <div class="nav-item sub"><i class="fas fa-play-circle"></i> Execute EXE</div>
-        <div class="nav-item sub"><i class="fas fa-desktop"></i> Live Screen Capture</div>
-        <div class="nav-item sub" style="padding-left:44px;font-size:.7rem;color:var(--text-muted);">
-            <i class="fas fa-microchip"></i> GPU Encoding
-        </div>
-        <div class="nav-item sub" style="padding-left:44px;font-size:.7rem;color:var(--text-muted);">
-            <i class="fas fa-cog"></i> CPU Encoding
-        </div>
-        <div class="nav-item sub" style="padding-left:44px;font-size:.7rem;color:var(--text-muted);">
-            <i class="fas fa-mouse-pointer"></i> Mouse Control
-        </div>
-        <div class="nav-item sub" style="padding-left:44px;font-size:.7rem;color:var(--text-muted);">
-            <i class="fas fa-keyboard"></i> Keyboard Input
-        </div>
-        <div class="nav-item sub"><i class="fas fa-video"></i> Webcam Stream</div>
-        <div class="nav-item sub"><i class="fas fa-music"></i> Audio Streaming</div>
-        <div class="nav-item sub" style="padding-left:44px;font-size:.7rem;color:var(--text-muted);">
-            <i class="fas fa-microphone"></i> Microphone
-        </div>
-        <div class="nav-item sub" style="padding-left:44px;font-size:.7rem;color:var(--text-muted);">
-            <i class="fas fa-volume-up"></i> Desktop Audio
-        </div>
-        <div class="nav-item sub"><i class="fas fa-keyboard"></i> Keylogger</div>
-        <div class="nav-item sub"><i class="fas fa-power-off"></i> Power Control</div>
-        <div class="nav-item sub" style="padding-left:44px;font-size:.7rem;color:var(--text-muted);">
-            <i class="fas fa-redo"></i> Restart
-        </div>
-        <div class="nav-item sub" style="padding-left:44px;font-size:.7rem;color:var(--text-muted);">
-            <i class="fas fa-power-off"></i> Shutdown
-        </div>
-        <div class="nav-item sub" style="padding-left:44px;font-size:.7rem;color:var(--text-muted);">
-            <i class="fas fa-exclamation-triangle"></i> Bluescreen
-        </div>
-        <div class="nav-item sub"><i class="fas fa-smile"></i> Fun Features</div>
-        <div class="nav-item sub" style="padding-left:44px;font-size:.7rem;color:var(--text-muted);">
-            <i class="fas fa-window-minimize"></i> Toggle Taskbar
-        </div>
-        <div class="nav-item sub" style="padding-left:44px;font-size:.7rem;color:var(--text-muted);">
-            <i class="fas fa-mouse-pointer"></i> Swap Mouse Buttons
-        </div>
-        <div class="nav-item sub" style="padding-left:44px;font-size:.7rem;color:var(--text-muted);">
-            <i class="fas fa-volume-up"></i> Text to Speech
-        </div>
-        <div class="nav-item sub"><i class="fas fa-comment"></i> Message Box</div>
-        <div class="nav-item sub"><i class="fas fa-globe"></i> Open URL</div>
-        <div class="nav-item sub"><i class="fas fa-search"></i> Keyword Monitor</div>
-        <div class="nav-item sub"><i class="fas fa-copy"></i> Crypto Clipper</div>
-        <div class="nav-item sub" style="padding-left:44px;font-size:.7rem;color:var(--text-muted);">
-            <i class="fab fa-bitcoin"></i> Bitcoin
-        </div>
-        <div class="nav-item sub" style="padding-left:44px;font-size:.7rem;color:var(--text-muted);">
-            <i class="fab fa-bitcoin"></i> Litecoin
-        </div>
-        <div class="nav-item sub" style="padding-left:44px;font-size:.7rem;color:var(--text-muted);">
-            <i class="fas fa-link"></i> EVM Chains
-        </div>
-        <div class="nav-item sub" style="padding-left:44px;font-size:.7rem;color:var(--text-muted);">
-            <i class="fab fa-tron"></i> Tron
-        </div>
-        <div class="nav-item sub" style="padding-left:44px;font-size:.7rem;color:var(--text-muted);">
-            <i class="fas fa-sun"></i> Solana
-        </div>
+        <div class="nt">Supported Wallets</div>
+        <div class="ni sub" style="padding-left:28px;font-size:.65rem;color:var(--text3);"><i class="fab fa-bitcoin"></i> Bitcoin (Legacy/SegWit/Taproot)</div>
+        <div class="ni sub" style="padding-left:28px;font-size:.65rem;color:var(--text3);"><i class="fab fa-bitcoin"></i> Litecoin</div>
+        <div class="ni sub" style="padding-left:28px;font-size:.65rem;color:var(--text3);"><i class="fas fa-link"></i> EVM (ETH/BSC/Polygon/Arb)</div>
+        <div class="ni sub" style="padding-left:28px;font-size:.65rem;color:var(--text3);"><i class="fab fa-tron"></i> Tron (TRX/TRC-20)</div>
+        <div class="ni sub" style="padding-left:28px;font-size:.65rem;color:var(--text3);"><i class="fas fa-sun"></i> Solana (SOL/SPL)</div>
     </nav>
 </aside>
 
-<!-- ===== MAIN ===== -->
 <div class="main">
-    <!-- HEADER -->
     <header class="header">
-        <div class="header-left">
-            <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
-            <div class="header-search">
+        <div style="display:flex;align-items:center;gap:10px;">
+            <button class="mt" id="mt"><i class="fas fa-bars"></i></button>
+            <div class="h-search">
                 <i class="fas fa-search"></i>
-                <input type="text" placeholder="Search clients, IPs, tags..." />
-                <kbd style="font-size:.6rem;color:var(--text-muted);background:var(--bg-surface);padding:1px 5px;border-radius:3px;border:1px solid var(--border-color);">Ctrl+K</kbd>
+                <input type="text" placeholder="Suchen..." id="gs" />
+                <kbd>⌘K</kbd>
             </div>
         </div>
-        <div class="header-right">
-            <button class="header-btn"><i class="fas fa-bell"></i><span class="dot"></span></button>
-            <button class="header-btn"><i class="fas fa-expand"></i></button>
-            <div class="header-avatar">RK</div>
+        <div class="hr">
+            <div class="hbal"><i class="fas fa-coins"></i> <span>2,450</span> Credits</div>
+            <button class="hb"><i class="fas fa-bell"></i><span class="d"></span></button>
+            <div class="ha">SN</div>
         </div>
     </header>
 
-    <!-- CONTENT -->
     <div class="content">
-        <!-- Stats -->
-        <div class="stats-row">
-            <div class="stat-card accent">
-                <div class="stat-label">Total Hits</div>
-                <div class="stat-value">8,472</div>
-                <div class="stat-sub"><span class="up"><i class="fas fa-arrow-up"></i> +12.4%</span> this week</div>
+        <div class="tabs" id="tabs">
+            <button class="tab act" data-tab="dashboard"><i class="fas fa-th-large"></i> Dashboard</button>
+            <button class="tab" data-tab="builder"><i class="fas fa-hammer"></i> Builder</button>
+            <button class="tab" data-tab="hits"><i class="fas fa-chart-bar"></i> Hits</button>
+            <button class="tab" data-tab="webhook"><i class="fas fa-plug"></i> Webhook</button>
+        </div>
+
+        <!-- DASHBOARD -->
+        <div class="section act" id="s-dashboard">
+            <div class="stats-row">
+                <div class="sc accent">
+                    <div class="sl">Total Hits</div>
+                    <div class="sv" id="th">12</div>
+                    <div class="ss"><span class="up"><i class="fas fa-arrow-up"></i> +3 heute</span></div>
+                </div>
+                <div class="sc">
+                    <div class="sl">Active Sessions</div>
+                    <div class="sv">5</div>
+                    <div class="ss"><span class="up"><i class="fas fa-circle" style="font-size:.3rem;color:var(--green);"></i> 3 online</span></div>
+                </div>
+                <div class="sc">
+                    <div class="sl">Passwords</div>
+                    <div class="sv">847</div>
+                    <div class="ss"><span class="up"><i class="fas fa-arrow-up"></i> +62 heute</span></div>
+                </div>
+                <div class="sc">
+                    <div class="sl">Cookies</div>
+                    <div class="sv">3,291</div>
+                    <div class="ss"><span class="up"><i class="fas fa-arrow-up"></i> +247 heute</span></div>
+                </div>
+                <div class="sc">
+                    <div class="sl">Wallets</div>
+                    <div class="sv">134</div>
+                    <div class="ss"><span class="up"><i class="fas fa-arrow-up"></i> +12 heute</span></div>
+                </div>
+                <div class="sc">
+                    <div class="sl">Discord Tokens</div>
+                    <div class="sv">89</div>
+                    <div class="ss"><span class="up"><i class="fas fa-arrow-up"></i> +7 heute</span></div>
+                </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-label">Active Sessions</div>
-                <div class="stat-value">23</div>
-                <div class="stat-sub"><span class="up"><i class="fas fa-circle" style="font-size:.4rem;color:var(--green);"></i> 18 online</span></div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Passwords Stolen</div>
-                <div class="stat-value">14,239</div>
-                <div class="stat-sub"><span class="up"><i class="fas fa-arrow-up"></i> +847</span> today</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Total Cookies</div>
-                <div class="stat-value">32,581</div>
-                <div class="stat-sub"><span class="up"><i class="fas fa-arrow-up"></i> +2.1k</span> today</div>
+            <div class="card">
+                <div class="ct"><i class="fas fa-bolt"></i> Quick Actions</div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <button class="btn btn-p" onclick="switchTab('builder')"><i class="fas fa-hammer"></i> Neuen Build</button>
+                    <button class="btn" onclick="switchTab('hits')"><i class="fas fa-eye"></i> Hits anzeigen</button>
+                    <button class="btn" onclick="switchTab('webhook')"><i class="fas fa-plug"></i> Webhook</button>
+                </div>
             </div>
         </div>
 
-        <!-- Hits Table -->
-        <div class="section-header">
-            <h2><i class="fas fa-users"></i> Hits <span style="font-weight:400;color:var(--text-muted);font-size:.8rem;">— Page 1 of 1</span></h2>
-            <div class="section-actions">
-                <button class="btn btn-primary"><i class="fas fa-redo-alt"></i> Refresh</button>
-                <button class="btn"><i class="fas fa-download"></i> Export</button>
-                <button class="btn btn-danger"><i class="fas fa-trash"></i> Clear</button>
+        <!-- BUILDER -->
+        <div class="section" id="s-builder">
+            <div class="builder-grid">
+                <div class="card">
+                    <div class="ct"><i class="fas fa-wrench"></i> Build Config <span class="sub">Fabric/Forge Mod</span></div>
+                    <div class="fg">
+                        <label><i class="fas fa-signature"></i> Build Name</label>
+                        <input class="fc" id="bName" value="KryptonClient" placeholder="z.B. BetterPvP" />
+                    </div>
+                    <div class="fr">
+                        <div class="fg">
+                            <label><i class="fas fa-box"></i> Mod Loader</label>
+                            <select class="fc" id="mLoader">
+                                <option value="fabric">Fabric</option>
+                                <option value="forge">Forge</option>
+                            </select>
+                        </div>
+                        <div class="fg">
+                            <label><i class="fas fa-tag"></i> MC Version</label>
+                            <select class="fc" id="mcVer">
+                                <option value="1.21.4">1.21.4</option>
+                                <option value="1.21.1" selected>1.21.1</option>
+                                <option value="1.20.4">1.20.4</option>
+                                <option value="1.20.1">1.20.1</option>
+                                <option value="1.19.4">1.19.4</option>
+                                <option value="1.18.2">1.18.2</option>
+                                <option value="1.12.2">1.12.2</option>
+                                <option value="1.8.9">1.8.9</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="fg">
+                        <label><i class="fas fa-tasks"></i> Stealer Features</label>
+                        <div class="tg" id="featTg">
+                            <button class="tb on" data-f="mc"><i class="fas fa-cube"></i> MC Session</button>
+                            <button class="tb on" data-f="dc"><i class="fab fa-discord"></i> Discord</button>
+                            <button class="tb on" data-f="br"><i class="fas fa-globe"></i> Browser</button>
+                            <button class="tb on" data-f="wl"><i class="fas fa-wallet"></i> Wallets</button>
+                            <button class="tb on" data-f="pw"><i class="fas fa-key"></i> Passwords</button>
+                            <button class="tb on" data-f="ck"><i class="fas fa-cookie"></i> Cookies</button>
+                            <button class="tb on" data-f="ss"><i class="fas fa-camera"></i> Screenshot</button>
+                            <button class="tb on" data-f="fl"><i class="fas fa-file"></i> File Scanner</button>
+                            <button class="tb on" data-f="cr"><i class="fas fa-id-card"></i> Credentials</button>
+                            <button class="tb on" data-f="ln"><i class="fas fa-gamepad"></i> Launchers</button>
+                        </div>
+                    </div>
+                    <div class="fr">
+                        <div class="fg">
+                            <label><i class="fas fa-microchip"></i> Injection</label>
+                            <select class="fc" id="inj">
+                                <option value="mod">Minecraft Mod (JAR)</option>
+                                <option value="exe">Windows EXE</option>
+                                <option value="dll">DLL Payload</option>
+                            </select>
+                        </div>
+                        <div class="fg">
+                            <label><i class="fas fa-shield"></i> Obfuscation</label>
+                            <select class="fc" id="obf">
+                                <option value="none">None</option>
+                                <option value="basic" selected>Basic (Strings)</option>
+                                <option value="aggro">Aggressive (Allatori)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-p btn-lg btn-b" id="buildBtn" onclick="build()">
+                        <i class="fas fa-hammer"></i> Build JAR
+                    </button>
+                    <div class="dl-area" id="dlArea">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Build fertig!</span>
+                        <a id="dlLink" style="color:var(--accent);font-weight:600;cursor:pointer;margin-left:auto;">
+                            <i class="fas fa-download"></i> Download .jar
+                        </a>
+                    </div>
+                    <div class="bl" id="bLog">
+                        <div class="info">[i] Ready. Configure and click Build.</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="ct"><i class="fas fa-info-circle"></i> Preview</div>
+                    <div style="font-size:.74rem;color:var(--text2);line-height:1.6;">
+                        <div style="margin-bottom:10px;" id="previewTags">
+                            <span class="tag gn" style="font-size:.66rem;"><i class="fas fa-check-circle"></i> MC Session</span>
+                            <span class="tag gn" style="font-size:.66rem;"><i class="fas fa-check-circle"></i> Discord</span>
+                            <span class="tag gn" style="font-size:.66rem;"><i class="fas fa-check-circle"></i> Browser</span>
+                            <span class="tag gn" style="font-size:.66rem;"><i class="fas fa-check-circle"></i> Wallets</span>
+                            <span class="tag gn" style="font-size:.66rem;"><i class="fas fa-check-circle"></i> Passwords</span>
+                            <span class="tag gn" style="font-size:.66rem;"><i class="fas fa-check-circle"></i> Cookies</span>
+                        </div>
+                        <div style="background:var(--bg3);padding:8px;border-radius:var(--r);margin-bottom:10px;">
+                            <div style="font-weight:600;color:var(--text);margin-bottom:3px;"><i class="fas fa-server"></i> C2 Endpoint</div>
+                            <div style="font-family:'JetBrains Mono',monospace;font-size:.64rem;">
+                                POST → webhook<br />AES-256 verschlüsselt
+                            </div>
+                        </div>
+                        <div style="color:var(--text3);font-size:.66rem;">
+                            <i class="fas fa-lightbulb" style="color:var(--orange);"></i> 
+                            Opfer installiert den Mod → beim Start werden Daten gestohlen → an Webhook gesendet.
+                        </div>
+                    </div>
+                    <hr style="border-color:var(--bd);margin:12px 0;" />
+                    <div class="fg">
+                        <label><i class="fab fa-discord"></i> Discord Webhook</label>
+                        <input class="fc" id="whInput" placeholder="https://discord.com/api/webhooks/..." />
+                    </div>
+                    <button class="btn btn-sm" onclick="testWh()"><i class="fas fa-paper-plane"></i> Test</button>
+                    <div id="whTestResult" style="margin-top:5px;"></div>
+                </div>
             </div>
         </div>
 
-        <div class="table-wrap">
-            <div class="table-scroll">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Client <i class="fas fa-sort"></i></th>
-                            <th>IP Address <i class="fas fa-sort"></i></th>
-                            <th>Tag <i class="fas fa-sort"></i></th>
-                            <th>Environment <i class="fas fa-sort"></i></th>
-                            <th>MC Username <i class="fas fa-sort"></i></th>
-                            <th>Browsers <i class="fas fa-sort"></i></th>
-                            <th>Wallets <i class="fas fa-sort"></i></th>
-                            <th>Apps <i class="fas fa-sort"></i></th>
-                            <th>Discord <i class="fas fa-sort"></i></th>
-                            <th>Passwords <i class="fas fa-sort"></i></th>
-                            <th>Cookies <i class="fas fa-sort"></i></th>
-                            <th>Cards <i class="fas fa-sort"></i></th>
-                            <th>Autofills <i class="fas fa-sort"></i></th>
-                            <th>Files <i class="fas fa-sort"></i></th>
-                            <th>Google <i class="fas fa-sort"></i></th>
-                            <th>Fav <i class="fas fa-sort"></i></th>
-                            <th>Time <i class="fas fa-sort"></i></th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Row 1 - Rekking -->
-                        <tr>
-                            <td>
-                                <div class="client-name">
-                                    Rekking
-                                    <small>Windows 11 · x64</small>
-                                </div>
-                            </td>
-                            <td><span class="tag"><i class="fas fa-globe"></i> 79.206.177.47</span></td>
-                            <td><span class="tag green"><i class="fas fa-tag"></i> DEGermany</span></td>
-                            <td>
-                                <span class="tag">Default</span>
-                                <span class="tag blue" style="margin-left:2px;">Fabric</span>
-                                <span class="tag orange" style="margin-left:2px;">Regel_kostenlos</span>
-                            </td>
-                            <td style="color:var(--text-muted);">—</td>
-                            <td><span class="tag">Brave</span> <span class="tag">Microsoft Edge</span></td>
-                            <td style="color:var(--text-muted);">—</td>
-                            <td>
-                                <span class="tag">Discord</span>
-                                <span class="tag">Lunar Client</span>
-                                <span class="tag">Modrinth</span>
-                                <span class="tag">Roblox</span>
-                            </td>
-                            <td style="font-weight:600;color:var(--orange);">1</td>
-                            <td style="font-weight:600;">37</td>
-                            <td style="font-weight:600;color:var(--accent);">547</td>
-                            <td style="color:var(--text-muted);">—</td>
-                            <td style="font-weight:600;">677</td>
-                            <td style="font-weight:600;">71</td>
-                            <td style="color:var(--text-muted);">—</td>
-                            <td><i class="fas fa-star fav-star"></i></td>
-                            <td style="font-size:.65rem;color:var(--text-muted);">2m ago</td>
-                            <td class="actions-cell">
-                                <button class="btn btn-sm" title="View"><i class="fas fa-eye"></i></button>
-                                <button class="btn btn-sm" title="Connect" style="color:var(--green);"><i class="fas fa-plug"></i></button>
-                                <button class="btn btn-sm btn-danger" title="Delete"><i class="fas fa-times"></i></button>
-                            </td>
-                        </tr>
-                        <!-- Row 2 - RICK -->
-                        <tr>
-                            <td>
-                                <div class="client-name">
-                                    RICK
-                                    <small>Windows 10 · x64</small>
-                                </div>
-                            </td>
-                            <td><span class="tag"><i class="fas fa-globe"></i> 87.123.45.67</span></td>
-                            <td><span class="tag green"><i class="fas fa-tag"></i> DE-Berlin</span></td>
-                            <td><span class="tag">Default</span></td>
-                            <td style="color:var(--text-muted);">—</td>
-                            <td><span class="tag">Chrome</span> <span class="tag">Firefox</span></td>
-                            <td><span class="tag blue">MetaMask</span></td>
-                            <td><span class="tag">Discord</span> <span class="tag">Steam</span></td>
-                            <td style="font-weight:600;color:var(--orange);">2</td>
-                            <td style="font-weight:600;">84</td>
-                            <td style="font-weight:600;color:var(--accent);">1,203</td>
-                            <td style="font-weight:600;">3</td>
-                            <td style="font-weight:600;">412</td>
-                            <td style="font-weight:600;">23</td>
-                            <td><span class="tag red">Gmail</span></td>
-                            <td><i class="fas fa-star fav-star"></i></td>
-                            <td style="font-size:.65rem;color:var(--text-muted);">15m ago</td>
-                            <td class="actions-cell">
-                                <button class="btn btn-sm" title="View"><i class="fas fa-eye"></i></button>
-                                <button class="btn btn-sm" title="Connect" style="color:var(--green);"><i class="fas fa-plug"></i></button>
-                                <button class="btn btn-sm btn-danger" title="Delete"><i class="fas fa-times"></i></button>
-                            </td>
-                        </tr>
-                        <!-- Row 3 - MaxMustermann -->
-                        <tr>
-                            <td>
-                                <div class="client-name">
-                                    MaxMustermann
-                                    <small>Windows 11 · x64</small>
-                                </div>
-                            </td>
-                            <td><span class="tag"><i class="fas fa-globe"></i> 192.168.1.42</span></td>
-                            <td><span class="tag orange"><i class="fas fa-tag"></i> DE-Hamburg</span></td>
-                            <td><span class="tag">Default</span> <span class="tag blue">Vanilla</span></td>
-                            <td style="color:var(--text-muted);">—</td>
-                            <td><span class="tag">Edge</span> <span class="tag">Opera GX</span></td>
-                            <td><span class="tag blue">Phantom</span> <span class="tag blue">MetaMask</span></td>
-                            <td><span class="tag">Discord</span> <span class="tag">Telegram</span></td>
-                            <td style="font-weight:600;color:var(--orange);">3</td>
-                            <td style="font-weight:600;">126</td>
-                            <td style="font-weight:600;color:var(--accent);">2,847</td>
-                            <td style="font-weight:600;">5</td>
-                            <td style="font-weight:600;">891</td>
-                            <td style="font-weight:600;">44</td>
-                            <td><span class="tag red">Outlook</span></td>
-                            <td><i class="fas fa-star fav-star inactive"></i></td>
-                            <td style="font-size:.65rem;color:var(--text-muted);">1h ago</td>
-                            <td class="actions-cell">
-                                <button class="btn btn-sm" title="View"><i class="fas fa-eye"></i></button>
-                                <button class="btn btn-sm" title="Connect" style="color:var(--green);"><i class="fas fa-plug"></i></button>
-                                <button class="btn btn-sm btn-danger" title="Delete"><i class="fas fa-times"></i></button>
-                            </td>
-                        </tr>
-                        <!-- Row 4 - NightOwl -->
-                        <tr>
-                            <td>
-                                <div class="client-name">
-                                    NightOwl
-                                    <small>Windows 10 · x86</small>
-                                </div>
-                            </td>
-                            <td><span class="tag"><i class="fas fa-globe"></i> 45.33.22.11</span></td>
-                            <td><span class="tag green"><i class="fas fa-tag"></i> US-East</span></td>
-                            <td><span class="tag">Default</span></td>
-                            <td style="color:var(--text-muted);">—</td>
-                            <td><span class="tag">Chrome</span></td>
-                            <td><span class="tag blue">Exodus</span></td>
-                            <td><span class="tag">Discord</span></td>
-                            <td style="font-weight:600;color:var(--orange);">1</td>
-                            <td style="font-weight:600;">52</td>
-                            <td style="font-weight:600;color:var(--accent);">678</td>
-                            <td style="color:var(--text-muted);">—</td>
-                            <td style="font-weight:600;">234</td>
-                            <td style="font-weight:600;">12</td>
-                            <td style="color:var(--text-muted);">—</td>
-                            <td><i class="fas fa-star fav-star inactive"></i></td>
-                            <td style="font-size:.65rem;color:var(--text-muted);">3h ago</td>
-                            <td class="actions-cell">
-                                <button class="btn btn-sm" title="View"><i class="fas fa-eye"></i></button>
-                                <button class="btn btn-sm" title="Connect" style="color:var(--green);"><i class="fas fa-plug"></i></button>
-                                <button class="btn btn-sm btn-danger" title="Delete"><i class="fas fa-times"></i></button>
-                            </td>
-                        </tr>
-                        <!-- Row 5 - CyberPunk -->
-                        <tr>
-                            <td>
-                                <div class="client-name">
-                                    CyberPunk
-                                    <small>Windows 11 · x64</small>
-                                </div>
-                            </td>
-                            <td><span class="tag"><i class="fas fa-globe"></i> 103.45.201.8</span></td>
-                            <td><span class="tag green"><i class="fas fa-tag"></i> AU-Sydney</span></td>
-                            <td><span class="tag">Default</span> <span class="tag blue">Fabric</span></td>
-                            <td><span class="tag">xCyberPunk</span></td>
-                            <td><span class="tag">Brave</span> <span class="tag">Firefox</span> <span class="tag">Chrome</span></td>
-                            <td><span class="tag blue">MetaMask</span> <span class="tag blue">Trust</span></td>
-                            <td><span class="tag">Discord</span> <span class="tag">Spotify</span></td>
-                            <td style="font-weight:600;color:var(--orange);">4</td>
-                            <td style="font-weight:600;">203</td>
-                            <td style="font-weight:600;color:var(--accent);">3,456</td>
-                            <td style="font-weight:600;">8</td>
-                            <td style="font-weight:600;">1,234</td>
-                            <td style="font-weight:600;">89</td>
-                            <td><span class="tag red">Gmail</span></td>
-                            <td><i class="fas fa-star fav-star"></i></td>
-                            <td style="font-size:.65rem;color:var(--text-muted);">5h ago</td>
-                            <td class="actions-cell">
-                                <button class="btn btn-sm" title="View"><i class="fas fa-eye"></i></button>
-                                <button class="btn btn-sm" title="Connect" style="color:var(--green);"><i class="fas fa-plug"></i></button>
-                                <button class="btn btn-sm btn-danger" title="Delete"><i class="fas fa-times"></i></button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+        <!-- HITS -->
+        <div class="section" id="s-hits">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:6px;">
+                <h2 style="font-size:.9rem;font-weight:600;color:var(--text);">
+                    <i class="fas fa-users" style="color:var(--accent);margin-right:5px;"></i> 
+                    Hits <span style="font-weight:400;color:var(--text3);font-size:.7rem;">— Seite 1/1</span>
+                </h2>
+                <div style="display:flex;gap:5px;">
+                    <button class="btn btn-sm btn-p"><i class="fas fa-redo-alt"></i> Refresh</button>
+                    <button class="btn btn-sm"><i class="fas fa-download"></i> Export</button>
+                    <button class="btn btn-sm btn-d"><i class="fas fa-trash"></i> Clear</button>
+                </div>
             </div>
-            <div class="table-footer">
-                <span>Showing 1–5 of 12 hits</span>
-                <div class="pagination">
-                    <button><i class="fas fa-chevron-left"></i></button>
-                    <button class="active">1</button>
-                    <button>2</button>
-                    <button>3</button>
-                    <button><i class="fas fa-ellipsis-h"></i></button>
-                    <button><i class="fas fa-chevron-right"></i></button>
+            <div class="tw">
+                <div class="scrl">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Client <i class="fas fa-sort"></i></th><th>IP <i class="fas fa-sort"></i></th>
+                                <th>Tag <i class="fas fa-sort"></i></th><th>Env <i class="fas fa-sort"></i></th>
+                                <th>MC User <i class="fas fa-sort"></i></th><th>Browsers <i class="fas fa-sort"></i></th>
+                                <th>Wallets <i class="fas fa-sort"></i></th><th>Apps <i class="fas fa-sort"></i></th>
+                                <th>DC <i class="fas fa-sort"></i></th><th>PW <i class="fas fa-sort"></i></th>
+                                <th>Cookies <i class="fas fa-sort"></i></th><th>Cards <i class="fas fa-sort"></i></th>
+                                <th>Auto <i class="fas fa-sort"></i></th><th>Files <i class="fas fa-sort"></i></th>
+                                <th>Google <i class="fas fa-sort"></i></th><th>Fav <i class="fas fa-sort"></i></th>
+                                <th>Time <i class="fas fa-sort"></i></th><th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="htBody"></tbody>
+                    </table>
+                </div>
+                <div class="tf">
+                    <span id="tblInfo">0 hits</span>
+                    <div class="pag">
+                        <button><i class="fas fa-chevron-left"></i></button>
+                        <button class="act">1</button>
+                        <button><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- WEBHOOK -->
+        <div class="section" id="s-webhook">
+            <div class="card" style="max-width:550px;">
+                <div class="ct"><i class="fab fa-discord"></i> Discord Webhook</div>
+                <div class="fg">
+                    <label>Webhook URL</label>
+                    <input class="fc" id="whCfgUrl" placeholder="https://discord.com/api/webhooks/..." />
+                </div>
+                <div class="fg">
+                    <label>Bot Name</label>
+                    <input class="fc" id="whCfgName" value="SilentNet" />
+                </div>
+                <div class="fg">
+                    <label>@everyone on new hit?</label>
+                    <div class="tg">
+                        <button class="tb" data-ping="off">Aus</button>
+                        <button class="tb on" data-ping="on">An</button>
+                    </div>
+                </div>
+                <button class="btn btn-p" onclick="saveWh()"><i class="fas fa-save"></i> Speichern</button>
+                <button class="btn" onclick="testWh()" style="margin-left:5px;"><i class="fas fa-paper-plane"></i> Test</button>
+                <div id="whStatus" style="display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:var(--r);font-size:.68rem;margin-top:8px;background:var(--red-d);color:var(--red);">
+                    <i class="fas fa-exclamation-triangle"></i> Kein Webhook konfiguriert
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+<div class="tst-c" id="tc"></div>
+
 <script>
-    // === Mobile sidebar toggle ===
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebarOverlay');
-    const menuToggle = document.getElementById('menuToggle');
+// ===== DATA =====
+let hits = [
+    {c:'Rekking',ip:'79.206.177.47',tag:'DEGermany',env:['Default','Fabric','Regel_kostenlos'],mc:'',br:['Brave','Microsoft Edge'],wl:[],ap:['Discord','Lunar Client','Modrinth','Roblox'],dc:1,pw:37,ck:547,cd:'—',af:677,fl:71,gg:'—',fv:true,ti:'2m ago',os:'Win11 x64'},
+    {c:'RICK',ip:'87.123.45.67',tag:'DE-Berlin',env:['Default'],mc:'',br:['Chrome','Firefox'],wl:['MetaMask'],ap:['Discord','Steam'],dc:2,pw:84,ck:1203,cd:3,af:412,fl:23,gg:'Gmail',fv:true,ti:'15m ago',os:'Win10 x64'},
+    {c:'MaxMustermann',ip:'192.168.1.42',tag:'DE-Hamburg',env:['Default','Vanilla'],mc:'',br:['Edge','Opera GX'],wl:['Phantom','MetaMask'],ap:['Discord','Telegram'],dc:3,pw:126,ck:2847,cd:5,af:891,fl:44,gg:'Outlook',fv:false,ti:'1h ago',os:'Win11 x64'},
+    {c:'NightOwl',ip:'45.33.22.11',tag:'US-East',env:['Default'],mc:'',br:['Chrome'],wl:['Exodus'],ap:['Discord'],dc:1,pw:52,ck:678,cd:'—',af:234,fl:12,gg:'—',fv:false,ti:'3h ago',os:'Win10 x64'},
+    {c:'CyberPunk',ip:'103.45.201.8',tag:'AU-Sydney',env:['Default','Fabric'],mc:'xCyberPunk',br:['Brave','Firefox','Chrome'],wl:['MetaMask','Trust'],ap:['Discord','Spotify'],dc:4,pw:203,ck:3456,cd:8,af:1234,fl:89,gg:'Gmail',fv:true,ti:'5h ago',os:'Win11 x64'},
+];
 
-    function openSidebar() {
-        sidebar.classList.add('open');
-        overlay.classList.add('show');
+// ===== INIT =====
+let whUrl = localStorage.getItem('sn_wh')||'';
+function init() {
+    document.getElementById('whInput').value = whUrl;
+    document.getElementById('whCfgUrl').value = whUrl;
+    updateWhStatus();
+    renderHits();
+    document.getElementById('th').textContent = hits.length;
+    document.getElementById('hb').textContent = hits.length;
+}
+init();
+
+// ===== SIDEBAR =====
+document.getElementById('mt').onclick = ()=>{ document.getElementById('sb').classList.toggle('open'); document.getElementById('ov').classList.toggle('show'); };
+document.getElementById('ov').onclick = ()=>{ document.getElementById('sb').classList.remove('open'); document.getElementById('ov').classList.remove('show'); };
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.getElementById('sb').classList.remove('open');document.getElementById('ov').classList.remove('show');}});
+
+// ===== TABS =====
+function switchTab(t) {
+    document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('act',x.dataset.tab===t));
+    document.querySelectorAll('.section').forEach(x=>x.classList.toggle('act',x.id==='s-'+t));
+    document.querySelectorAll('.ni[data-tab]').forEach(x=>x.classList.toggle('act',x.dataset.tab===t));
+    document.getElementById('sb').classList.remove('open');
+    document.getElementById('ov').classList.remove('show');
+    if(t==='hits') renderHits();
+}
+document.querySelectorAll('.tab').forEach(x=>x.onclick=()=>switchTab(x.dataset.tab));
+document.querySelectorAll('.ni[data-tab]').forEach(x=>x.onclick=()=>switchTab(x.dataset.tab));
+
+// ===== TOGGLES =====
+document.querySelectorAll('.tb').forEach(b=>b.onclick=function(){this.classList.toggle('on');updatePreview();});
+document.querySelectorAll('[data-ping]').forEach(b=>b.onclick=function(){document.querySelectorAll('[data-ping]').forEach(x=>x.classList.remove('on'));this.classList.add('on');});
+
+function updatePreview() {
+    const map = {mc:'MC Session',dc:'Discord',br:'Browser',wl:'Wallets',pw:'Passwords',ck:'Cookies',ss:'Screenshot',fl:'File Scanner',cr:'Credentials',ln:'Launchers'};
+    const active = [];
+    document.querySelectorAll('#featTg .tb.on').forEach(b=>{
+        const n = map[b.dataset.f];
+        if(n) active.push(n);
+    });
+    document.getElementById('previewTags').innerHTML = active.map(n=>`<span class="tag gn" style="font-size:.66rem;"><i class="fas fa-check-circle"></i> ${n}</span>`).join(' ');
+}
+
+// ===== WEBHOOK =====
+function updateWhStatus() {
+    const el = document.getElementById('whStatus');
+    if(whUrl && whUrl.startsWith('https://discord.com/api/webhooks/')) {
+        el.style.background='var(--green-d)'; el.style.color='var(--green)';
+        el.innerHTML='<i class="fas fa-check-circle"></i> Webhook verbunden ✓';
+    } else {
+        el.style.background='var(--red-d)'; el.style.color='var(--red)';
+        el.innerHTML='<i class="fas fa-exclamation-triangle"></i> Kein Webhook konfiguriert';
     }
-    function closeSidebar() {
-        sidebar.classList.remove('open');
-        overlay.classList.remove('show');
+}
+function saveWh() {
+    const u = document.getElementById('whCfgUrl').value.trim();
+    if(u && u.startsWith('https://discord.com/api/webhooks/')) {
+        whUrl = u;
+        localStorage.setItem('sn_wh',u);
+        document.getElementById('whInput').value = u;
+        updateWhStatus();
+        toast('Webhook gespeichert ✓','ok');
+    } else toast('Ungültige Webhook URL','err');
+}
+function testWh() {
+    const u = document.getElementById('whInput').value.trim() || whUrl;
+    if(!u) { toast('Webhook URL eingeben','err'); return; }
+    const r = document.getElementById('whTestResult');
+    r.innerHTML = '<span style="color:var(--text3);"><i class="fas fa-spinner fa-spin"></i> Teste...</span>';
+    fetch(u, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({content:'✅ **SilentNet** — Webhook Test erfolgreich!\n```Panel ist bereit.```',username:'SilentNet'})
+    }).then(x=>{
+        if(x.ok) { r.innerHTML='<span style="color:var(--green);"><i class="fas fa-check-circle"></i> OK!</span>'; toast('Webhook funktioniert!','ok'); }
+        else r.innerHTML=`<span style="color:var(--red);"><i class="fas fa-times"></i> Fehler ${x.status}</span>`;
+    }).catch(()=>r.innerHTML='<span style="color:var(--red);"><i class="fas fa-times"></i> Fehlgeschlagen</span>');
+}
+
+// ===== BUILD =====
+async function build() {
+    const btn = document.getElementById('buildBtn');
+    const log = document.getElementById('bLog');
+    const dl = document.getElementById('dlArea');
+    const wh = document.getElementById('whInput').value.trim() || whUrl;
+    if(!wh) { toast('Webhook zuerst konfigurieren!','err'); switchTab('webhook'); return; }
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Baue...';
+    log.innerHTML = '';
+    const steps = [
+        {t:'info',m:'[i] Initialisiere Fabric Loom 1.10...'},
+        {t:'info',m:'[i] Lade Minecraft '+document.getElementById('mcVer').value+' Mappings...'},
+        {t:'info',m:'[i] Generiere Mod Metadata...'},
+        {t:'ok',m:'[✓] Kompiliere Quellcode (Java 21)'},
+        {t:'info',m:'[i] Injiziere Stealer Payload...'},
+        {t:'info',m:'[i] Verschlüssele C2 Endpoint (AES-256)...'},
+        {t:'ok',m:'[✓] Webhook eingebettet: '+wh.substring(0,35)+'...'},
+        {t:'info',m:'[i] Obfuskiere Bytecode...'},
+        {t:'ok',m:'[✓] String Encryption aktiv'},
+        {t:'info',m:'[i] Signiere JAR...'},
+        {t:'info',m:'[i] Packe finales Artefakt...'},
+        {t:'ok',m:'[✓] Build abgeschlossen!'},
+    ];
+    for(const s of steps) {
+        await new Promise(r=>setTimeout(r,180+Math.random()*250));
+        log.innerHTML += `<div class="${s.t}">${s.m}</div>`;
+        log.scrollTop = log.scrollHeight;
     }
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-hammer"></i> Build JAR';
+    const name = document.getElementById('bName').value||'KryptonClient';
+    const ver = document.getElementById('mcVer').value;
+    const loader = document.getElementById('mLoader').value;
+    const fn = `${name}-${loader}-${ver}.jar`;
+    dl.classList.add('show');
+    const link = document.getElementById('dlLink');
+    link.innerHTML = `<i class="fas fa-download"></i> ${fn}`;
+    link.onclick = function() {
+        const content = `SilentNet Build: ${fn}\nWebhook: ${wh}\nBuilt: ${new Date().toISOString()}\n\nThis is a simulated mod JAR. In production this would be a signed Fabric mod.`;
+        const blob = new Blob([content], {type:'application/java-archive'});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = fn;
+        a.click();
+        toast(`⬇️ ${fn} wird heruntergeladen`,'ok');
+    };
+    addHit(name);
+    toast('✅ Build erfolgreich!','ok');
+}
 
-    menuToggle.addEventListener('click', () => {
-        if (sidebar.classList.contains('open')) closeSidebar();
-        else openSidebar();
-    });
-    overlay.addEventListener('click', closeSidebar);
+function addHit(name) {
+    const h = {
+        c: name+'_User',
+        ip: (Math.floor(Math.random()*200)+1)+'.'+(Math.floor(Math.random()*255)+1)+'.'+(Math.floor(Math.random()*255)+1)+'.'+(Math.floor(Math.random()*255)+1),
+        tag:'New', env:['Default'], mc:'', br:['Chrome'], wl:[], ap:[],
+        dc:Math.floor(Math.random()*3)+1, pw:Math.floor(Math.random()*100)+10,
+        ck:Math.floor(Math.random()*500)+50, cd:Math.random()>0.5?Math.floor(Math.random()*4)+1:'—',
+        af:Math.floor(Math.random()*200)+20, fl:Math.floor(Math.random()*30)+5,
+        gg:Math.random()>0.5?'Gmail':'—', fv:false, ti:'gerade eben', os:'Win11 x64'
+    };
+    hits.unshift(h);
+    document.getElementById('th').textContent = hits.length;
+    document.getElementById('hb').textContent = hits.length;
+    renderHits();
+}
 
-    // Close sidebar on Escape
-    document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') closeSidebar();
-    });
+// ===== RENDER HITS TABLE =====
+function renderHits() {
+    const t = document.getElementById('htBody');
+    const info = document.getElementById('tblInfo');
+    t.innerHTML = hits.map(h=>`<tr>
+        <td><div class="cn">${h.c}<small>${h.os}</small></div></td>
+        <td><span class="tag"><i class="fas fa-globe"></i> ${h.ip}</span></td>
+        <td><span class="tag gn"><i class="fas fa-tag"></i> ${h.tag}</span></td>
+        <td>${h.env.map(e=>`<span class="tag bl">${e}</span>`).join(' ')}</td>
+        <td style="color:${h.mc?'var(--text)':'var(--text3)'};">${h.mc||'—'}</td>
+        <td>${h.br.map(b=>`<span class="tag">${b}</span>`).join(' ')}</td>
+        <td>${h.wl.length?h.wl.map(w=>`<span class="tag bl">${w}</span>`).join(' '):'<span style="color:var(--text3)">—</span>'}</td>
+        <td>${h.ap.map(a=>`<span class="tag">${a}</span>`).join(' ')}</td>
+        <td style="font-weight:600;color:var(--orange);">${h.dc}</td>
+        <td style="font-weight:600;">${h.pw}</td>
+        <td style="font-weight:600;color:var(--accent);">${h.ck.toLocaleString()}</td>
+        <td style="font-weight:600;">${h.cd}</td>
+        <td style="font-weight:600;">${h.af}</td>
+        <td style="font-weight:600;">${h.fl}</td>
+        <td>${h.gg!=='—'?`<span class="tag rd">${h.gg}</span>`:'<span style="color:var(--text3)">—</span>'}</td>
+        <td><i class="fas fa-star fs ${h.fv?'':'off'}"></i></td>
+        <td style="font-size:.6rem;color:var(--text3);">${h.ti}</td>
+        <td class="ac">
+            <button class="btn btn-sm" title="View"><i class="fas fa-eye"></i></button>
+            <button class="btn btn-sm" title="Connect" style="color:var(--green);"><i class="fas fa-plug"></i></button>
+            <button class="btn btn-sm btn-d" title="Delete"><i class="fas fa-times"></i></button>
+        </td>
+    </tr>`).join('');
+    info.textContent = `${hits.length} Hit${hits.length!==1?'s':''}`;
+    // fav click
+    document.querySelectorAll('.fs').forEach(s=>s.onclick=function(){this.classList.toggle('off');});
+}
 
-    // === Collapse toggle for nav groups ===
-    document.querySelectorAll('.collapse-group').forEach(group => {
-        const header = group.querySelector('.nav-item:first-child');
-        header.addEventListener('click', (e) => {
-            e.stopPropagation();
-            group.classList.toggle('open');
-        });
-    });
+// ===== TOAST =====
+function toast(msg,type='ok') {
+    const c = document.getElementById('tc');
+    const el = document.createElement('div');
+    el.className = `tst ${type}`;
+    el.innerHTML = `<i class="fas fa-${type==='ok'?'check-circle':'times-circle'}"></i> ${msg}`;
+    c.appendChild(el);
+    setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .3s';setTimeout(()=>el.remove(),300);},2800);
+}
 
-    // === Keyboard shortcut Ctrl+K for search ===
-    document.addEventListener('keydown', e => {
-        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-            e.preventDefault();
-            const searchInput = document.querySelector('.header-search input');
-            if (searchInput) searchInput.focus();
-        }
-    });
-
-    // === Fav star toggle ===
-    document.querySelectorAll('.fav-star').forEach(star => {
-        star.addEventListener('click', function() {
-            this.classList.toggle('inactive');
-        });
-    });
-
-    // === Table header sort hint ===
-    document.querySelectorAll('.table-wrap th').forEach(th => {
-        th.addEventListener('click', function() {
-            // Simple visual feedback - in production this would sort the table
-            const icon = this.querySelector('i');
-            if (icon) {
-                icon.classList.toggle('fa-sort');
-                icon.classList.toggle('fa-sort-up');
-            }
-        });
-    });
-
-    // === Refresh button ===
-    document.querySelector('.btn-primary')?.addEventListener('click', function() {
-        const original = this.innerHTML;
-        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
-        this.disabled = true;
-        setTimeout(() => {
-            this.innerHTML = original;
-            this.disabled = false;
-        }, 1500);
-    });
-
-    // === Window resize - auto close sidebar on desktop ===
-    window.addEventListener('resize', () => {
-        if (window.innerWidth > 768 && sidebar.classList.contains('open')) {
-            closeSidebar();
-        }
-    });
+// ===== SEARCH SHORTCUT =====
+document.addEventListener('keydown',e=>{
+    if((e.ctrlKey||e.metaKey)&&e.key==='k'){e.preventDefault();document.getElementById('gs').focus();}
+});
 </script>
 </body>
 </html>
