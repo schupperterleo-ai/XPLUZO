@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Load Launcher </title>
+    <title>Load Launcher | The Ultimate Minecraft Experience</title>
     
+    <!-- Modern Font: Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     
     <style>
@@ -14,8 +15,8 @@
             --primary-glow: rgba(0, 255, 136, 0.4);
             --discord: #5865F2; 
             --discord-glow: rgba(88, 101, 242, 0.4);
-            --store: #f5b041; /* Gold/Orange for the Store */
-            --store-glow: rgba(245, 176, 65, 0.4);
+            --store: #ff91a4; /* Sakura Pink for the Store */
+            --store-glow: rgba(255, 145, 164, 0.4);
             --bg-dark: #050505;
             --bg-surface: rgba(20, 20, 20, 0.55); 
             --text-main: #ffffff;
@@ -189,7 +190,7 @@
         }
 
         .modal-content.store-modal {
-            max-width: 550px; /* A bit wider for the store */
+            max-width: 550px; 
         }
 
         .modal-content h2 { margin-top: 0; font-weight: 600; font-size: 1.8rem; }
@@ -213,7 +214,7 @@
             background: rgba(0, 0, 0, 0.4);
             border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 20px;
-            padding: 25px;
+            padding: 20px;
             margin-top: 25px;
             transition: transform 0.3s ease, border-color 0.3s ease;
         }
@@ -223,19 +224,21 @@
             border-color: var(--store);
         }
 
+        /* Update für das neue Preview Bild (Vollbreite, abgerundet) */
         .store-item img {
-            width: 120px;
-            height: auto;
-            border-radius: 8px;
-            image-rendering: pixelated; /* Keeps Minecraft textures sharp */
-            margin-bottom: 15px;
-            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5));
+            width: 100%;
+            max-height: 250px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
         }
 
         .store-item h4 {
             margin: 0 0 10px 0;
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             color: white;
+            font-weight: 600;
         }
 
         .store-item .price {
@@ -313,17 +316,19 @@
 
     <div class="background-animation"></div>
 
+    <!-- Hero Section -->
     <header>
         <h1>Load Launcher</h1>
         <p class="subtitle">Your ultimate connection to LoadSMP, LoadPVP, and LoadTiers. Maximum FPS, minimal delay, and 100% focus on your gameplay.</p>
         
         <div class="hero-buttons">
             <button onclick="openModal('downloadModal')" class="btn">📥 Download</button>
-            <button onclick="openModal('cosmeticsModal')" class="btn btn-store">✨ Cosmetics</button>
+            <button onclick="openModal('cosmeticsModal')" class="btn btn-store">🌸 Cosmetics</button>
             <a href="https://discord.gg/cNkq2KxfPV" target="_blank" class="btn btn-discord">💬 Discord</a>
         </div>
     </header>
 
+    <!-- Download Modal -->
     <div id="downloadModal" class="modal-overlay" onclick="closeModalOutside(event, 'downloadModal')">
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal('downloadModal')">&times;</span>
@@ -342,6 +347,7 @@
         </div>
     </div>
 
+    <!-- Cosmetics Store Modal -->
     <div id="cosmeticsModal" class="modal-overlay" onclick="closeModalOutside(event, 'cosmeticsModal')">
         <div class="modal-content store-modal">
             <span class="close-btn" onclick="closeModal('cosmeticsModal')">&times;</span>
@@ -349,14 +355,16 @@
             <p style="color: var(--text-muted); font-size: 0.95rem;">Upgrade your look and show off in LoadTiers.</p>
             
             <div class="store-item">
-                <img src="SkinMC-Cape-150404.png" alt="Load Cape Preview">
-                <h4>Exclusive Load Cape</h4>
+                <!-- Hier wird dein In-Game Preview geladen -->
+                <img src="image_2cfa58.png" alt="Sakura Cape Preview">
+                <h4>Exclusive Sakura Cape</h4>
                 <p class="price">🪙 500 Coins</p>
                 <button class="btn btn-buy">Purchase Cape</button>
             </div>
         </div>
     </div>
 
+    <!-- Feature Section -->
     <section class="features">
         <div class="card fade-in-section">
             <h3>⚡ Crystal & Sword PvP</h3>
@@ -376,6 +384,7 @@
         <p>&copy; 2026 Load Project. Developed with Python & Skript.</p>
     </footer>
 
+    <!-- JavaScript -->
     <script>
         // --- Modal System ---
         function openModal(modalId) {
