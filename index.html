@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Load Launcher | Die beste Minecraft Experience</title>
+    <title>Load Launcher</title>
     <style>
-        /* Modernes, dunkles Theme - passend zu Minecraft und Coding */
+        /* Modernes, dunkles Theme */
         :root {
-            --primary: #00ff88; /* Ein giftiges Neongrün für Akzente */
+            --primary: #00ff88; 
             --primary-glow: rgba(0, 255, 136, 0.4);
+            --discord: #5865F2; /* Original Discord Farbe */
+            --discord-glow: rgba(88, 101, 242, 0.4);
             --bg-dark: #0d0d0d;
             --bg-card: #1a1a1a;
             --text: #ffffff;
@@ -24,7 +26,7 @@
             scroll-behavior: smooth;
         }
 
-        /* --- Animationen (CSS) --- */
+        /* --- Animationen --- */
         @keyframes fadeInDown {
             from { opacity: 0; transform: translateY(-40px); }
             to { opacity: 1; transform: translateY(0); }
@@ -32,11 +34,15 @@
 
         @keyframes float {
             0% { transform: translateY(0px); }
-            50% { transform: translateY(-12px); }
+            50% { transform: translateY(-8px); }
             100% { transform: translateY(0px); }
         }
 
-        /* Klassen für das JavaScript Scroll-Fading */
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
         .fade-in-section {
             opacity: 0;
             transform: translateY(10vh);
@@ -81,10 +87,17 @@
             line-height: 1.6;
         }
 
-        .btn {
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
             margin-top: 40px;
-            padding: 16px 45px;
-            font-size: 1.2rem;
+            animation: fadeInDown 1.4s ease-out, float 4s ease-in-out infinite;
+        }
+
+        /* --- Buttons --- */
+        .btn {
+            padding: 16px 40px;
+            font-size: 1.1rem;
             font-weight: 800;
             color: var(--bg-dark);
             background-color: var(--primary);
@@ -94,13 +107,87 @@
             text-decoration: none;
             text-transform: uppercase;
             letter-spacing: 1px;
-            animation: fadeInDown 1.4s ease-out, float 4s ease-in-out infinite;
             transition: transform 0.2s, box-shadow 0.2s;
         }
 
         .btn:hover {
-            transform: scale(1.05) translateY(-5px);
+            transform: scale(1.05) translateY(-3px);
             box-shadow: 0 0 25px var(--primary-glow);
+        }
+
+        .btn-discord {
+            background-color: var(--discord);
+            color: white;
+        }
+
+        .btn-discord:hover {
+            box-shadow: 0 0 25px var(--discord-glow);
+        }
+
+        .btn.disabled {
+            background-color: #333;
+            color: #777;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* --- Download Modal (Mini GUI) --- */
+        .modal-overlay {
+            display: none; /* Standardmäßig versteckt */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: var(--bg-card);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            border-top: 4px solid var(--primary);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            position: relative;
+            animation: modalFadeIn 0.3s ease-out;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .close-btn:hover {
+            color: white;
+        }
+
+        .os-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .os-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 1rem;
+            padding: 14px 20px;
         }
 
         /* --- Features Sektion --- */
@@ -121,25 +208,17 @@
             width: 320px;
             text-align: center;
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s;
-            border-top: 4px solid var(--primary);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border-top: 4px solid #333;
         }
 
         .card:hover {
             transform: translateY(-15px) scale(1.03);
+            border-color: var(--primary);
             box-shadow: 0 20px 40px rgba(0, 255, 136, 0.15);
         }
 
-        .card h3 {
-            font-size: 1.5rem;
-            margin-top: 0;
-            color: #fff;
-        }
-
-        .card p {
-            color: var(--text-muted);
-            line-height: 1.6;
-        }
+        .card h3 { font-size: 1.5rem; margin-top: 0; color: #fff; }
+        .card p { color: var(--text-muted); line-height: 1.6; }
 
         /* --- Footer --- */
         footer {
@@ -154,12 +233,39 @@
 </head>
 <body>
 
+    <!-- Hero Bereich -->
     <header>
         <h1>Load Launcher</h1>
         <p class="subtitle">Deine ultimative Verbindung zu LoadSMP, LoadPVP und den LoadTiers. Maximale FPS, minimaler Delay und 100% Fokus auf dein Gameplay.</p>
-        <a href="#download" class="btn">Client Herunterladen</a>
+        
+        <div class="hero-buttons">
+            <button onclick="openModal()" class="btn">Client Herunterladen</button>
+            <a href="https://discord.gg/cNkq2KxfPV" target="_blank" class="btn btn-discord">Discord Joinen</a>
+        </div>
     </header>
 
+    <!-- Download Modal (Mini GUI) -->
+    <div id="downloadModal" class="modal-overlay" onclick="closeModalOutside(event)">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h2>Wähle dein OS</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Bitte wähle dein Betriebssystem aus, um den Load Launcher herunterzuladen.</p>
+            
+            <div class="os-options">
+                <!-- Windows Download: Lädt LoadLauncher.exe herunter -->
+                <a href="LoadLauncher.exe" download class="btn os-btn">
+                    🪟 Windows (.exe)
+                </a>
+                
+                <!-- Linux Download: Ist deaktiviert (Kommt bald) -->
+                <button class="btn os-btn disabled" disabled>
+                    🐧 Linux (Kommt bald)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature Bereich -->
     <section class="features">
         <div class="card fade-in-section">
             <h3>⚡ Crystal & Sword PvP</h3>
@@ -179,26 +285,38 @@
         <p>&copy; 2026 Load Project. Developed with Python & Skript.</p>
     </footer>
 
+    <!-- JavaScript -->
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Konfiguration für den Intersection Observer
-            const observerOptions = {
-                root: null,
-                rootMargin: '0px',
-                threshold: 0.15 // Feuert, wenn 15% des Elements sichtbar sind
-            };
+        // --- Modal (Mini GUI) Logik ---
+        const modal = document.getElementById('downloadModal');
 
+        function openModal() {
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        // Schließt das Modal, wenn man außerhalb der Box hinklickt
+        function closeModalOutside(event) {
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        // --- Scroll-Animationen ---
+        document.addEventListener("DOMContentLoaded", function() {
+            const observerOptions = { root: null, rootMargin: '0px', threshold: 0.15 };
             const observer = new IntersectionObserver((entries, observer) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         entry.target.classList.add('is-visible');
-                        // Optional: Das Element nicht mehr beobachten, wenn es einmal sichtbar war
                         observer.unobserve(entry.target);
                     }
                 });
             }, observerOptions);
 
-            // Alle Elemente mit der Klasse 'fade-in-section' beobachten
             const elements = document.querySelectorAll('.fade-in-section');
             elements.forEach(el => observer.observe(el));
         });
