@@ -1,34 +1,40 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Load Launcher</title>
+    <title>Load Launcher | The Ultimate Minecraft Experience</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
     <style>
-        /* Modernes, dunkles Theme */
+        /* Modern Dark & Neon Theme */
         :root {
             --primary: #00ff88; 
             --primary-glow: rgba(0, 255, 136, 0.4);
-            --discord: #5865F2; /* Original Discord Farbe */
+            --discord: #5865F2; 
             --discord-glow: rgba(88, 101, 242, 0.4);
-            --bg-dark: #0d0d0d;
-            --bg-card: #1a1a1a;
-            --text: #ffffff;
-            --text-muted: #a0a0a0;
+            --bg-dark: #050505;
+            --bg-surface: rgba(30, 30, 30, 0.4); /* Transparent for Glassmorphism */
+            --text-main: #ffffff;
+            --text-muted: #a1a1aa;
         }
 
         body {
             margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Poppins', sans-serif;
             background-color: var(--bg-dark);
-            color: var(--text);
+            color: var(--text-main);
             overflow-x: hidden;
             scroll-behavior: smooth;
+            /* Subtle background glow effect */
+            background-image: radial-gradient(circle at 50% -20%, rgba(0, 255, 136, 0.15) 0%, transparent 50%);
+            background-repeat: no-repeat;
         }
 
-        /* --- Animationen --- */
+        /* --- Animations --- */
         @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-40px); }
+            from { opacity: 0; transform: translateY(-30px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
@@ -39,15 +45,15 @@
         }
 
         @keyframes modalFadeIn {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
+            from { opacity: 0; transform: scale(0.95) translateY(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
         }
 
         .fade-in-section {
             opacity: 0;
-            transform: translateY(10vh);
+            transform: translateY(40px);
             visibility: hidden;
-            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
             will-change: opacity, visibility;
         }
 
@@ -57,7 +63,7 @@
             visibility: visible;
         }
 
-        /* --- Header Sektion --- */
+        /* --- Header / Hero Section --- */
         header {
             height: 100vh;
             display: flex;
@@ -65,26 +71,29 @@
             align-items: center;
             justify-content: center;
             text-align: center;
-            background: radial-gradient(circle at center, #1a232c 0%, var(--bg-dark) 100%);
             padding: 0 20px;
+            position: relative;
         }
 
         h1 {
-            font-size: 5rem;
-            margin-bottom: 10px;
+            font-size: clamp(3rem, 8vw, 5.5rem);
+            font-weight: 800;
+            margin-bottom: 15px;
             letter-spacing: -2px;
             animation: fadeInDown 1s ease-out;
-            background: -webkit-linear-gradient(45deg, #00ff88, #00b8ff);
+            background: linear-gradient(135deg, #ffffff 0%, #00ff88 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 40px rgba(0, 255, 136, 0.2);
         }
 
         p.subtitle {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             color: var(--text-muted);
+            font-weight: 300;
             animation: fadeInDown 1.2s ease-out;
-            max-width: 650px;
-            line-height: 1.6;
+            max-width: 600px;
+            line-height: 1.7;
         }
 
         .hero-buttons {
@@ -96,23 +105,26 @@
 
         /* --- Buttons --- */
         .btn {
-            padding: 16px 40px;
-            font-size: 1.1rem;
-            font-weight: 800;
+            padding: 16px 36px;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
             color: var(--bg-dark);
             background-color: var(--primary);
             border: none;
-            border-radius: 50px;
+            border-radius: 12px;
             cursor: pointer;
             text-decoration: none;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: transform 0.2s, box-shadow 0.2s;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .btn:hover {
-            transform: scale(1.05) translateY(-3px);
-            box-shadow: 0 0 25px var(--primary-glow);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px var(--primary-glow);
         }
 
         .btn-discord {
@@ -121,12 +133,12 @@
         }
 
         .btn-discord:hover {
-            box-shadow: 0 0 25px var(--discord-glow);
+            box-shadow: 0 10px 25px var(--discord-glow);
         }
 
         .btn.disabled {
-            background-color: #333;
-            color: #777;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #666;
             cursor: not-allowed;
             box-shadow: none;
             transform: none;
@@ -134,37 +146,46 @@
 
         /* --- Download Modal (Mini GUI) --- */
         .modal-overlay {
-            display: none; /* Standardmäßig versteckt */
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(5px);
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             z-index: 1000;
             justify-content: center;
             align-items: center;
         }
 
         .modal-content {
-            background-color: var(--bg-card);
+            background: var(--bg-surface);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 40px;
-            border-radius: 20px;
+            border-radius: 24px;
             text-align: center;
             max-width: 400px;
             width: 90%;
-            border-top: 4px solid var(--primary);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
             position: relative;
-            animation: modalFadeIn 0.3s ease-out;
+            animation: modalFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .modal-content h2 {
+            margin-top: 0;
+            font-weight: 600;
         }
 
         .close-btn {
             position: absolute;
             top: 15px;
             right: 20px;
-            font-size: 1.5rem;
+            font-size: 2rem;
+            line-height: 1;
             color: var(--text-muted);
             cursor: pointer;
             transition: color 0.2s;
@@ -182,102 +203,112 @@
         }
 
         .os-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+            padding: 16px;
             font-size: 1rem;
-            padding: 14px 20px;
+            width: 100%;
+            box-sizing: border-box;
         }
 
-        /* --- Features Sektion --- */
+        /* --- Features Section --- */
         .features {
-            padding: 120px 20px;
+            padding: 100px 20px;
             display: flex;
             justify-content: center;
-            gap: 40px;
+            gap: 30px;
             flex-wrap: wrap;
             max-width: 1200px;
             margin: 0 auto;
         }
 
         .card {
-            background: var(--bg-card);
+            background: var(--bg-surface);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             padding: 40px 30px;
-            border-radius: 20px;
+            border-radius: 24px;
             width: 320px;
-            text-align: center;
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s;
-            border-top: 4px solid #333;
+            text-align: left;
+            transition: all 0.4s ease;
         }
 
         .card:hover {
-            transform: translateY(-15px) scale(1.03);
-            border-color: var(--primary);
-            box-shadow: 0 20px 40px rgba(0, 255, 136, 0.15);
+            transform: translateY(-10px);
+            border-color: rgba(0, 255, 136, 0.3);
+            background: rgba(40, 40, 40, 0.6);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
         }
 
-        .card h3 { font-size: 1.5rem; margin-top: 0; color: #fff; }
-        .card p { color: var(--text-muted); line-height: 1.6; }
+        .card h3 { 
+            font-size: 1.4rem; 
+            margin-top: 0; 
+            color: #fff; 
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card p { 
+            color: var(--text-muted); 
+            line-height: 1.7; 
+            font-size: 0.95rem;
+            margin-bottom: 0;
+        }
 
         /* --- Footer --- */
         footer {
             text-align: center;
-            padding: 30px;
-            border-top: 1px solid #222;
+            padding: 40px 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
             color: #555;
-            margin-top: 50px;
+            margin-top: 40px;
             font-size: 0.9rem;
         }
     </style>
 </head>
 <body>
 
-    <!-- Hero Bereich -->
     <header>
         <h1>Load Launcher</h1>
-        <p class="subtitle">Deine ultimative Verbindung zu LoadSMP, LoadPVP und den LoadTiers. Maximale FPS, minimaler Delay und 100% Fokus auf dein Gameplay.</p>
+        <p class="subtitle">Your ultimate connection to LoadSMP, LoadPVP, and LoadTiers. Maximum FPS, minimal delay, and 100% focus on your gameplay.</p>
         
         <div class="hero-buttons">
-            <button onclick="openModal()" class="btn">Client Herunterladen</button>
-            <a href="https://discord.gg/cNkq2KxfPV" target="_blank" class="btn btn-discord">Discord Joinen</a>
+            <button onclick="openModal()" class="btn">Download Client</button>
+            <a href="https://discord.gg/cNkq2KxfPV" target="_blank" class="btn btn-discord">Join Discord</a>
         </div>
     </header>
 
-    <!-- Download Modal (Mini GUI) -->
     <div id="downloadModal" class="modal-overlay" onclick="closeModalOutside(event)">
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal()">&times;</span>
-            <h2>Wähle dein OS</h2>
-            <p style="color: var(--text-muted); font-size: 0.9rem;">Bitte wähle dein Betriebssystem aus, um den Load Launcher herunterzuladen.</p>
+            <h2>Choose Your OS</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 25px;">Please select your operating system to download the Load Launcher.</p>
             
             <div class="os-options">
-                <!-- Windows Download: Lädt LoadLauncher.exe herunter -->
-                <a href="LoadLauncher.exe" download class="btn os-btn">
+                <a href="Load Launcher Setup 1.0.0.exe" download class="btn os-btn">
                     🪟 Windows (.exe)
                 </a>
                 
-                <!-- Linux Download: Ist deaktiviert (Kommt bald) -->
                 <button class="btn os-btn disabled" disabled>
-                    🐧 Linux (Kommt bald)
+                    🐧 Linux (Coming soon)
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Feature Bereich -->
     <section class="features">
         <div class="card fade-in-section">
             <h3>⚡ Crystal & Sword PvP</h3>
-            <p>Perfekt optimiert für competitive PvP. Erlebe flüssige Hit-Registration und konstante Frames in anspruchsvollen LoadTiers-Kämpfen.</p>
+            <p>Perfectly optimized for competitive PvP. Experience fluid hit registration and consistent frame rates in demanding LoadTiers battles.</p>
         </div>
         <div class="card fade-in-section">
             <h3>🛡️ Standalone System</h3>
-            <p>Ein In-Game-System, das komplett eigenständig läuft. Kein nerviger Overhead, alles direkt über unsere eigenen Systeme gesteuert.</p>
+            <p>A completely standalone in-game system. No annoying overhead—everything is managed directly through our custom infrastructure.</p>
         </div>
         <div class="card fade-in-section">
-            <h3>🚀 Leichtgewichtig</h3>
-            <p>Ein cleanes Interface ohne Bloatware. Der Launcher startet in Sekunden und bringt dich ohne Umwege direkt auf den Server.</p>
+            <h3>🚀 Lightweight & Fast</h3>
+            <p>A clean interface with zero bloatware. The launcher boots in seconds and connects you straight to the server without detours.</p>
         </div>
     </section>
 
@@ -285,9 +316,8 @@
         <p>&copy; 2026 Load Project. Developed with Python & Skript.</p>
     </footer>
 
-    <!-- JavaScript -->
     <script>
-        // --- Modal (Mini GUI) Logik ---
+        // --- Modal Logic ---
         const modal = document.getElementById('downloadModal');
 
         function openModal() {
@@ -298,14 +328,14 @@
             modal.style.display = 'none';
         }
 
-        // Schließt das Modal, wenn man außerhalb der Box hinklickt
+        // Close modal when clicking outside the box
         function closeModalOutside(event) {
             if (event.target === modal) {
                 closeModal();
             }
         }
 
-        // --- Scroll-Animationen ---
+        // --- Scroll Animations ---
         document.addEventListener("DOMContentLoaded", function() {
             const observerOptions = { root: null, rootMargin: '0px', threshold: 0.15 };
             const observer = new IntersectionObserver((entries, observer) => {
