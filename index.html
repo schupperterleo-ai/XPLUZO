@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Load Launcher | The Ultimate Minecraft Experience</title>
+    <title>Load Launcher</title>
     
     <!-- Modern Font: Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -15,7 +15,7 @@
             --primary-glow: rgba(0, 255, 136, 0.4);
             --discord: #5865F2; 
             --discord-glow: rgba(88, 101, 242, 0.4);
-            --store: #ff91a4; /* Sakura Pink for the Store */
+            --store: #ff91a4; 
             --store-glow: rgba(255, 145, 164, 0.4);
             --bg-dark: #050505;
             --bg-surface: rgba(20, 20, 20, 0.55); 
@@ -163,6 +163,32 @@
             transform: none;
         }
 
+        /* --- Mini Upload Button (Floating) --- */
+        .btn-mini-upload {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--bg-surface);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-muted);
+            padding: 10px 15px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-mini-upload:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-color: var(--primary);
+        }
+
         /* --- Modals (Mini GUI) --- */
         .modal-overlay {
             display: none;
@@ -189,10 +215,8 @@
             animation: modalFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .modal-content.store-modal {
-            max-width: 550px; 
-        }
-
+        .modal-content.store-modal { max-width: 550px; }
+        
         .modal-content h2 { margin-top: 0; font-weight: 600; font-size: 1.8rem; }
         
         .close-btn {
@@ -209,6 +233,39 @@
         .os-options { display: flex; flex-direction: column; gap: 15px; margin-top: 30px; }
         .os-btn { padding: 18px; font-size: 1.05rem; width: 100%; box-sizing: border-box; }
 
+        /* --- Upload Form inside Modal --- */
+        .upload-group {
+            margin-top: 25px;
+            text-align: left;
+        }
+        
+        .upload-group label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--primary);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .file-input-wrapper {
+            background: rgba(0,0,0,0.3);
+            border: 1px dashed rgba(255,255,255,0.2);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .file-input-wrapper input {
+            color: var(--text-muted);
+            font-family: 'Poppins', sans-serif;
+            width: 100%;
+        }
+
+        .upload-submit-btn {
+            width: 100%;
+            margin-top: 10px;
+        }
+
         /* --- Cosmetics Store Item --- */
         .store-item {
             background: rgba(0, 0, 0, 0.4);
@@ -224,7 +281,6 @@
             border-color: var(--store);
         }
 
-        /* Update für das neue Preview Bild (Vollbreite, abgerundet) */
         .store-item img {
             width: 100%;
             max-height: 250px;
@@ -234,13 +290,7 @@
             box-shadow: 0 10px 20px rgba(0,0,0,0.5);
         }
 
-        .store-item h4 {
-            margin: 0 0 10px 0;
-            font-size: 1.4rem;
-            color: white;
-            font-weight: 600;
-        }
-
+        .store-item h4 { margin: 0 0 10px 0; font-size: 1.4rem; color: white; font-weight: 600; }
         .store-item .price {
             color: var(--store);
             font-weight: 800;
@@ -251,12 +301,7 @@
             justify-content: center;
             gap: 8px;
         }
-
-        .store-item .btn-buy {
-            width: 100%;
-            background-color: var(--store);
-            color: var(--bg-dark);
-        }
+        .store-item .btn-buy { width: 100%; background-color: var(--store); color: var(--bg-dark); }
 
         /* --- Features Section --- */
         .features {
@@ -287,19 +332,8 @@
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(0, 255, 136, 0.05);
         }
 
-        .card h3 { 
-            font-size: 1.4rem; 
-            margin-top: 0; 
-            color: #fff; 
-            font-weight: 600;
-        }
-
-        .card p { 
-            color: var(--text-muted); 
-            line-height: 1.7; 
-            font-size: 0.95rem;
-            margin-bottom: 0;
-        }
+        .card h3 { font-size: 1.4rem; margin-top: 0; color: #fff; font-weight: 600; }
+        .card p { color: var(--text-muted); line-height: 1.7; font-size: 0.95rem; margin-bottom: 0; }
 
         /* --- Footer --- */
         footer {
@@ -315,6 +349,11 @@
 <body>
 
     <div class="background-animation"></div>
+
+    <!-- Floating Mini Upload Button -->
+    <button class="btn-mini-upload" onclick="openModal('uploadModal')">
+        ☁️ Upload Files
+    </button>
 
     <!-- Hero Section -->
     <header>
@@ -355,11 +394,34 @@
             <p style="color: var(--text-muted); font-size: 0.95rem;">Upgrade your look and show off in LoadTiers.</p>
             
             <div class="store-item">
-                <!-- Hier wird dein In-Game Preview geladen -->
                 <img src="image_2cfa58.png" alt="Sakura Cape Preview">
                 <h4>Exclusive Sakura Cape</h4>
                 <p class="price">🪙 500 Coins</p>
                 <button class="btn btn-buy">Purchase Cape</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Modal -->
+    <div id="uploadModal" class="modal-overlay" onclick="closeModalOutside(event, 'uploadModal')">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('uploadModal')">&times;</span>
+            <h2>Community Upload</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Upload a new Cape image or a client .exe update. (Requires a backend server to save globally).</p>
+            
+            <div class="upload-group">
+                <label for="capeUpload">Upload Cape Preview (.png / .jpg)</label>
+                <div class="file-input-wrapper">
+                    <input type="file" id="capeUpload" accept="image/png, image/jpeg">
+                </div>
+
+                <label for="exeUpload">Upload Client Update (.exe)</label>
+                <div class="file-input-wrapper">
+                    <input type="file" id="exeUpload" accept=".exe">
+                </div>
+                
+                <button class="btn upload-submit-btn" onclick="handleFakeUpload()">Submit Files</button>
+                <p id="uploadStatus" style="font-size: 0.85rem; margin-top: 10px; color: var(--primary); display: none;">Files submitted! (Backend connection required to publish)</p>
             </div>
         </div>
     </div>
@@ -393,6 +455,12 @@
 
         function closeModal(modalId) {
             document.getElementById(modalId).style.display = 'none';
+            // Reset upload status if closing upload modal
+            if(modalId === 'uploadModal') {
+                document.getElementById('uploadStatus').style.display = 'none';
+                document.getElementById('capeUpload').value = "";
+                document.getElementById('exeUpload').value = "";
+            }
         }
 
         function closeModalOutside(event, modalId) {
@@ -400,6 +468,29 @@
             if (event.target === modal) {
                 closeModal(modalId);
             }
+        }
+
+        // --- Fake Upload Handler (Needs Backend) ---
+        function handleFakeUpload() {
+            const capeFile = document.getElementById('capeUpload').files[0];
+            const exeFile = document.getElementById('exeUpload').files[0];
+            const statusText = document.getElementById('uploadStatus');
+
+            if(!capeFile && !exeFile) {
+                statusText.style.color = "#ff4444";
+                statusText.innerText = "Please select at least one file.";
+                statusText.style.display = "block";
+                return;
+            }
+
+            // Simulate backend processing
+            statusText.style.color = "var(--primary)";
+            statusText.innerText = "Uploading... please wait.";
+            statusText.style.display = "block";
+
+            setTimeout(() => {
+                statusText.innerText = "Success! (Note: Needs Python Backend to be visible to others)";
+            }, 1500);
         }
 
         // --- Scroll Animations ---
