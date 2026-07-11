@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Load Launcher | The Ultimate Minecraft Experience</title>
+    <title>Load Launcher </title>
     
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     
@@ -14,8 +14,10 @@
             --primary-glow: rgba(0, 255, 136, 0.4);
             --discord: #5865F2; 
             --discord-glow: rgba(88, 101, 242, 0.4);
+            --store: #f5b041; /* Gold/Orange for the Store */
+            --store-glow: rgba(245, 176, 65, 0.4);
             --bg-dark: #050505;
-            --bg-surface: rgba(30, 30, 30, 0.4); /* Transparent for Glassmorphism */
+            --bg-surface: rgba(20, 20, 20, 0.55); 
             --text-main: #ffffff;
             --text-muted: #a1a1aa;
         }
@@ -27,9 +29,25 @@
             color: var(--text-main);
             overflow-x: hidden;
             scroll-behavior: smooth;
-            /* Subtle background glow effect */
-            background-image: radial-gradient(circle at 50% -20%, rgba(0, 255, 136, 0.15) 0%, transparent 50%);
-            background-repeat: no-repeat;
+        }
+
+        /* --- Animated Mesh Background --- */
+        .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 15% 50%, rgba(0, 255, 136, 0.08), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(0, 184, 255, 0.08), transparent 25%);
+            animation: bgShift 15s ease-in-out infinite alternate;
+        }
+
+        @keyframes bgShift {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1) translate(20px, -20px); }
         }
 
         /* --- Animations --- */
@@ -65,13 +83,13 @@
 
         /* --- Header / Hero Section --- */
         header {
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 0 20px;
+            padding: 20px;
             position: relative;
         }
 
@@ -94,67 +112,64 @@
             animation: fadeInDown 1.2s ease-out;
             max-width: 600px;
             line-height: 1.7;
+            margin-bottom: 40px;
         }
 
         .hero-buttons {
             display: flex;
-            gap: 20px;
-            margin-top: 40px;
-            animation: fadeInDown 1.4s ease-out, float 4s ease-in-out infinite;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            animation: fadeInDown 1.4s ease-out, float 5s ease-in-out infinite;
         }
 
         /* --- Buttons --- */
         .btn {
-            padding: 16px 36px;
+            padding: 16px 32px;
             font-size: 1rem;
             font-weight: 600;
             font-family: 'Poppins', sans-serif;
             color: var(--bg-dark);
             background-color: var(--primary);
             border: none;
-            border-radius: 12px;
+            border-radius: 14px;
             cursor: pointer;
             text-decoration: none;
             letter-spacing: 0.5px;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            gap: 8px;
         }
 
         .btn:hover {
-            transform: translateY(-3px);
+            transform: translateY(-5px) scale(1.02);
             box-shadow: 0 10px 25px var(--primary-glow);
         }
 
-        .btn-discord {
-            background-color: var(--discord);
-            color: white;
-        }
+        .btn-discord { background-color: var(--discord); color: white; }
+        .btn-discord:hover { box-shadow: 0 10px 25px var(--discord-glow); }
 
-        .btn-discord:hover {
-            box-shadow: 0 10px 25px var(--discord-glow);
-        }
+        .btn-store { background-color: transparent; color: var(--store); border: 2px solid var(--store); }
+        .btn-store:hover { background-color: var(--store); color: var(--bg-dark); box-shadow: 0 10px 25px var(--store-glow); }
 
         .btn.disabled {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: #666;
+            background-color: rgba(255, 255, 255, 0.05);
+            color: #555;
             cursor: not-allowed;
             box-shadow: none;
             transform: none;
         }
 
-        /* --- Download Modal (Mini GUI) --- */
+        /* --- Modals (Mini GUI) --- */
         .modal-overlay {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             z-index: 1000;
             justify-content: center;
             align-items: center;
@@ -162,56 +177,87 @@
 
         .modal-content {
             background: var(--bg-surface);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             padding: 40px;
-            border-radius: 24px;
+            border-radius: 28px;
             text-align: center;
-            max-width: 400px;
+            max-width: 420px;
             width: 90%;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+            box-shadow: 0 40px 80px rgba(0,0,0,0.8);
             position: relative;
             animation: modalFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .modal-content h2 {
-            margin-top: 0;
-            font-weight: 600;
+        .modal-content.store-modal {
+            max-width: 550px; /* A bit wider for the store */
         }
 
+        .modal-content h2 { margin-top: 0; font-weight: 600; font-size: 1.8rem; }
+        
         .close-btn {
             position: absolute;
-            top: 15px;
-            right: 20px;
+            top: 20px; right: 25px;
             font-size: 2rem;
             line-height: 1;
             color: var(--text-muted);
             cursor: pointer;
-            transition: color 0.2s;
+            transition: color 0.2s, transform 0.2s;
+        }
+        .close-btn:hover { color: white; transform: rotate(90deg); }
+
+        .os-options { display: flex; flex-direction: column; gap: 15px; margin-top: 30px; }
+        .os-btn { padding: 18px; font-size: 1.05rem; width: 100%; box-sizing: border-box; }
+
+        /* --- Cosmetics Store Item --- */
+        .store-item {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 25px;
+            margin-top: 25px;
+            transition: transform 0.3s ease, border-color 0.3s ease;
         }
 
-        .close-btn:hover {
+        .store-item:hover {
+            transform: translateY(-5px);
+            border-color: var(--store);
+        }
+
+        .store-item img {
+            width: 120px;
+            height: auto;
+            border-radius: 8px;
+            image-rendering: pixelated; /* Keeps Minecraft textures sharp */
+            margin-bottom: 15px;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5));
+        }
+
+        .store-item h4 {
+            margin: 0 0 10px 0;
+            font-size: 1.3rem;
             color: white;
         }
 
-        .os-options {
+        .store-item .price {
+            color: var(--store);
+            font-weight: 800;
+            font-size: 1.2rem;
+            margin: 0 0 20px 0;
             display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-top: 30px;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
-        .os-btn {
-            padding: 16px;
-            font-size: 1rem;
+        .store-item .btn-buy {
             width: 100%;
-            box-sizing: border-box;
+            background-color: var(--store);
+            color: var(--bg-dark);
         }
 
         /* --- Features Section --- */
         .features {
-            padding: 100px 20px;
+            padding: 80px 20px;
             display: flex;
             justify-content: center;
             gap: 30px;
@@ -221,10 +267,10 @@
         }
 
         .card {
-            background: var(--bg-surface);
+            background: linear-gradient(145deg, rgba(30,30,30,0.6) 0%, rgba(20,20,20,0.4) 100%);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.03);
             padding: 40px 30px;
             border-radius: 24px;
             width: 320px;
@@ -235,8 +281,7 @@
         .card:hover {
             transform: translateY(-10px);
             border-color: rgba(0, 255, 136, 0.3);
-            background: rgba(40, 40, 40, 0.6);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(0, 255, 136, 0.05);
         }
 
         .card h3 { 
@@ -244,9 +289,6 @@
             margin-top: 0; 
             color: #fff; 
             font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
 
         .card p { 
@@ -261,7 +303,7 @@
             text-align: center;
             padding: 40px 20px;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
-            color: #555;
+            color: #444;
             margin-top: 40px;
             font-size: 0.9rem;
         }
@@ -269,21 +311,24 @@
 </head>
 <body>
 
+    <div class="background-animation"></div>
+
     <header>
         <h1>Load Launcher</h1>
         <p class="subtitle">Your ultimate connection to LoadSMP, LoadPVP, and LoadTiers. Maximum FPS, minimal delay, and 100% focus on your gameplay.</p>
         
         <div class="hero-buttons">
-            <button onclick="openModal()" class="btn">Download Client</button>
-            <a href="https://discord.gg/cNkq2KxfPV" target="_blank" class="btn btn-discord">Join Discord</a>
+            <button onclick="openModal('downloadModal')" class="btn">📥 Download</button>
+            <button onclick="openModal('cosmeticsModal')" class="btn btn-store">✨ Cosmetics</button>
+            <a href="https://discord.gg/cNkq2KxfPV" target="_blank" class="btn btn-discord">💬 Discord</a>
         </div>
     </header>
 
-    <div id="downloadModal" class="modal-overlay" onclick="closeModalOutside(event)">
+    <div id="downloadModal" class="modal-overlay" onclick="closeModalOutside(event, 'downloadModal')">
         <div class="modal-content">
-            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <span class="close-btn" onclick="closeModal('downloadModal')">&times;</span>
             <h2>Choose Your OS</h2>
-            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 25px;">Please select your operating system to download the Load Launcher.</p>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">Select your operating system to download the Load Launcher client.</p>
             
             <div class="os-options">
                 <a href="Load Launcher Setup 1.0.0.exe" download class="btn os-btn">
@@ -291,8 +336,23 @@
                 </a>
                 
                 <button class="btn os-btn disabled" disabled>
-                    🐧 Linux (Coming soon)
+                    🐧 Fedora / Ubuntu (.rpm / .deb) - Soon
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="cosmeticsModal" class="modal-overlay" onclick="closeModalOutside(event, 'cosmeticsModal')">
+        <div class="modal-content store-modal">
+            <span class="close-btn" onclick="closeModal('cosmeticsModal')">&times;</span>
+            <h2>Cosmetics Store</h2>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">Upgrade your look and show off in LoadTiers.</p>
+            
+            <div class="store-item">
+                <img src="SkinMC-Cape-150404.png" alt="Load Cape Preview">
+                <h4>Exclusive Load Cape</h4>
+                <p class="price">🪙 500 Coins</p>
+                <button class="btn btn-buy">Purchase Cape</button>
             </div>
         </div>
     </div>
@@ -300,7 +360,7 @@
     <section class="features">
         <div class="card fade-in-section">
             <h3>⚡ Crystal & Sword PvP</h3>
-            <p>Perfectly optimized for competitive PvP. Experience fluid hit registration and consistent frame rates in demanding LoadTiers battles.</p>
+            <p>Perfectly optimized for competitive PvP. Experience fluid hit registration and consistent frame rates in demanding battles.</p>
         </div>
         <div class="card fade-in-section">
             <h3>🛡️ Standalone System</h3>
@@ -317,21 +377,19 @@
     </footer>
 
     <script>
-        // --- Modal Logic ---
-        const modal = document.getElementById('downloadModal');
-
-        function openModal() {
-            modal.style.display = 'flex';
+        // --- Modal System ---
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
         }
 
-        function closeModal() {
-            modal.style.display = 'none';
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
         }
 
-        // Close modal when clicking outside the box
-        function closeModalOutside(event) {
+        function closeModalOutside(event, modalId) {
+            const modal = document.getElementById(modalId);
             if (event.target === modal) {
-                closeModal();
+                closeModal(modalId);
             }
         }
 
