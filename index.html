@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Load Launcher</title>
+    <title>Load Launcher | The Ultimate Minecraft Experience</title>
     
-    <!-- Modern Font: Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     
     <style>
@@ -32,14 +31,9 @@
             scroll-behavior: smooth;
         }
 
-        /* --- Animated Mesh Background --- */
         .background-animation {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: -1;
+            top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
             background: 
                 radial-gradient(circle at 15% 50%, rgba(0, 255, 136, 0.08), transparent 25%),
                 radial-gradient(circle at 85% 30%, rgba(0, 184, 255, 0.08), transparent 25%);
@@ -51,7 +45,6 @@
             100% { transform: scale(1.1) translate(20px, -20px); }
         }
 
-        /* --- Animations --- */
         @keyframes fadeInDown {
             from { opacity: 0; transform: translateY(-30px); }
             to { opacity: 1; transform: translateY(0); }
@@ -69,297 +62,105 @@
         }
 
         .fade-in-section {
-            opacity: 0;
-            transform: translateY(40px);
-            visibility: hidden;
+            opacity: 0; transform: translateY(40px); visibility: hidden;
             transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
             will-change: opacity, visibility;
         }
+        .fade-in-section.is-visible { opacity: 1; transform: none; visibility: visible; }
 
-        .fade-in-section.is-visible {
-            opacity: 1;
-            transform: none;
-            visibility: visible;
-        }
-
-        /* --- Header / Hero Section --- */
         header {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 20px;
-            position: relative;
+            min-height: 100vh; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; text-align: center;
+            padding: 20px; position: relative;
         }
 
         h1 {
-            font-size: clamp(3rem, 8vw, 5.5rem);
-            font-weight: 800;
-            margin-bottom: 15px;
-            letter-spacing: -2px;
-            animation: fadeInDown 1s ease-out;
+            font-size: clamp(3rem, 8vw, 5.5rem); font-weight: 800; margin-bottom: 15px;
+            letter-spacing: -2px; animation: fadeInDown 1s ease-out;
             background: linear-gradient(135deg, #ffffff 0%, #00ff88 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             text-shadow: 0 0 40px rgba(0, 255, 136, 0.2);
         }
 
         p.subtitle {
-            font-size: 1.2rem;
-            color: var(--text-muted);
-            font-weight: 300;
-            animation: fadeInDown 1.2s ease-out;
-            max-width: 600px;
-            line-height: 1.7;
-            margin-bottom: 40px;
+            font-size: 1.2rem; color: var(--text-muted); font-weight: 300;
+            animation: fadeInDown 1.2s ease-out; max-width: 600px; line-height: 1.7; margin-bottom: 40px;
         }
 
         .hero-buttons {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            justify-content: center;
+            display: flex; gap: 15px; flex-wrap: wrap; justify-content: center;
             animation: fadeInDown 1.4s ease-out, float 5s ease-in-out infinite;
         }
 
-        /* --- Buttons --- */
         .btn {
-            padding: 16px 32px;
-            font-size: 1rem;
-            font-weight: 600;
-            font-family: 'Poppins', sans-serif;
-            color: var(--bg-dark);
-            background-color: var(--primary);
-            border: none;
-            border-radius: 14px;
-            cursor: pointer;
-            text-decoration: none;
-            letter-spacing: 0.5px;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
+            padding: 16px 32px; font-size: 1rem; font-weight: 600;
+            font-family: 'Poppins', sans-serif; color: var(--bg-dark);
+            background-color: var(--primary); border: none; border-radius: 14px;
+            cursor: pointer; text-decoration: none; transition: all 0.3s ease;
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
         }
-
-        .btn:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 10px 25px var(--primary-glow);
-        }
-
+        .btn:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 10px 25px var(--primary-glow); }
         .btn-discord { background-color: var(--discord); color: white; }
         .btn-discord:hover { box-shadow: 0 10px 25px var(--discord-glow); }
-
         .btn-store { background-color: transparent; color: var(--store); border: 2px solid var(--store); }
         .btn-store:hover { background-color: var(--store); color: var(--bg-dark); box-shadow: 0 10px 25px var(--store-glow); }
+        .btn.disabled { background-color: rgba(255, 255, 255, 0.05); color: #555; cursor: not-allowed; box-shadow: none; transform: none; }
 
-        .btn.disabled {
-            background-color: rgba(255, 255, 255, 0.05);
-            color: #555;
-            cursor: not-allowed;
-            box-shadow: none;
-            transform: none;
-        }
-
-        /* --- Mini Upload Button (Floating) --- */
         .btn-mini-upload {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: var(--bg-surface);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--text-muted);
-            padding: 10px 15px;
-            border-radius: 50px;
-            font-size: 0.85rem;
-            cursor: pointer;
-            z-index: 100;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            position: fixed; bottom: 20px; right: 20px;
+            background: var(--bg-surface); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-muted);
+            padding: 10px 15px; border-radius: 50px; font-size: 0.85rem;
+            cursor: pointer; z-index: 100; transition: all 0.3s ease;
         }
+        .btn-mini-upload:hover { background: rgba(255, 255, 255, 0.1); color: white; border-color: var(--primary); }
 
-        .btn-mini-upload:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        /* --- Modals (Mini GUI) --- */
         .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.7); backdrop-filter: blur(12px);
+            z-index: 1000; justify-content: center; align-items: center;
         }
-
         .modal-content {
-            background: var(--bg-surface);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 40px;
-            border-radius: 28px;
-            text-align: center;
-            max-width: 420px;
-            width: 90%;
-            box-shadow: 0 40px 80px rgba(0,0,0,0.8);
-            position: relative;
-            animation: modalFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            background: var(--bg-surface); border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 40px; border-radius: 28px; text-align: center; max-width: 420px;
+            width: 90%; box-shadow: 0 40px 80px rgba(0,0,0,0.8); position: relative;
+            animation: modalFadeIn 0.4s ease;
         }
-
         .modal-content.store-modal { max-width: 550px; }
-        
-        .modal-content h2 { margin-top: 0; font-weight: 600; font-size: 1.8rem; }
-        
-        .close-btn {
-            position: absolute;
-            top: 20px; right: 25px;
-            font-size: 2rem;
-            line-height: 1;
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: color 0.2s, transform 0.2s;
-        }
-        .close-btn:hover { color: white; transform: rotate(90deg); }
-
+        .close-btn { position: absolute; top: 20px; right: 25px; font-size: 2rem; color: var(--text-muted); cursor: pointer; transition: color 0.2s; }
+        .close-btn:hover { color: white; }
         .os-options { display: flex; flex-direction: column; gap: 15px; margin-top: 30px; }
         .os-btn { padding: 18px; font-size: 1.05rem; width: 100%; box-sizing: border-box; }
 
-        /* --- Upload Form inside Modal --- */
-        .upload-group {
-            margin-top: 25px;
-            text-align: left;
-        }
-        
-        .upload-group label {
-            display: block;
-            font-size: 0.9rem;
-            color: var(--primary);
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
+        .upload-group { margin-top: 25px; text-align: left; }
+        .upload-group label { display: block; font-size: 0.9rem; color: var(--primary); margin-bottom: 8px; font-weight: 600; }
+        .file-input-wrapper { background: rgba(0,0,0,0.3); border: 1px dashed rgba(255,255,255,0.2); padding: 10px; border-radius: 8px; margin-bottom: 15px; }
+        .file-input-wrapper input { color: var(--text-muted); width: 100%; }
+        .upload-submit-btn { width: 100%; margin-top: 10px; }
 
-        .file-input-wrapper {
-            background: rgba(0,0,0,0.3);
-            border: 1px dashed rgba(255,255,255,0.2);
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
-
-        .file-input-wrapper input {
-            color: var(--text-muted);
-            font-family: 'Poppins', sans-serif;
-            width: 100%;
-        }
-
-        .upload-submit-btn {
-            width: 100%;
-            margin-top: 10px;
-        }
-
-        /* --- Cosmetics Store Item --- */
-        .store-item {
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            padding: 20px;
-            margin-top: 25px;
-            transition: transform 0.3s ease, border-color 0.3s ease;
-        }
-
-        .store-item:hover {
-            transform: translateY(-5px);
-            border-color: var(--store);
-        }
-
-        .store-item img {
-            width: 100%;
-            max-height: 250px;
-            object-fit: cover;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-        }
-
-        .store-item h4 { margin: 0 0 10px 0; font-size: 1.4rem; color: white; font-weight: 600; }
-        .store-item .price {
-            color: var(--store);
-            font-weight: 800;
-            font-size: 1.2rem;
-            margin: 0 0 20px 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
+        .store-item { background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 20px; padding: 20px; margin-top: 25px; }
+        .store-item img { width: 100%; max-height: 250px; object-fit: cover; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .store-item h4 { margin: 0 0 10px 0; font-size: 1.4rem; color: white; }
+        .store-item .price { color: var(--store); font-weight: 800; font-size: 1.2rem; margin: 0 0 20px 0; }
         .store-item .btn-buy { width: 100%; background-color: var(--store); color: var(--bg-dark); }
 
-        /* --- Features Section --- */
-        .features {
-            padding: 80px 20px;
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            flex-wrap: wrap;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .card {
-            background: linear-gradient(145deg, rgba(30,30,30,0.6) 0%, rgba(20,20,20,0.4) 100%);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            padding: 40px 30px;
-            border-radius: 24px;
-            width: 320px;
-            text-align: left;
-            transition: all 0.4s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-10px);
-            border-color: rgba(0, 255, 136, 0.3);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(0, 255, 136, 0.05);
-        }
-
+        .features { padding: 80px 20px; display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; max-width: 1200px; margin: 0 auto; }
+        .card { background: linear-gradient(145deg, rgba(30,30,30,0.6) 0%, rgba(20,20,20,0.4) 100%); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.03); padding: 40px 30px; border-radius: 24px; width: 320px; text-align: left; transition: all 0.4s ease; }
+        .card:hover { transform: translateY(-10px); border-color: rgba(0, 255, 136, 0.3); }
         .card h3 { font-size: 1.4rem; margin-top: 0; color: #fff; font-weight: 600; }
         .card p { color: var(--text-muted); line-height: 1.7; font-size: 0.95rem; margin-bottom: 0; }
-
-        /* --- Footer --- */
-        footer {
-            text-align: center;
-            padding: 40px 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            color: #444;
-            margin-top: 40px;
-            font-size: 0.9rem;
-        }
+        footer { text-align: center; padding: 40px 20px; border-top: 1px solid rgba(255, 255, 255, 0.05); color: #444; margin-top: 40px; font-size: 0.9rem; }
     </style>
 </head>
 <body>
 
     <div class="background-animation"></div>
 
-    <!-- Floating Mini Upload Button -->
-    <button class="btn-mini-upload" onclick="openModal('uploadModal')">
-        ☁️ Upload Files
-    </button>
+    <button class="btn-mini-upload" onclick="openModal('uploadModal')">☁️ Upload Files</button>
 
-    <!-- Hero Section -->
     <header>
         <h1>Load Launcher</h1>
-        <p class="subtitle">Your ultimate connection to LoadSMP, LoadPVP, and LoadTiers. Maximum FPS, minimal delay, and 100% focus on your gameplay.</p>
-        
+        <p class="subtitle">Your ultimate connection to LoadSMP, LoadPVP, and LoadTiers.</p>
         <div class="hero-buttons">
             <button onclick="openModal('downloadModal')" class="btn">📥 Download</button>
             <button onclick="openModal('cosmeticsModal')" class="btn btn-store">🌸 Cosmetics</button>
@@ -367,32 +168,21 @@
         </div>
     </header>
 
-    <!-- Download Modal -->
     <div id="downloadModal" class="modal-overlay" onclick="closeModalOutside(event, 'downloadModal')">
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal('downloadModal')">&times;</span>
             <h2>Choose Your OS</h2>
-            <p style="color: var(--text-muted); font-size: 0.95rem;">Select your operating system to download the Load Launcher client.</p>
-            
             <div class="os-options">
-                <a href="Load Launcher Setup 1.0.0.exe" download class="btn os-btn">
-                    🪟 Windows (.exe)
-                </a>
-                
-                <button class="btn os-btn disabled" disabled>
-                    🐧 Fedora / Ubuntu (.rpm / .deb) - Soon
-                </button>
+                <a href="Load Launcher Setup 1.0.0.exe" download class="btn os-btn">🪟 Windows (.exe)</a>
+                <button class="btn os-btn disabled" disabled>🐧 Fedora / Ubuntu - Soon</button>
             </div>
         </div>
     </div>
 
-    <!-- Cosmetics Store Modal -->
     <div id="cosmeticsModal" class="modal-overlay" onclick="closeModalOutside(event, 'cosmeticsModal')">
         <div class="modal-content store-modal">
             <span class="close-btn" onclick="closeModal('cosmeticsModal')">&times;</span>
             <h2>Cosmetics Store</h2>
-            <p style="color: var(--text-muted); font-size: 0.95rem;">Upgrade your look and show off in LoadTiers.</p>
-            
             <div class="store-item">
                 <img src="image_2cfa58.png" alt="Sakura Cape Preview">
                 <h4>Exclusive Sakura Cape</h4>
@@ -402,111 +192,101 @@
         </div>
     </div>
 
-    <!-- Upload Modal -->
     <div id="uploadModal" class="modal-overlay" onclick="closeModalOutside(event, 'uploadModal')">
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal('uploadModal')">&times;</span>
-            <h2>Community Upload</h2>
-            <p style="color: var(--text-muted); font-size: 0.9rem;">Upload a new Cape image or a client .exe update. (Requires a backend server to save globally).</p>
-            
+            <h2>Cloud Upload (Firebase)</h2>
             <div class="upload-group">
-                <label for="capeUpload">Upload Cape Preview (.png / .jpg)</label>
-                <div class="file-input-wrapper">
-                    <input type="file" id="capeUpload" accept="image/png, image/jpeg">
-                </div>
-
+                <label for="capeUpload">Upload Cape Preview (.png)</label>
+                <div class="file-input-wrapper"><input type="file" id="capeUpload" accept="image/png, image/jpeg"></div>
                 <label for="exeUpload">Upload Client Update (.exe)</label>
-                <div class="file-input-wrapper">
-                    <input type="file" id="exeUpload" accept=".exe">
-                </div>
-                
-                <button class="btn upload-submit-btn" onclick="handleFakeUpload()">Submit Files</button>
-                <p id="uploadStatus" style="font-size: 0.85rem; margin-top: 10px; color: var(--primary); display: none;">Files submitted! (Backend connection required to publish)</p>
+                <div class="file-input-wrapper"><input type="file" id="exeUpload" accept=".exe"></div>
+                <button class="btn upload-submit-btn" onclick="handleRealUpload()">Upload to Cloud</button>
+                <p id="uploadStatus" style="font-size: 0.85rem; margin-top: 10px; color: var(--primary); display: none;"></p>
             </div>
         </div>
     </div>
 
-    <!-- Feature Section -->
-    <section class="features">
-        <div class="card fade-in-section">
-            <h3>⚡ Crystal & Sword PvP</h3>
-            <p>Perfectly optimized for competitive PvP. Experience fluid hit registration and consistent frame rates in demanding battles.</p>
-        </div>
-        <div class="card fade-in-section">
-            <h3>🛡️ Standalone System</h3>
-            <p>A completely standalone in-game system. No annoying overhead—everything is managed directly through our custom infrastructure.</p>
-        </div>
-        <div class="card fade-in-section">
-            <h3>🚀 Lightweight & Fast</h3>
-            <p>A clean interface with zero bloatware. The launcher boots in seconds and connects you straight to the server without detours.</p>
-        </div>
-    </section>
+    <script type="module">
+        // Import Firebase Core and Storage from Google CDN
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getStorage, ref, uploadBytes } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
-    <footer>
-        <p>&copy; 2026 Load Project. Developed with Python & Skript.</p>
-    </footer>
+        // Deine exakte Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyBswyuV0HblMDvmrh6McmPRb26Hz99XhAY",
+            authDomain: "loadtiers.firebaseapp.com",
+            projectId: "loadtiers",
+            storageBucket: "loadtiers.firebasestorage.app",
+            messagingSenderId: "705641531162",
+            appId: "1:705641531162:web:c09e2227b0bff91ab5cea3",
+            measurementId: "G-VXJ4YDKVP7"
+        };
 
-    <!-- JavaScript -->
-    <script>
-        // --- Modal System ---
-        function openModal(modalId) {
+        // Firebase starten
+        const app = initializeApp(firebaseConfig);
+        const storage = getStorage(app); // Storage (für die Dateien) aktivieren
+
+        // UI Funktionen für die Buttons an das 'window' Objekt heften, damit HTML sie findet
+        window.openModal = function(modalId) {
             document.getElementById(modalId).style.display = 'flex';
         }
-
-        function closeModal(modalId) {
+        window.closeModal = function(modalId) {
             document.getElementById(modalId).style.display = 'none';
-            // Reset upload status if closing upload modal
             if(modalId === 'uploadModal') {
                 document.getElementById('uploadStatus').style.display = 'none';
-                document.getElementById('capeUpload').value = "";
-                document.getElementById('exeUpload').value = "";
             }
         }
-
-        function closeModalOutside(event, modalId) {
+        window.closeModalOutside = function(event, modalId) {
             const modal = document.getElementById(modalId);
-            if (event.target === modal) {
-                closeModal(modalId);
-            }
+            if (event.target === modal) closeModal(modalId);
         }
 
-        // --- Fake Upload Handler (Needs Backend) ---
-        function handleFakeUpload() {
+        // --- HIER PASSIERT DER ECHTE UPLOAD ---
+        window.handleRealUpload = async function() {
             const capeFile = document.getElementById('capeUpload').files[0];
             const exeFile = document.getElementById('exeUpload').files[0];
             const statusText = document.getElementById('uploadStatus');
 
             if(!capeFile && !exeFile) {
                 statusText.style.color = "#ff4444";
-                statusText.innerText = "Please select at least one file.";
+                statusText.innerText = "Please select a file first.";
                 statusText.style.display = "block";
                 return;
             }
 
-            // Simulate backend processing
             statusText.style.color = "var(--primary)";
-            statusText.innerText = "Uploading... please wait.";
+            statusText.innerText = "Uploading to Firebase Cloud... ⏳";
             statusText.style.display = "block";
 
-            setTimeout(() => {
-                statusText.innerText = "Success! (Note: Needs Python Backend to be visible to others)";
-            }, 1500);
+            try {
+                // Wenn ein Cape hochgeladen wird
+                if (capeFile) {
+                    const capeRef = ref(storage, 'capes/' + capeFile.name);
+                    await uploadBytes(capeRef, capeFile);
+                }
+                // Wenn eine .exe hochgeladen wird
+                if (exeFile) {
+                    const exeRef = ref(storage, 'clients/' + exeFile.name);
+                    await uploadBytes(exeRef, exeFile);
+                }
+                
+                statusText.innerText = "✅ Upload successful! Files are in the cloud.";
+            } catch (error) {
+                console.error(error);
+                statusText.style.color = "#ff4444";
+                statusText.innerText = "❌ Error: Check Firebase Storage Rules.";
+            }
         }
 
-        // --- Scroll Animations ---
+        // Scroll Animationen
         document.addEventListener("DOMContentLoaded", function() {
-            const observerOptions = { root: null, rootMargin: '0px', threshold: 0.15 };
-            const observer = new IntersectionObserver((entries, observer) => {
+            const observer = new IntersectionObserver((entries, obs) => {
                 entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('is-visible');
-                        observer.unobserve(entry.target);
-                    }
+                    if (entry.isIntersecting) { entry.target.classList.add('is-visible'); obs.unobserve(entry.target); }
                 });
-            }, observerOptions);
-
-            const elements = document.querySelectorAll('.fade-in-section');
-            elements.forEach(el => observer.observe(el));
+            }, { threshold: 0.15 });
+            document.querySelectorAll('.fade-in-section').forEach(el => observer.observe(el));
         });
     </script>
 </body>
